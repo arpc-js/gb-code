@@ -98,17 +98,9 @@ export default class Base {
     async save(): Promise<this> {
         const pk = (this.constructor as typeof Base).primaryKey as keyof this;
         if (this[pk]) {
-            // 更新
-            const data = { ...this } as Record<string, unknown>;
-            delete data[pk as string];
-            const results = await (this.constructor as typeof Base).update({ [pk]: this[pk] }, data) as Record<string, unknown>[];
-            if (results.length > 0) Object.assign(this, results[0]);
-            return this;
+            return await this.update();
         } else {
-            // 新增
-            const result = await (this.constructor as typeof Base).add({ ...this });
-            Object.assign(this, result);
-            return this;
+            return await this.add();
         }
     }
     

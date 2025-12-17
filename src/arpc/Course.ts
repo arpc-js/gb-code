@@ -1,4 +1,4 @@
-import Base from './Base';
+import Base from '../core/Base';
 
 // 课程 Active Record 类
 // arpc云对象，云端arpc对象继承base，自带增删改查

@@ -1,4 +1,4 @@
-import Base from './Base';
+import Base from '../core/Base';
 
 // 用户 Active Record 类
 // 表名自动从类名推断：User -> users

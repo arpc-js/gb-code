@@ -7,7 +7,7 @@
     "dev": "run-p build:* start",
     "build:csr": "vite build --watch --outDir dist/client",
     "build:ssr": "vite build --watch --ssr src/main.ts --outDir dist/server",
-    "start": "bun --watch src/server.js"
+    "start": "bun --watch src/index.ts"
   },
   "dependencies": {
     "vue": "^3.5.25",
