@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "run-p build:* && bun src/server.js",
-    "build:client": "vite build --outDir dist/client",
-    "build:server": "vite build --ssr src/main.ts --outDir dist/server",
-    "start": "bun src/server.js"
+    "dev": "run-p build:* start",
+    "build:client": "vite build --watch --outDir dist/client",
+    "build:server": "vite build --watch --ssr src/main.ts --outDir dist/server",
+    "start": "bun --watch src/server.js"
   },
   "dependencies": {
     "vue": "^3.5.24",
