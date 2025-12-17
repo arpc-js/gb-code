@@ -44,35 +44,28 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 import { Course } from '../arpc/Course.js';
 
-// 课程列表
-const courses = ref([]);
+// 编辑状态
 const editingId = ref(null);
 const log = ref('');
 
-// 新课程 - reactive 对象
-const newCourse = reactive(new Course({
-  title: '',
-  description: '',
-  price: 0,
-  duration: '10小时',
-  lessons: 20
-}));
+// 课程列表 - 直接响应式
+const courses = await Course.get();
+
+// 新课程 - 直接响应式
+const newCourse = new Course();
 
 // 编辑中的课程
 let editCourse = null;
 
-// 初始加载
-courses.value = await Course.get();
-
-// 新增 - Active Record 实例方法
+// 新增
 async function addCourse() {
   if (!newCourse.title) return;
   
-  await newCourse.add1();
-  courses.value.push({ ...newCourse.toJSON() });
+  await newCourse.add();
+  courses.push({ ...newCourse.toJSON() });
   log.value = `新增成功: ${newCourse.title} (ID: ${newCourse.id})`;
   
   // 重置
@@ -85,28 +78,30 @@ async function addCourse() {
 // 开始编辑
 function startEdit(course) {
   editingId.value = course.id;
-  editCourse = reactive(new Course({ ...course }));
+  editCourse = new Course({ ...course });
 }
 
-// 更新 - Active Record 实例方法
+// 更新
 async function updateCourse() {
   await editCourse.update();
   
-  const index = courses.value.findIndex(c => c.id === editCourse.id);
-  if (index !== -1) courses.value[index] = { ...editCourse.toJSON() };
+  const index = courses.findIndex(c => c.id === editCourse.id);
+  if (index !== -1) courses[index] = { ...editCourse.toJSON() };
   
   log.value = `更新成功: ${editCourse.title}`;
   editingId.value = null;
 }
 
-// 删除 - Active Record 实例方法
+// 删除
 async function deleteCourse(course) {
   if (!confirm('确定删除这个课程吗？')) return;
   
   const toDelete = new Course(course);
   await toDelete.del();
   
-  courses.value = courses.value.filter(c => c.id !== course.id);
+  const index = courses.findIndex(c => c.id === course.id);
+  if (index !== -1) courses.splice(index, 1);
+  
   log.value = `删除成功: ${course.title}`;
 }
 </script>

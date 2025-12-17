@@ -21,6 +21,8 @@ export default function arpcPlugin() {
             const className = name.charAt(0).toUpperCase() + name.slice(1);
             
             return `
+import { reactive } from 'vue';
+
 // ${className} - 前端 RPC Proxy 类
 const __rpc = async (method, properties = {}, params = []) => {
     const res = await fetch('/${name}/' + method, {
@@ -29,7 +31,14 @@ const __rpc = async (method, properties = {}, params = []) => {
         body: JSON.stringify({ properties, params })
     });
     if (!res.ok) throw new Error(await res.text());
-    return res.json();
+    const data = await res.json();
+    // 返回结果自动 reactive
+    if (Array.isArray(data)) {
+        return reactive(data);
+    } else if (data && typeof data === 'object') {
+        return reactive(data);
+    }
+    return data;
 };
 
 class __${className}Base {
@@ -39,12 +48,10 @@ class __${className}Base {
         const self = this;
         
         // 用 Proxy 代理实例，任意方法调用都走 RPC
-        return new Proxy(this, {
+        const proxy = new Proxy(this, {
             get(target, prop) {
-                // 属性访问
                 if (prop in target) return target[prop];
                 
-                // 动态方法 - 返回 RPC 调用函数
                 return async (...args) => {
                     const result = await __rpc(prop, self.toJSON(), args);
                     if (result && typeof result === 'object' && !Array.isArray(result)) {
@@ -58,6 +65,9 @@ class __${className}Base {
                 return true;
             }
         });
+        
+        // 返回 reactive 包装的 proxy
+        return reactive(proxy);
     }
     
     toJSON() {
