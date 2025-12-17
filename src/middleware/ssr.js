@@ -27,7 +27,6 @@ function getTemplate() {
 // 创建 SSR 处理器
 export async function createSsrHandler() {
     const { createApp } = await import('../../dist/server/main.js');
-    const { getSSRData } = await import('../rpc/index.js');
     const template = await getTemplate();
     
     console.log('[SSR] Production mode');
@@ -72,20 +71,13 @@ export async function createSsrHandler() {
             await router.push(pathname);
             await router.isReady();
             
-            // 添加错误处理器
             app.config.errorHandler = (err) => {
                 console.error('[SSR] Vue Error:', err);
             };
             
             const appHtml = await renderToString(app);
-            console.log('[SSR] Rendered HTML length:', appHtml.length);
-            
-            const ssrData = getSSRData();
-            console.log('[SSR] SSR Data:', ssrData);
             
             let html = template.replace(`<div id="app"></div>`, `<div id="app">${appHtml}</div>`);
-            const ssrDataScript = `<script>window.__SSR_DATA__ = ${JSON.stringify(ssrData)};</script>`;
-            html = html.replace('</head>', `${ssrDataScript}</head>`);
             
             return new Response(html, {
                 headers: {

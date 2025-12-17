@@ -18,14 +18,15 @@
 <script setup>
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { Course } from '../rpc/index.js';
+import Course from '../arpc/Course.js';
 
 const route = useRoute();
 const course = ref(null);
 
-// 服务端直接获取，客户端自动从 SSR 缓存读取
+// 加载课程详情
 const id = Number(route.params.id);
-course.value = await Course.get({ id });
+const [data] = await Course.get({ id });
+course.value = data;
 </script>
 
 <style scoped>

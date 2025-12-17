@@ -1,27 +1,114 @@
 <template>
   <div class="home">
-    <h1>课程列表</h1>
+    <h1>课程管理 - CRUD 演示</h1>
+    
+    <!-- 新增课程表单 -->
+    <div class="add-form">
+      <h3>新增课程</h3>
+      <input v-model="newCourse.title" placeholder="课程标题" />
+      <input v-model="newCourse.description" placeholder="课程描述" />
+      <input v-model.number="newCourse.price" type="number" placeholder="价格" />
+      <button @click="addCourse">添加课程</button>
+    </div>
+    
+    <!-- 课程列表 -->
     <div class="course-list">
       <div v-for="course in courses" :key="course.id" class="course-card">
-        <h3>{{ course.title }}</h3>
-        <p>{{ course.description }}</p>
-        <div class="card-footer">
-          <span class="price">¥{{ course.price }}</span>
-          <router-link :to="`/course/${course.id}`" class="detail-btn">查看详情</router-link>
+        <div v-if="editingId === course.id" class="edit-mode">
+          <input v-model="editCourse.title" />
+          <input v-model="editCourse.description" />
+          <input v-model.number="editCourse.price" type="number" />
+          <button @click="updateCourse">保存</button>
+          <button @click="editingId = null">取消</button>
+        </div>
+        <div v-else>
+          <h3>{{ course.title }}</h3>
+          <p>{{ course.description }}</p>
+          <div class="card-footer">
+            <span class="price">￥{{ course.price }}</span>
+            <div class="actions">
+              <button @click="startEdit(course)" class="edit-btn">编辑</button>
+              <button @click="deleteCourse(course)" class="del-btn">删除</button>
+              <router-link :to="`/course/${course.id}`" class="detail-btn">详情</router-link>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+    
+    <!-- 操作日志 -->
+    <div v-if="log" class="log">
+      <strong>最近操作:</strong> {{ log }}
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { Course } from '../rpc/index.js';
+import { ref, reactive } from 'vue';
+import Course from '../arpc/Course.js';
 
+// 课程列表
 const courses = ref([]);
+const editingId = ref(null);
+const log = ref('');
 
-// 服务端直接获取，客户端自动从 SSR 缓存读取
-courses.value = await Course.list();
+// 新课程 - reactive 对象
+const newCourse = reactive(new Course({
+  title: '',
+  description: '',
+  price: 0,
+  duration: '10小时',
+  lessons: 20
+}));
+
+// 编辑中的课程
+let editCourse = null;
+
+// 初始加载
+courses.value = await Course.get();
+
+// 新增 - Active Record 实例方法
+async function addCourse() {
+  if (!newCourse.title) return;
+  
+  await newCourse.add();
+  courses.value.push({ ...newCourse.toJSON() });
+  log.value = `新增成功: ${newCourse.title} (ID: ${newCourse.id})`;
+  
+  // 重置
+  newCourse.id = undefined;
+  newCourse.title = '';
+  newCourse.description = '';
+  newCourse.price = 0;
+}
+
+// 开始编辑
+function startEdit(course) {
+  editingId.value = course.id;
+  editCourse = reactive(new Course({ ...course }));
+}
+
+// 更新 - Active Record 实例方法
+async function updateCourse() {
+  await editCourse.update();
+  
+  const index = courses.value.findIndex(c => c.id === editCourse.id);
+  if (index !== -1) courses.value[index] = { ...editCourse.toJSON() };
+  
+  log.value = `更新成功: ${editCourse.title}`;
+  editingId.value = null;
+}
+
+// 删除 - Active Record 实例方法
+async function deleteCourse(course) {
+  if (!confirm('确定删除这个课程吗？')) return;
+  
+  const toDelete = new Course(course);
+  await toDelete.del();
+  
+  courses.value = courses.value.filter(c => c.id !== course.id);
+  log.value = `删除成功: ${course.title}`;
+}
 </script>
 
 <style scoped>
@@ -35,6 +122,39 @@ courses.value = await Course.list();
   text-align: center;
   color: #333;
   margin-bottom: 30px;
+}
+
+.add-form {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.add-form h3 {
+  width: 100%;
+  margin: 0 0 10px 0;
+}
+
+.add-form input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.add-form button {
+  background: #42b983;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .course-list {
@@ -78,16 +198,48 @@ courses.value = await Course.list();
   font-weight: bold;
 }
 
-.detail-btn {
-  background: #42b983;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-size: 14px;
+.actions {
+  display: flex;
+  gap: 8px;
 }
 
-.detail-btn:hover {
-  background: #369970;
+.edit-btn, .del-btn, .detail-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.edit-btn { background: #3498db; color: white; }
+.del-btn { background: #e74c3c; color: white; }
+.detail-btn { background: #42b983; color: white; }
+
+.edit-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-mode input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.edit-mode button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.log {
+  margin-top: 20px;
+  padding: 15px;
+  background: #d4edda;
+  border-radius: 8px;
+  color: #155724;
 }
 </style>
