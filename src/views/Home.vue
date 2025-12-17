@@ -64,7 +64,7 @@ let editCourse = null;
 async function addCourse() {
   if (!newCourse.title) return;
   
-  await newCourse.add();
+  await newCourse.add1()//.catch((err) => {alert(err.message+'111');});
   courses.push({ ...newCourse.toJSON() });
   log.value = `新增成功: ${newCourse.title} (ID: ${newCourse.id})`;
   

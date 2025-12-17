@@ -5,6 +5,7 @@ import Base from './Base.js';
 export default class Course extends Base {
     async add1(){
         console.log('add1:',this)
+        throw new Error('暂时无法添加');
         return await super.add();
     }
 }
