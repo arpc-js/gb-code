@@ -31,7 +31,7 @@ export class Course extends Base {
         console.log('add6:', this);
         // 假如后端异常，直接抛出
         // 不需要code，data。msg
-        throw new Error('这是测试6rpc方法');
+        //throw new Error('这是测试6rpc方法');
         return await super.add();
     }
 }
