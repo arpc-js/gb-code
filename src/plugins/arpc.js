@@ -21,53 +21,43 @@ export default function arpcPlugin() {
             const className = name.charAt(0).toUpperCase() + name.slice(1);
             
             return `
-// ${className} - 前端 RPC 类
-const __rpc = async (method, params) => {
+// ${className} - 前端 RPC Proxy 类
+const __rpc = async (method, properties = {}, params = []) => {
     const res = await fetch('/${name}/' + method, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params)
+        body: JSON.stringify({ properties, params })
     });
     if (!res.ok) throw new Error(await res.text());
     return res.json();
 };
 
-class ${className} {
+class __${className}Base {
     constructor(data = {}) {
         Object.assign(this, data);
-    }
-    
-    static get(where = {}) { return __rpc('get', where); }
-    static add(data) { return __rpc('add', data); }
-    static update(where, data) { return __rpc('update', { where, data }); }
-    static del(where) { return __rpc('del', where); }
-    
-    async add() {
-        const { id, ...rest } = this.toJSON();
-        const result = await __rpc('add', rest);
-        Object.assign(this, result);
-        return this;
-    }
-    
-    async update(where) {
-        const { id, ...rest } = this.toJSON();
-        const result = await __rpc('update', { where: where || { id: this.id }, data: rest });
-        if (result.length > 0) Object.assign(this, result[0]);
-        return result;
-    }
-    
-    async del(where) {
-        return await __rpc('del', where || { id: this.id });
-    }
-    
-    async save() {
-        return this.id ? this.update() : this.add();
-    }
-    
-    async reload() {
-        const [data] = await __rpc('get', { id: this.id });
-        Object.assign(this, data);
-        return this;
+        
+        const self = this;
+        
+        // 用 Proxy 代理实例，任意方法调用都走 RPC
+        return new Proxy(this, {
+            get(target, prop) {
+                // 属性访问
+                if (prop in target) return target[prop];
+                
+                // 动态方法 - 返回 RPC 调用函数
+                return async (...args) => {
+                    const result = await __rpc(prop, self.toJSON(), args);
+                    if (result && typeof result === 'object' && !Array.isArray(result)) {
+                        Object.assign(target, result);
+                    }
+                    return result;
+                };
+            },
+            set(target, prop, value) {
+                target[prop] = value;
+                return true;
+            }
+        });
     }
     
     toJSON() {
@@ -79,7 +69,20 @@ class ${className} {
     }
 }
 
-export default ${className};
+// 用 Proxy 代理类本身，支持任意静态方法调用
+const ${className} = new Proxy(__${className}Base, {
+    get(target, prop) {
+        if (prop === 'prototype' || prop === 'name' || prop === 'length') {
+            return target[prop];
+        }
+        return (...args) => __rpc(prop, {}, args);
+    },
+    construct(target, args) {
+        return new target(...args);
+    }
+});
+
+export { ${className} };
 `;
         }
     };

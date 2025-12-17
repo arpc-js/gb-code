@@ -45,7 +45,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import Course from '../arpc/Course.js';
+import { Course } from '../arpc/Course.js';
 
 // 课程列表
 const courses = ref([]);
@@ -71,7 +71,7 @@ courses.value = await Course.get();
 async function addCourse() {
   if (!newCourse.title) return;
   
-  await newCourse.add();
+  await newCourse.add1();
   courses.value.push({ ...newCourse.toJSON() });
   log.value = `新增成功: ${newCourse.title} (ID: ${newCourse.id})`;
   

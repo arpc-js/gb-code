@@ -18,7 +18,7 @@ async function loadClass(className) {
     return ARClass;
 }
 
-// ARPC 处理器 - /course/get -> Course.get()
+// ARPC 处理器 - /course/get -> Course.get(...params)
 export async function handleRpc(req) {
     if (req.method !== 'POST') return null;
     
@@ -35,25 +35,41 @@ export async function handleRpc(req) {
     }
     
     try {
+        // 解析请求体: { properties?: {}, params?: [] }
         const body = await req.json().catch(() => ({}));
+        const { properties = {}, params = [] } = body;
+        
+        // 加载类
         const ARClass = await loadClass(className);
         
         let result;
+        const hasProperties = Object.keys(properties).length > 0;
         
-        // 调用静态方法
-        if (methodName === 'get') {
-            result = ARClass.get(body);
-        } else if (methodName === 'add') {
-            result = ARClass.add(body);
-        } else if (methodName === 'update') {
-            result = ARClass.update(body.where, body.data);
-        } else if (methodName === 'del') {
-            result = ARClass.del(body);
+        // 如果有 properties，说明是实例方法调用
+        if (hasProperties) {
+            const instance = new ARClass(properties);
+            
+            if (typeof instance[methodName] !== 'function') {
+                return new Response(`Instance method ${methodName} not found`, {
+                    status: 404,
+                    headers: getCorsHeaders()
+                });
+            }
+            
+            result = instance[methodName](...params);
+        } else if (typeof ARClass[methodName] === 'function') {
+            // 静态方法调用: Course.get(...params)
+            result = ARClass[methodName](...params);
         } else {
             return new Response(`Method ${methodName} not found`, {
                 status: 404,
                 headers: getCorsHeaders()
             });
+        }
+        
+        // 处理 Promise
+        if (result instanceof Promise) {
+            result = await result;
         }
         
         return new Response(JSON.stringify(result), {
