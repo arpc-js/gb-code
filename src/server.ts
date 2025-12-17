@@ -1,15 +1,15 @@
-import { handleCors } from './middleware/cors.js';
-import { handleRpc } from './middleware/rpc.js';
-import { createSsrHandler } from './middleware/ssr.js';
+import { handleCors } from './middleware/cors';
+import { handleRpc } from './middleware/rpc';
+import { createSsrHandler } from './middleware/ssr';
 
-async function startServer() {
+async function startServer(): Promise<void> {
     // 创建 SSR 处理器
     const ssrHandler = await createSsrHandler();
 
     // 创建 Bun HTTP 服务器
     Bun.serve({
         port: 3000,
-        async fetch(req) {
+        async fetch(req: Request): Promise<Response> {
             // 1. CORS 处理
             const corsResponse = handleCors(req);
             if (corsResponse) return corsResponse;

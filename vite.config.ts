@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import arpc from './src/plugins/arpc.js'
+import arpc from './src/plugins/arpc'
 
 export default defineConfig(() => ({
   plugins: [
-    arpc(),
+    arpc(),//前端会rpc代理，后端不代理
     vue()
   ],
 }))

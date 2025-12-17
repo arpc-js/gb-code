@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>课程管理 - CRUD 演示</h1>
+    <h1>arpc框架CRUD演示</h1>
     
     <!-- 新增课程表单 -->
     <div class="add-form">
@@ -8,7 +8,7 @@
       <input v-model="newCourse.title" placeholder="课程标题" />
       <input v-model="newCourse.description" placeholder="课程描述" />
       <input v-model.number="newCourse.price" type="number" placeholder="价格" />
-      <button @click="addCourse">添加课程</button>
+      <button @click="newCourse.add6()">添加课程</button>
     </div>
     
     <!-- 课程列表 -->
@@ -43,18 +43,20 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-import { Course } from '../arpc/Course.js';
+<script setup lang="ts">
+import { ref, type Ref } from 'vue';
+import { Course } from '../arpc/Course';
 
 // 编辑状态
 const editingId = ref(null);
 const log = ref('');
 
-// 课程列表 - 直接响应式
+//一行代码完成列表查询
 const courses = await Course.get();
 
-// 新课程 - 直接响应式
+//2行代码完成新增
+//第一行new对象，双向绑定表单
+//对象.add()插入数据库了
 const newCourse = new Course();
 
 // 编辑中的课程

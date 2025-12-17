@@ -1,25 +1,27 @@
 import { join } from 'path';
-import { getCorsHeaders } from './cors.js';
+import { getCorsHeaders } from './cors';
+import Base from '../arpc/Base';
 
 // 类缓存
-const classCache = new Map();
+const classCache = new Map<string, typeof Base>();
 
 // 动态加载 arpc 类
-async function loadClass(className) {
+async function loadClass(className: string): Promise<typeof Base> {
     const name = className.charAt(0).toUpperCase() + className.slice(1);
     if (classCache.has(name)) {
-        return classCache.get(name);
+        return classCache.get(name)!;
     }
     
-    const classPath = join(import.meta.dir, `../arpc/${name}.js`);
+    const classPath = join(import.meta.dir, `../arpc/${name}.ts`);
     const module = await import(classPath);
-    const ARClass = module.default;
+    // 支持命名导出：export class Course
+    const ARClass = module[name] as typeof Base;
     classCache.set(name, ARClass);
     return ARClass;
 }
 
 // ARPC 处理器 - /course/get -> Course.get(...params)
-export async function handleRpc(req) {
+export async function handleRpc(req: Request): Promise<Response | null> {
     if (req.method !== 'POST') return null;
     
     const url = new URL(req.url);
@@ -36,18 +38,18 @@ export async function handleRpc(req) {
     
     try {
         // 解析请求体: { properties?: {}, params?: [] }
-        const body = await req.json().catch(() => ({}));
+        const body = await req.json().catch(() => ({})) as { properties?: Record<string, unknown>; params?: unknown[] };
         const { properties = {}, params = [] } = body;
         
         // 加载类
         const ARClass = await loadClass(className);
         
-        let result;
+        let result: unknown;
         const hasProperties = Object.keys(properties).length > 0;
         
         // 如果有 properties，说明是实例方法调用
         if (hasProperties) {
-            const instance = new ARClass(properties);
+            const instance = new ARClass(properties) as Base & Record<string, unknown>;
             
             if (typeof instance[methodName] !== 'function') {
                 return new Response(`Instance method ${methodName} not found`, {
@@ -56,10 +58,10 @@ export async function handleRpc(req) {
                 });
             }
             
-            result = instance[methodName](...params);
-        } else if (typeof ARClass[methodName] === 'function') {
+            result = (instance[methodName] as (...args: unknown[]) => unknown)(...params);
+        } else if (typeof (ARClass as unknown as Record<string, unknown>)[methodName] === 'function') {
             // 静态方法调用: Course.get(...params)
-            result = ARClass[methodName](...params);
+            result = ((ARClass as unknown as Record<string, unknown>)[methodName] as (...args: unknown[]) => unknown)(...params);
         } else {
             return new Response(`Method ${methodName} not found`, {
                 status: 404,
@@ -81,7 +83,7 @@ export async function handleRpc(req) {
         });
     } catch (e) {
         console.error('[RPC Error]', e);
-        return new Response(e.message, {
+        return new Response((e as Error).message, {
             status: 500,
             headers: getCorsHeaders()
         });

@@ -1,11 +1,13 @@
 import { join, extname } from 'path';
 import { renderToString } from 'vue/server-renderer';
-import { getCorsHeaders } from './cors.js';
+import { getCorsHeaders } from './cors';
+import type { App } from 'vue';
+import type { Router } from 'vue-router';
 
 const clientDir = join(import.meta.dir, '../../dist/client');
 
 // MIME 类型映射
-const mimeTypes = {
+const mimeTypes: Record<string, string> = {
     '.html': 'text/html',
     '.js': 'application/javascript',
     '.css': 'text/css',
@@ -20,18 +22,18 @@ const mimeTypes = {
 };
 
 // 读取模板
-function getTemplate() {
+function getTemplate(): Promise<string> {
     return Bun.file(join(clientDir, 'index.html')).text();
 }
 
 // 创建 SSR 处理器
-export async function createSsrHandler() {
-    const { createApp } = await import('../../dist/server/main.js');
+export async function createSsrHandler(): Promise<(req: Request) => Promise<Response>> {
+    const { createApp } = await import('../../dist/server/main.js') as { createApp: () => App };
     const template = await getTemplate();
     
     console.log('[SSR] Production mode');
     
-    return async (req) => {
+    return async (req: Request): Promise<Response> => {
         const url = new URL(req.url);
         const pathname = url.pathname;
         
@@ -67,7 +69,7 @@ export async function createSsrHandler() {
         
         try {
             const app = createApp();
-            const router = app.config.globalProperties.$router;
+            const router = app.config.globalProperties.$router as Router;
             
             await router.push(pathname);
             await router.isReady();
@@ -78,7 +80,7 @@ export async function createSsrHandler() {
             
             const appHtml = await renderToString(app);
             
-            let html = template.replace(`<div id="app"></div>`, `<div id="app">${appHtml}</div>`);
+            const html = template.replace(`<div id="app"></div>`, `<div id="app">${appHtml}</div>`);
             
             return new Response(html, {
                 headers: {
@@ -88,7 +90,7 @@ export async function createSsrHandler() {
             });
         } catch (e) {
             console.error('SSR Error:', e);
-            return new Response(`SSR Error: ${e.message}`, { status: 500 });
+            return new Response(`SSR Error: ${(e as Error).message}`, { status: 500 });
         }
     };
 }

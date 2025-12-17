@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "run-p build:* start",
-    "build:client": "vite build --watch --outDir dist/client",
-    "build:server": "vite build --watch --ssr src/main.ts --outDir dist/server",
+    "build:csr": "vite build --watch --outDir dist/client",
+    "build:ssr": "vite build --watch --ssr src/main.ts --outDir dist/server",
     "start": "bun --watch src/server.js"
   },
   "dependencies": {

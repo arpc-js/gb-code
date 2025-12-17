@@ -1,11 +1,18 @@
+import type { Plugin, ResolveIdResult } from 'vite';
+
 // Vite 插件：arpc + 自动水合
-export default function arpcPlugin() {
+// SSR 构建时不替换，保持原始类直接访问数据库
+// CSR 客户端构建时替换成 RPC 代理
+export default function arpcPlugin(): Plugin {
     return {
         name: 'vite-plugin-arpc',
         enforce: 'pre',
         
-        // 拦截 arpc 模块解析
-        resolveId(source) {
+        // 拦截 arpc 模块解析（仅 CSR）
+        resolveId(source: string, _importer: string | undefined, options?: { ssr?: boolean }): ResolveIdResult {
+            // SSR 构建时不拦截，使用原始模块
+            if (options?.ssr) return null;
+            
             const match = source.match(/arpc\/(\w+)/);
             if (match) {
                 return `\0virtual:arpc-${match[1].toLowerCase()}`;
@@ -13,8 +20,11 @@ export default function arpcPlugin() {
             return null;
         },
         
-        // 加载虚拟 arpc 模块
-        load(id) {
+        // 加载虚拟 arpc 模块（仅 CSR）
+        load(id: string, options?: { ssr?: boolean }): string | null {
+            // SSR 构建时不加载虚拟模块
+            if (options?.ssr) return null;
+            
             if (!id.startsWith('\0virtual:arpc-')) return null;
             
             const name = id.replace('\0virtual:arpc-', '');
@@ -23,8 +33,11 @@ export default function arpcPlugin() {
             return generateRpcClass(name, className);
         },
         
-        // 自动注入客户端水合代码
-        transform(code, id) {
+        // 自动注入客户端水合代码（仅 CSR）
+        transform(code: string, id: string, options?: { ssr?: boolean }): { code: string; map: null } | null {
+            // SSR 构建时不注入水合代码
+            if (options?.ssr) return null;
+            
             // 只处理 main.ts/main.js
             if (!id.endsWith('main.ts') && !id.endsWith('main.js')) return null;
             if (id.includes('node_modules')) return null;
@@ -44,8 +57,8 @@ if (typeof window !== 'undefined') {
     };
 }
 
-// 生成 RPC 类代码
-function generateRpcClass(name, className) {
+// 生成 RPC 类代码（注意：生成的是纯 JavaScript，不能包含 TypeScript 类型注解）
+function generateRpcClass(name: string, className: string): string {
     return `
 import { reactive } from 'vue';
 
@@ -62,14 +75,21 @@ const __rpc = async (method, properties = {}, params = []) => {
     return data;
 };
 
+// 已知的数据字段名（返回值而非 RPC 函数）
+const __dataFields = ['id', 'title', 'description', 'price', 'name', 'email', 'duration', 'lessons', 'createdAt', 'updatedAt'];
+
 class __${className}Base {
     constructor(data = {}) {
         Object.assign(this, data);
         const self = this;
-        
+        //csr的rpc代理
         const proxy = new Proxy(this, {
             get(target, prop) {
+                // 已存在的属性直接返回
                 if (prop in target) return target[prop];
+                // 已知数据字段返回 undefined
+                if (__dataFields.includes(prop)) return undefined;
+                // 其他属性当作 RPC 方法
                 return async (...args) => {
                     const result = await __rpc(prop, self.toJSON(), args);
                     if (result && typeof result === 'object' && !Array.isArray(result)) {
