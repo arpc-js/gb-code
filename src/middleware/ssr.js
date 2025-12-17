@@ -1,18 +1,8 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { createBrotliCompress, brotliCompressSync, constants } from 'node:zlib';
-import { pipeline } from 'node:stream';
+import { join, extname } from 'path';
 import { renderToString } from 'vue/server-renderer';
+import { getCorsHeaders } from './cors.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const clientDir = path.resolve(__dirname, '../../dist/client');
-
-// 检查客户端是否支持 brotli
-function acceptsBrotli(req) {
-    const encoding = req.headers['accept-encoding'] || '';
-    return encoding.includes('br');
-}
+const clientDir = join(import.meta.dir, '../../dist/client');
 
 // MIME 类型映射
 const mimeTypes = {
@@ -29,99 +19,85 @@ const mimeTypes = {
     '.woff2': 'font/woff2',
 };
 
-// 静态文件服务中间件（支持 brotli）
-function staticMiddleware(req, res, next) {
-    const filePath = path.join(clientDir, req.url);
-    
-    // 检查文件是否存在
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-        const ext = path.extname(filePath);
-        const contentType = mimeTypes[ext] || 'application/octet-stream';
-        
-        res.setHeader('Content-Type', contentType);
-        res.statusCode = 200;
-        
-        // 对文本文件启用 brotli 压缩
-        const compressible = ['.js', '.css', '.html', '.json', '.svg'].includes(ext);
-        if (compressible && acceptsBrotli(req)) {
-            res.setHeader('Content-Encoding', 'br');
-            pipeline(fs.createReadStream(filePath), createBrotliCompress(), res, () => {});
-        } else {
-            fs.createReadStream(filePath).pipe(res);
-        }
-    } else {
-        next();
-    }
-}
-
 // 读取模板
 function getTemplate() {
-    return fs.readFileSync(path.resolve(__dirname, '../../dist/client/index.html'), 'utf-8');
+    return Bun.file(join(clientDir, 'index.html')).text();
 }
 
-// SSR 中间件
-function ssrMiddleware(render, getSSRData) {
-    const template = getTemplate();
+// 创建 SSR 处理器
+export async function createSsrHandler() {
+    const { createApp } = await import('../../dist/server/main.js');
+    const { getSSRData } = await import('../rpc/index.js');
+    const template = await getTemplate();
     
-    return async (req, res, next) => {
-        const url = req.url;
-
-        if (req.method !== 'GET') return next();
-        if (url === '/favicon.ico') return next();
-        if (url.startsWith('/api/') || (path.extname(url) && !url.endsWith('.html'))) return next();
-
-        try {
-            const { app, router } = render();
+    console.log('[SSR] Production mode');
+    
+    return async (req) => {
+        const url = new URL(req.url);
+        const pathname = url.pathname;
+        
+        // 1. 尝试提供静态文件
+        const filePath = join(clientDir, pathname);
+        const file = Bun.file(filePath);
+        
+        if (await file.exists()) {
+            const ext = extname(filePath);
+            const contentType = mimeTypes[ext] || 'application/octet-stream';
             
-            await router.push(url);
+            return new Response(file, {
+                headers: {
+                    'Content-Type': contentType,
+                    ...getCorsHeaders()
+                }
+            });
+        }
+        
+        // 2. SSR 渲染
+        if (req.method !== 'GET') {
+            return new Response('Method Not Allowed', { status: 405 });
+        }
+        
+        if (pathname === '/favicon.ico') {
+            return new Response(null, { status: 404 });
+        }
+        
+        // 跳过 API 请求和静态资源
+        if (pathname.startsWith('/api/') || (extname(pathname) && !pathname.endsWith('.html'))) {
+            return new Response('Not Found', { status: 404 });
+        }
+        
+        try {
+            const { app, router } = createApp();
+            
+            await router.push(pathname);
             await router.isReady();
             
-            // 添加错误处理器捕获渲染过程中的错误
+            // 添加错误处理器
             app.config.errorHandler = (err) => {
                 console.error('[SSR] Vue Error:', err);
             };
             
             const appHtml = await renderToString(app);
             console.log('[SSR] Rendered HTML length:', appHtml.length);
+            
             const ssrData = getSSRData();
             console.log('[SSR] SSR Data:', ssrData);
-
+            
             let html = template.replace(`<div id="app"></div>`, `<div id="app">${appHtml}</div>`);
             const ssrDataScript = `<script>window.__SSR_DATA__ = ${JSON.stringify(ssrData)};</script>`;
             html = html.replace('</head>', `${ssrDataScript}</head>`);
-
-            res.setHeader('Content-Type', 'text/html');
-            res.statusCode = 200;
             
-            // HTML 压缩（brotli）
-            if (acceptsBrotli(req)) {
-                res.setHeader('Content-Encoding', 'br');
-                res.end(brotliCompressSync(Buffer.from(html)));
-            } else {
-                res.end(html);
-            }
+            return new Response(html, {
+                headers: {
+                    'Content-Type': 'text/html',
+                    ...getCorsHeaders()
+                }
+            });
         } catch (e) {
             console.error('SSR Error:', e);
-            next(e);
+            return new Response(`SSR Error: ${e.message}`, { status: 500 });
         }
     };
 }
 
-// 封装函数：创建 SSR 中间件
-export async function ssr(app) {
-    const { createApp } = await import('../../dist/server/main.js');
-    const { getSSRData } = await import('../rpc/index.js');  // 直接从源码导入
-    
-    // 封装 render 函数
-    const render = () => {
-        return createApp();  // createApp 已返回 { app, router }
-    };
-    
-    // 静态资源服务
-    app.use(staticMiddleware);
-    app.use(ssrMiddleware(render, getSSRData));
-    
-    console.log('[SSR] Production mode');
-}
-
-export default ssr;
+export default createSsrHandler;

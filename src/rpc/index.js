@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 // 全局数据存储（用于 SSR 数据传递）
 let ssrData = {};
 
@@ -8,19 +10,10 @@ function getCacheKey(className, methodName, props) {
 
 // 服务端 RPC 调用
 async function createServerInstance(className) {
-    const [pathModule, urlModule] = await Promise.all([
-        import(/* @vite-ignore */ 'node:path'),
-        import(/* @vite-ignore */ 'node:url')
-    ]);
-    
-    const path = pathModule.default;
-    const { pathToFileURL } = urlModule;
-    
-    // 使用 process.cwd() 获取项目根目录，避免打包后路径错误
-    const rpcDir = path.resolve(process.cwd(), 'src/rpc');
-    const classPath = path.resolve(rpcDir, `./${className}.js`);
-    const classUrl = pathToFileURL(classPath).href;
-    const module = await import(/* @vite-ignore */ classUrl);
+    // 使用 Bun 的 import.meta.dir 和 process.cwd()
+    const rpcDir = join(process.cwd(), 'src/rpc');
+    const classPath = join(rpcDir, `./${className}.js`);
+    const module = await import(classPath);
     return new module.default();
 }
 
