@@ -66,7 +66,8 @@ export async function createSsrHandler() {
         }
         
         try {
-            const { app, router } = createApp();
+            const app = createApp();
+            const router = app.config.globalProperties.$router;
             
             await router.push(pathname);
             await router.isReady();

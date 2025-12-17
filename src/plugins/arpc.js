@@ -36,11 +36,7 @@ export default function arpcPlugin() {
             const hydrateCode = `
 // 自动水合 (arpc 插件生成)
 if (typeof window !== 'undefined') {
-    const { app, router } = createApp();
-    router.isReady().then(() => {
-        app.mount('#app');
-        console.log('[ARPC] Hydrated');
-    });
+    createApp().mount('#app');
 }
 `;
             return { code: code + hydrateCode, map: null };
