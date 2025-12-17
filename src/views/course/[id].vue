@@ -18,7 +18,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { Course } from '../arpc/Course.js';
+import { Course } from '../../arpc/Course.js';
 
 const route = useRoute();
 const course = ref(null);
