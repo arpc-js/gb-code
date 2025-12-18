@@ -72,8 +72,58 @@ export default class Base {
     }
     
     // GET - 查询
-    static async get(cond?: TemplateStringsArray | Record<string, unknown>, ...values: unknown[]): Promise<unknown[]> {
-        const t = this.table, w = buildCondition(cond, ...values);
+    // fields: 字段选择，支持 'id,title' 或 '!id,title' 排除字段
+    static async get(cond?: TemplateStringsArray | Record<string, unknown>, fields?: string, ...values: unknown[]): Promise<unknown[]> {
+        const t = this.table;
+        
+        // 判断第二个参数是否为字段字符串
+        let actualFields = fields;
+        let actualValues = values;
+        
+        // 如果 fields 不是字符串，说明它可能是模板字符串的值
+        if (fields !== undefined && typeof fields !== 'string') {
+            actualValues = [fields, ...values];
+            actualFields = undefined;
+        }
+        
+        // 解析字段选择
+        if (actualFields && actualFields.trim()) {
+            const isExclude = actualFields.startsWith('!');
+            const fieldList = (isExclude ? actualFields.slice(1) : actualFields)
+                .split(',')
+                .map(f => f.trim())
+                .filter(f => f);
+            
+            if (isExclude && fieldList.length > 0) {
+                // 排除字段模式：先查询所有数据再过滤
+                const w = buildCondition(cond, ...actualValues);
+                const results = w 
+                    ? await sql`SELECT * FROM ${sql(t)} WHERE ${w}` 
+                    : await sql`SELECT * FROM ${sql(t)}`;
+                
+                return (results as Record<string, unknown>[]).map(row => {
+                    const filtered: Record<string, unknown> = {};
+                    for (const key of Object.keys(row)) {
+                        if (!fieldList.includes(key)) {
+                            filtered[key] = row[key];
+                        }
+                    }
+                    return filtered;
+                });
+            } else if (fieldList.length > 0) {
+                // 包含字段模式
+                const w = buildCondition(cond, ...actualValues);
+                let fieldsSql = sql`${sql(fieldList[0])}`;
+                for (let i = 1; i < fieldList.length; i++) {
+                    fieldsSql = sql`${fieldsSql}, ${sql(fieldList[i])}`;
+                }
+                return w 
+                    ? await sql`SELECT ${fieldsSql} FROM ${sql(t)} WHERE ${w}` 
+                    : await sql`SELECT ${fieldsSql} FROM ${sql(t)}`;
+            }
+        }
+        
+        const w = buildCondition(cond, ...actualValues);
         return w ? await sql`SELECT * FROM ${sql(t)} WHERE ${w}` : await sql`SELECT * FROM ${sql(t)}`;
     }
     
