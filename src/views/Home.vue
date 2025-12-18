@@ -58,7 +58,7 @@ const courses = await Course.get();
 //第一行new对象，双向绑定表单
 //对象.add()插入数据库了
 const newCourse = new Course();
-
+Course.get1()
 // 编辑中的课程
 let editCourse = null;
 

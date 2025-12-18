@@ -15,7 +15,8 @@ export default function arpcPlugin(): Plugin {
             
             const match = source.match(/arpc\/(\w+)/);
             if (match) {
-                return `\0virtual:arpc-${match[1].toLowerCase()}`;
+                // 保持原始大小写
+                return `\0virtual:arpc-${match[1]}`;
             }
             return null;
         },
@@ -28,9 +29,10 @@ export default function arpcPlugin(): Plugin {
             if (!id.startsWith('\0virtual:arpc-')) return null;
             
             const name = id.replace('\0virtual:arpc-', '');
+            // className 和 name 保持一致（首字母大写）
             const className = name.charAt(0).toUpperCase() + name.slice(1);
             
-            return generateRpcClass(name, className);
+            return generateRpcClass(className, className);
         },
         
         // 自动注入客户端水合代码（仅 CSR）
@@ -63,11 +65,27 @@ function generateRpcClass(name: string, className: string): string {
 import { reactive } from 'vue';
 
 const __rpc = async (method, properties = {}, params = []) => {
+    // 自动携带 token
+    const headers = { 'Content-Type': 'application/json' };
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    
     const res = await fetch('/${name}/' + method, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ properties, params })
     });
+    
+    // 401 未授权，跳转登录页
+    if (res.status === 401) {
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        }
+        throw new Error('未登录，请先登录');
+    }
+    
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     if (Array.isArray(data)) return reactive(data);

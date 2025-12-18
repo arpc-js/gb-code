@@ -1,4 +1,5 @@
 import Base from '../core/Base';
+import {ctx} from "../core/Arpc.ts";
 
 // 课程 Active Record 类
 // arpc云对象，云端 arpc 对象继承 base，自带增删改查
@@ -16,5 +17,10 @@ export class Course extends Base {
         if (data.price !== undefined) this.price = data.price;
         if (data.duration !== undefined) this.duration = data.duration;
         if (data.lessons !== undefined) this.lessons = data.lessons;
+    }
+    static async get1(): Promise<any> {
+        // 添加或更新课程
+        ctx.info(ctx.get('userId'),'1111')
+        throw new Error('1111');
     }
 }
