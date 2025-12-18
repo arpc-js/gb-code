@@ -1,7 +1,51 @@
 import { SQL } from 'bun';
+import { AsyncLocalStorage } from 'async_hooks';
 
 // 数据库连接 - 切换数据库修改此 DSN
-const sql = new SQL( 'sqlite://data.db');
+const sql = new SQL('sqlite://data.db');
+
+// 事务上下文存储
+const txStorage = new AsyncLocalStorage<ReturnType<typeof sql.begin extends (fn: (tx: infer T) => any) => any ? T : never>>();
+
+// 获取当前数据库连接（优先使用事务 tx）
+export function db(): typeof sql {
+    return (txStorage.getStore() ?? sql) as typeof sql;
+}
+
+// @tx 装饰器 - 声明式事务（无需括号）
+export function tx<T extends (...args: any[]) => Promise<any>>(
+    _target: any,
+    _propertyKey: string,
+    descriptor: TypedPropertyDescriptor<T>
+) {
+    const originalMethod = descriptor.value!;
+    
+    descriptor.value = async function (this: any, ...args: any[]) {
+        // 如果已经在事务中，直接执行
+        if (txStorage.getStore()) {
+            return await originalMethod.apply(this, args);
+        }
+        
+        // 开启新事务
+        return await sql.begin(async (t: any) => {
+            return await txStorage.run(t, async () => {
+                return await originalMethod.apply(this, args);
+            });
+        });
+    } as T;
+    
+    return descriptor;
+}
+
+// 编程式事务
+export async function runTx<T>(fn: () => Promise<T>): Promise<T> {
+    if (txStorage.getStore()) {
+        return await fn();
+    }
+    return await sql.begin(async (tx: any) => {
+        return await txStorage.run(tx, fn);
+    });
+}
 
 // 初始化表结构
 await sql`
@@ -313,7 +357,8 @@ export default class Base {
     
     // ADD - 新增
     static async add(data: Record<string, unknown> | Record<string, unknown>[]): Promise<unknown> {
-        const result = await sql`INSERT INTO ${sql.unsafe(this.table)} ${sql(data)} RETURNING *`;
+        const d = db();
+        const result = await d`INSERT INTO ${sql.unsafe(this.table)} ${sql(data)} RETURNING *`;
         return Array.isArray(data) ? result : result[0];
     }
     
@@ -324,7 +369,8 @@ export default class Base {
         const { where } = buildCondition(cond, ...values);
         if (!where) throw new Error('Delete requires conditions');
         const deleted = await this.get(cond, undefined, ...values);
-        await sql`DELETE FROM ${sql.unsafe(this.table)} WHERE ${where}`;
+        const d = db();
+        await d`DELETE FROM ${sql.unsafe(this.table)} WHERE ${where}`;
         return deleted;
     }
     
@@ -354,15 +400,16 @@ export default class Base {
         const cls = this.constructor as typeof Base;
         const pk = cls.primaryKey as keyof this;
         const t = cls.table;
-        const d = { ...this } as Record<string, unknown>;
-        delete d[pk as string];
+        const data = { ...this } as Record<string, unknown>;
+        delete data[pk as string];
         
         const { where } = cond !== undefined 
             ? buildCondition(cond, ...values) 
             : (this[pk] ? buildCondition({ [pk]: this[pk] }) : { where: null });
         
         if (where) {
-            await sql`UPDATE ${sql.unsafe(t)} SET ${sql(d)} WHERE ${where}`;
+            const conn = db();
+            await conn`UPDATE ${sql.unsafe(t)} SET ${sql(data)} WHERE ${where}`;
             const results = await cls.get(cond ?? { [pk]: this[pk] });
             if (results.length) Object.assign(this, results[0]);
         }
