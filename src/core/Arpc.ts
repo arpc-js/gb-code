@@ -1,5 +1,6 @@
 import { join } from 'path';
 import { AsyncLocalStorage } from 'async_hooks';
+import type { ServerWebSocket } from 'bun';
 
 // 生成 traceId
 function genTraceId(): string {
@@ -36,6 +37,9 @@ export interface Context {
     userId?: number;
     user?: Record<string, unknown>;
     
+    // WebSocket（如果是 WS 请求）
+    ws?: ServerWebSocket<WsData>;
+    
     // 快捷方法
     json(data: unknown, status?: number): void;
     text(data: string, status?: number): void;
@@ -64,6 +68,7 @@ const ctx = new Proxy({} as Context & { get: (key: string) => unknown }, {
                 if (key === 'userId') return store.userId;
                 if (key === 'user') return store.user;
                 if (key === 'traceId') return store.traceId;
+                if (key === 'wsId') return store.ws?.data?.id;
                 return store.state[key];
             };
         }
@@ -92,6 +97,27 @@ import Base from './Base';
 
 // 类缓存
 const classCache = new Map<string, typeof Base>();
+
+// WebSocket 数据类型
+interface WsData {
+    id: string;
+    userId?: number;
+    [key: string]: unknown;
+}
+
+// 全局 server 引用（用于 pub/sub）
+let server: ReturnType<typeof Bun.serve> | null = null;
+
+// WebSocket 管理器（使用 Bun 原生 pub/sub）
+const ws = {
+    // 广播给所有订阅者
+    publish(topic: string, data: unknown) {
+        server?.publish(topic, JSON.stringify(data));
+    },
+    
+    // 获取在线数（通过全局计数）
+    count: 0
+};
 
 // Arpc 框架
 class ArpcServer {
@@ -303,11 +329,136 @@ class ArpcServer {
         });
     }
     
+    // WebSocket 处理器
+    private wsHandlers: {
+        open?: (client: ServerWebSocket<WsData>) => void;
+        close?: (client: ServerWebSocket<WsData>, code: number, reason: string) => void;
+        message?: (client: ServerWebSocket<WsData>, msg: string) => void;
+    } = {};
+    
+    // 配置 WebSocket
+    ws(handlers: typeof this.wsHandlers): this {
+        this.wsHandlers = handlers;
+        return this;
+    }
+    
+    // WebSocket RPC 处理
+    private async handleWsRpc(data: string, client: ServerWebSocket<WsData>): Promise<unknown> {
+        const traceId = client.data.id;
+        
+        // 创建 WS 上下文
+        const wsCtx: Context = {
+            req: new Request('ws://localhost'),
+            url: new URL('ws://localhost'),
+            path: '',
+            method: 'WS',
+            params: {},
+            query: {},
+            state: {},
+            headers: {},
+            traceId,
+            startTime: Date.now(),
+            ws: client,
+            userId: client.data.userId,
+            info: (...args: unknown[]) => console.log(`[${formatTime()}] [${traceId}]`, ...args),
+            err: (...args: unknown[]) => console.error(`[${formatTime()}] [${traceId}]`, ...args),
+            json() {},
+            text() {},
+            html() {}
+        };
+        
+        // 用 ctxStorage 包装执行
+        let reqId: unknown;
+        return ctxStorage.run(wsCtx, async () => {
+            try {
+                const parsed = JSON.parse(data);
+                const { path, properties = {}, params = [], __id } = parsed;
+                reqId = __id;
+                
+                if (!path) return { error: 'Invalid RPC: path required', __id };
+                
+                wsCtx.path = path;
+                
+                // 解析路径: /Course/get -> [Course, get]
+                const parts = path.replace(/^\//, '').split('/');
+                if (parts.length !== 2) return { error: 'Invalid path format', __id };
+                
+                const [className, methodName] = parts;
+                const ARClass = await this.loadClass(className);
+                
+                let result: unknown;
+                
+                if (Object.keys(properties).length > 0) {
+                    const instance = new ARClass(properties) as Base & Record<string, unknown>;
+                    if (typeof instance[methodName] !== 'function') {
+                        return { error: `Method ${methodName} not found`, __id };
+                    }
+                    result = await (instance[methodName] as (...args: unknown[]) => unknown)(...params);
+                } else {
+                    const fn = (ARClass as unknown as Record<string, unknown>)[methodName];
+                    if (typeof fn !== 'function') return { error: `Method ${methodName} not found`, __id };
+                    result = await (fn as (...args: unknown[]) => unknown).call(ARClass, ...params);
+                }
+                
+                return { result, __id };
+            } catch (e) {
+                wsCtx.err('WS RPC Error:', (e as Error).message);
+                return { error: (e as Error).message, __id: reqId };
+            }
+        });
+    }
+    
     // 启动服务
     listen(port: number, callback?: () => void): this {
-        Bun.serve({
+        const self = this;
+        
+        server = Bun.serve({
             port,
-            fetch: (req) => this.handleRequest(req)
+            fetch: (req, srv) => {
+                // WebSocket 升级
+                if (req.headers.get('upgrade') === 'websocket') {
+                    const id = genTraceId();
+                    const url = new URL(req.url);
+                    const success = srv.upgrade(req, { 
+                        data: { id, path: url.pathname } 
+                    });
+                    return success ? undefined : new Response('WebSocket upgrade failed', { status: 400 });
+                }
+                return this.handleRequest(req);
+            },
+            websocket: {
+                // 类型声明
+                data: {} as WsData,
+                idleTimeout: 120,
+                
+                open(client) {
+                    ws.count++;
+                    // 自动订阅全局频道
+                    client.subscribe('broadcast');
+                    console.log(`[WS] 连接 ${client.data.id}, 在线: ${ws.count}`);
+                    self.wsHandlers.open?.(client);
+                },
+                
+                close(client, code, reason) {
+                    ws.count--;
+                    console.log(`[WS] 断开 ${client.data.id}, 在线: ${ws.count}`);
+                    self.wsHandlers.close?.(client, code, reason);
+                },
+                
+                async message(client, message) {
+                    const msg = message.toString();
+                    
+                    // 自定义处理器
+                    if (self.wsHandlers.message) {
+                        self.wsHandlers.message(client, msg);
+                        return;
+                    }
+                    
+                    // 默认 RPC 处理
+                    const result = await self.handleWsRpc(msg, client);
+                    client.send(JSON.stringify(result));
+                }
+            }
         });
         
         callback?.() || console.log(`Arpc server running at http://localhost:${port}`);
@@ -323,4 +474,4 @@ function Arpc(dir: string='arpc'): ArpcServer {
 }
 
 export default Arpc;
-export { Base, ArpcServer, useCtx, ctx };
+export { Base, ArpcServer, useCtx, ctx, ws, WsData };

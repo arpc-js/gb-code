@@ -13,6 +13,11 @@ export default function arpcPlugin(): Plugin {
             // SSR 构建时不拦截，使用原始模块
             if (options?.ssr) return null;
             
+            // ws 工具模块
+            if (source === 'arpc/ws') {
+                return '\0virtual:arpc-ws';
+            }
+            
             const match = source.match(/arpc\/(\w+)/);
             if (match) {
                 // 保持原始大小写
@@ -25,6 +30,11 @@ export default function arpcPlugin(): Plugin {
         load(id: string, options?: { ssr?: boolean }): string | null {
             // SSR 构建时不加载虚拟模块
             if (options?.ssr) return null;
+            
+            // WebSocket RPC 工具
+            if (id === '\0virtual:arpc-ws') {
+                return generateWsRpc();
+            }
             
             if (!id.startsWith('\0virtual:arpc-')) return null;
             
@@ -144,5 +154,112 @@ const ${className} = new Proxy(__${className}Base, {
 });
 
 export { ${className} };
+`;
+}
+
+// 生成 WebSocket RPC 客户端工具
+function generateWsRpc(): string {
+    return `
+let __ws = null;
+let __reqId = 0;
+const __pending = new Map();
+let __reconnectTimer = null;
+let __messageHandler = null;
+
+// 连接 WebSocket
+function connect(url) {
+    if (__ws && __ws.readyState === WebSocket.OPEN) return Promise.resolve(__ws);
+    
+    return new Promise((resolve, reject) => {
+        const wsUrl = url || (location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host + '/ws';
+        __ws = new WebSocket(wsUrl);
+        
+        __ws.onopen = () => {
+            console.log('[WS] 已连接');
+            resolve(__ws);
+        };
+        
+        __ws.onclose = () => {
+            console.log('[WS] 已断开');
+            __ws = null;
+            // 自动重连
+            if (!__reconnectTimer) {
+                __reconnectTimer = setTimeout(() => {
+                    __reconnectTimer = null;
+                    connect(url).catch(() => {});
+                }, 3000);
+            }
+        };
+        
+        __ws.onerror = (e) => {
+            console.error('[WS] 错误', e);
+            reject(new Error('WebSocket 连接失败'));
+        };
+        
+        __ws.onmessage = (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                
+                // RPC 响应（有 __id 字段）
+                if (data.__id !== undefined) {
+                    const { resolve, reject } = __pending.get(data.__id) || {};
+                    __pending.delete(data.__id);
+                    if (data.error) {
+                        reject?.(new Error(data.error));
+                    } else {
+                        resolve?.(data.result);
+                    }
+                    return;
+                }
+                
+                // 广播消息
+                __messageHandler?.(data);
+            } catch {}
+        };
+    });
+}
+
+// 发送 RPC 请求（await 风格）
+async function rpc(path, properties = {}, params = []) {
+    await connect();
+    
+    const id = ++__reqId;
+    
+    return new Promise((resolve, reject) => {
+        __pending.set(id, { resolve, reject });
+        
+        // 超时处理
+        setTimeout(() => {
+            if (__pending.has(id)) {
+                __pending.delete(id);
+                reject(new Error('RPC 超时'));
+            }
+        }, 30000);
+        
+        __ws.send(JSON.stringify({ path, properties, params, __id: id }));
+    });
+}
+
+// 监听广播消息
+function onMessage(handler) {
+    __messageHandler = handler;
+}
+
+// 关闭连接
+function close() {
+    if (__reconnectTimer) {
+        clearTimeout(__reconnectTimer);
+        __reconnectTimer = null;
+    }
+    __ws?.close();
+    __ws = null;
+}
+
+// 获取连接状态
+function isConnected() {
+    return __ws && __ws.readyState === WebSocket.OPEN;
+}
+
+export { connect, rpc, onMessage, close, isConnected };
 `;
 }
