@@ -1,6 +1,6 @@
 import Arpc from './core/Arpc';
 import { cors, errorHandler, ssr } from './core/middlewares';
-Arpc('arpc')
+Arpc()
     .use(errorHandler)
     .use(cors)
     .use(ssr)

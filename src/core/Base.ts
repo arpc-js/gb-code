@@ -34,21 +34,154 @@ if (Number(result[0]?.count ?? 0) === 0) {
     ])}`;
 }
 
-// 构建条件片段
-function buildCondition(cond?: TemplateStringsArray | Record<string, unknown>, ...values: unknown[]) {
-    if (Array.isArray(cond) && (cond as TemplateStringsArray).raw) {
-        const strings = cond as TemplateStringsArray;
-        if (!strings.some(s => s.trim()) && !values.length) return null;
-        return sql(strings, ...values);
+// 控制参数
+const CTRL_KEYS = ['limit', 'offset', 'order', 'group', 'page', 'size'];
+
+// 解析单个条件值（支持操作符对象）
+function parseCondValue(field: string, value: unknown): ReturnType<typeof sql> | null {
+    // 数组直接作为 in 语法糖: id: [1,2,3] => id IN (1,2,3)
+    if (Array.isArray(value)) {
+        if (value.length === 0) return null;
+        // 构建 IN (val1, val2, val3) 形式
+        const ph = value.map((_, i) => i === 0 ? sql`${value[0]}` : sql`, ${value[i]}`);
+        let list = ph[0];
+        for (let i = 1; i < ph.length; i++) list = sql`${list}${ph[i]}`;
+        return sql`${sql.unsafe(field)} IN (${list})`;
     }
-    if (cond && typeof cond === 'object') {
-        const keys = Object.keys(cond);
-        if (!keys.length) return null;
-        let r = sql`${sql(keys[0])} = ${cond[keys[0]]}`;
-        for (let i = 1; i < keys.length; i++) r = sql`${r} AND ${sql(keys[i])} = ${cond[keys[i]]}`;
+    
+    // 操作符对象: { '>': 50, '<': 100 }
+    if (value && typeof value === 'object') {
+        const ops = value as Record<string, unknown>;
+        const parts: ReturnType<typeof sql>[] = [];
+        
+        for (const [op, val] of Object.entries(ops)) {
+            switch (op) {
+                // 符号语法
+                case '=':   parts.push(sql`${sql.unsafe(field)} = ${val}`); break;
+                case '!=':  parts.push(sql`${sql.unsafe(field)} != ${val}`); break;
+                case '<>':  parts.push(sql`${sql.unsafe(field)} != ${val}`); break;
+                case '>':   parts.push(sql`${sql.unsafe(field)} > ${val}`); break;
+                case '>=':  parts.push(sql`${sql.unsafe(field)} >= ${val}`); break;
+                case '<':   parts.push(sql`${sql.unsafe(field)} < ${val}`); break;
+                case '<=':  parts.push(sql`${sql.unsafe(field)} <= ${val}`); break;
+                // 关键字语法
+                case 'like':  parts.push(sql`${sql.unsafe(field)} LIKE ${val}`); break;
+                case 'nlike': parts.push(sql`${sql.unsafe(field)} NOT LIKE ${val}`); break;
+                case 'in': 
+                    if (Array.isArray(val) && val.length) {
+                        const ph = val.map((_, i) => i === 0 ? sql`${val[0]}` : sql`, ${val[i]}`);
+                        let list = ph[0];
+                        for (let i = 1; i < ph.length; i++) list = sql`${list}${ph[i]}`;
+                        parts.push(sql`${sql.unsafe(field)} IN (${list})`);
+                    }
+                    break;
+                case 'nin':
+                    if (Array.isArray(val) && val.length) {
+                        const ph = val.map((_, i) => i === 0 ? sql`${val[0]}` : sql`, ${val[i]}`);
+                        let list = ph[0];
+                        for (let i = 1; i < ph.length; i++) list = sql`${list}${ph[i]}`;
+                        parts.push(sql`${sql.unsafe(field)} NOT IN (${list})`);
+                    }
+                    break;
+                case 'between':
+                    if (Array.isArray(val) && val.length === 2) {
+                        parts.push(sql`${sql.unsafe(field)} BETWEEN ${val[0]} AND ${val[1]}`);
+                    }
+                    break;
+                case 'null':
+                    parts.push(val ? sql`${sql.unsafe(field)} IS NULL` : sql`${sql.unsafe(field)} IS NOT NULL`);
+                    break;
+            }
+        }
+        
+        if (!parts.length) return null;
+        let r = parts[0];
+        for (let i = 1; i < parts.length; i++) r = sql`${r} AND ${parts[i]}`;
         return r;
     }
-    return null;
+    
+    // 普通值: field = value
+    return sql`${sql.unsafe(field)} = ${value}`;
+}
+
+// 构建条件片段（支持模板字符串和对象）
+function buildCondition(cond?: TemplateStringsArray | Record<string, unknown>, ...values: unknown[]): {
+    where: ReturnType<typeof sql> | null;
+    limit?: number;
+    offset?: number;
+    order?: string;
+    group?: string;
+} {
+    // 模板字符串模式
+    if (Array.isArray(cond) && (cond as TemplateStringsArray).raw) {
+        const strings = cond as TemplateStringsArray;
+        if (!strings.some(s => s.trim()) && !values.length) return { where: null };
+        return { where: sql(strings, ...values) };
+    }
+    
+    // 对象模式
+    if (cond && typeof cond === 'object') {
+        const ctrl: { limit?: number; offset?: number; order?: string; group?: string; page?: number; size?: number } = {};
+        const conditions: ReturnType<typeof sql>[] = [];
+        
+        for (const [key, value] of Object.entries(cond)) {
+            // 提取控制参数
+            if (key === 'limit') { ctrl.limit = Number(value); continue; }
+            if (key === 'offset') { ctrl.offset = Number(value); continue; }
+            if (key === 'order') { ctrl.order = String(value); continue; }
+            if (key === 'group') { ctrl.group = String(value); continue; }
+            // page/size 语法糖，自动转换为 offset/limit
+            if (key === 'page') { ctrl.page = Number(value); continue; }
+            if (key === 'size') { ctrl.size = Number(value); continue; }
+            
+            // or 条件
+            if (key === 'or' && Array.isArray(value)) {
+                const orParts: ReturnType<typeof sql>[] = [];
+                for (const item of value) {
+                    const { where } = buildCondition(item);
+                    if (where) orParts.push(where);
+                }
+                if (orParts.length) {
+                    let orSql = sql`(${orParts[0]})`;
+                    for (let i = 1; i < orParts.length; i++) orSql = sql`${orSql} OR (${orParts[i]})`;
+                    conditions.push(sql`(${orSql})`);
+                }
+                continue;
+            }
+            
+            // and 条件
+            if (key === 'and' && Array.isArray(value)) {
+                for (const item of value) {
+                    const { where } = buildCondition(item);
+                    if (where) conditions.push(where);
+                }
+                continue;
+            }
+            
+            // 普通字段条件
+            const parsed = parseCondValue(key, value);
+            if (parsed) conditions.push(parsed);
+        }
+        
+        let where: ReturnType<typeof sql> | null = null;
+        if (conditions.length) {
+            where = conditions[0];
+            for (let i = 1; i < conditions.length; i++) where = sql`${where} AND ${conditions[i]}`;
+        }
+        
+        // page/size 转换为 offset/limit
+        let { limit, offset } = ctrl;
+        if (ctrl.page !== undefined && ctrl.size !== undefined) {
+            limit = ctrl.size;
+            offset = (ctrl.page - 1) * ctrl.size;
+        } else if (ctrl.size !== undefined) {
+            limit = ctrl.size;
+        }
+        
+        return { where, limit, offset, order: ctrl.order, group: ctrl.group };
+    }
+    
+    return { where: null };
 }
 
 // Active Record 基类
@@ -72,7 +205,7 @@ export default class Base {
     }
     
     // GET - 查询
-    // fields: 字段选择，支持 'id,title' 或 '!id,title' 排除字段
+    // fields: 字段选择 'id,title' | 排除 '!password' | 统计 'count(*),sum(price)'
     static async get(cond?: TemplateStringsArray | Record<string, unknown>, fields?: string, ...values: unknown[]): Promise<unknown[]> {
         const t = this.table;
         
@@ -80,56 +213,107 @@ export default class Base {
         let actualFields = fields;
         let actualValues = values;
         
-        // 如果 fields 不是字符串，说明它可能是模板字符串的值
         if (fields !== undefined && typeof fields !== 'string') {
             actualValues = [fields, ...values];
             actualFields = undefined;
         }
         
-        // 解析字段选择
+        // 解析条件和控制参数
+        const { where, limit, offset, order, group } = buildCondition(cond, ...actualValues);
+        
+        // 构建字段部分
+        let selectSql: ReturnType<typeof sql>;
+        let isExcludeMode = false;
+        
         if (actualFields && actualFields.trim()) {
-            const isExclude = actualFields.startsWith('!');
-            const fieldList = (isExclude ? actualFields.slice(1) : actualFields)
-                .split(',')
-                .map(f => f.trim())
-                .filter(f => f);
+            isExcludeMode = actualFields.startsWith('!');
+            const fieldStr = isExcludeMode ? actualFields.slice(1) : actualFields;
+            const fieldList = fieldStr.split(',').map(f => f.trim()).filter(f => f);
             
-            if (isExclude && fieldList.length > 0) {
-                // 排除字段模式：先查询所有数据再过滤
-                const w = buildCondition(cond, ...actualValues);
-                const results = w 
-                    ? await sql`SELECT * FROM ${sql(t)} WHERE ${w}` 
-                    : await sql`SELECT * FROM ${sql(t)}`;
-                
-                return (results as Record<string, unknown>[]).map(row => {
-                    const filtered: Record<string, unknown> = {};
-                    for (const key of Object.keys(row)) {
-                        if (!fieldList.includes(key)) {
-                            filtered[key] = row[key];
-                        }
-                    }
-                    return filtered;
-                });
+            if (isExcludeMode) {
+                // 排除模式需要先查全部再过滤
+                selectSql = sql`*`;
             } else if (fieldList.length > 0) {
-                // 包含字段模式
-                const w = buildCondition(cond, ...actualValues);
-                let fieldsSql = sql`${sql(fieldList[0])}`;
-                for (let i = 1; i < fieldList.length; i++) {
-                    fieldsSql = sql`${fieldsSql}, ${sql(fieldList[i])}`;
+                // 解析字段（支持统计函数）
+                const parts: ReturnType<typeof sql>[] = [];
+                for (const f of fieldList) {
+                    const aggMatch = f.match(/^(count|sum|avg|max|min)\((.+)\)$/i);
+                    if (aggMatch) {
+                        const [, fn, col] = aggMatch;
+                        const fnUpper = fn.toUpperCase();
+                        if (col === '*') {
+                            parts.push(sql.unsafe(`${fnUpper}(*) AS ${fn}_all`));
+                        } else {
+                            parts.push(sql.unsafe(`${fnUpper}(${col}) AS ${fn}_${col}`));
+                        }
+                    } else {
+                        parts.push(sql.unsafe(f));
+                    }
                 }
-                return w 
-                    ? await sql`SELECT ${fieldsSql} FROM ${sql(t)} WHERE ${w}` 
-                    : await sql`SELECT ${fieldsSql} FROM ${sql(t)}`;
+                selectSql = parts[0];
+                for (let i = 1; i < parts.length; i++) selectSql = sql`${selectSql}, ${parts[i]}`;
+            } else {
+                selectSql = sql`*`;
             }
+        } else {
+            selectSql = sql`*`;
         }
         
-        const w = buildCondition(cond, ...actualValues);
-        return w ? await sql`SELECT * FROM ${sql(t)} WHERE ${w}` : await sql`SELECT * FROM ${sql(t)}`;
+        // 构建完整 SQL
+        let query = where 
+            ? sql`SELECT ${selectSql} FROM ${sql.unsafe(t)} WHERE ${where}`
+            : sql`SELECT ${selectSql} FROM ${sql.unsafe(t)}`;
+        
+        // GROUP BY
+        if (group) {
+            const groupFields = group.split(',').map(g => g.trim());
+            let groupSql = sql.unsafe(groupFields[0]);
+            for (let i = 1; i < groupFields.length; i++) groupSql = sql`${groupSql}, ${sql.unsafe(groupFields[i])}`;
+            query = sql`${query} GROUP BY ${groupSql}`;
+        }
+        
+        // ORDER BY（默认 DESC）
+        if (order) {
+            // 处理每个排序字段，没有指定 asc/desc 则默认 desc
+            const orderParts = order.split(',').map(part => {
+                const trimmed = part.trim();
+                const lower = trimmed.toLowerCase();
+                if (lower.endsWith(' asc') || lower.endsWith(' desc')) {
+                    return trimmed;
+                }
+                return `${trimmed} DESC`;
+            });
+            query = sql`${query} ORDER BY ${sql.unsafe(orderParts.join(', '))}`;
+        }
+        
+        // LIMIT & OFFSET
+        if (limit !== undefined) {
+            query = sql`${query} LIMIT ${limit}`;
+        }
+        if (offset !== undefined) {
+            query = sql`${query} OFFSET ${offset}`;
+        }
+        
+        const results = await query;
+        
+        // 排除字段模式后处理
+        if (isExcludeMode && actualFields) {
+            const excludeList = actualFields.slice(1).split(',').map(f => f.trim());
+            return (results as Record<string, unknown>[]).map(row => {
+                const filtered: Record<string, unknown> = {};
+                for (const key of Object.keys(row)) {
+                    if (!excludeList.includes(key)) filtered[key] = row[key];
+                }
+                return filtered;
+            });
+        }
+        
+        return results as unknown[];
     }
     
     // ADD - 新增
     static async add(data: Record<string, unknown> | Record<string, unknown>[]): Promise<unknown> {
-        const result = await sql`INSERT INTO ${sql(this.table)} ${sql(data)} RETURNING *`;
+        const result = await sql`INSERT INTO ${sql.unsafe(this.table)} ${sql(data)} RETURNING *`;
         return Array.isArray(data) ? result : result[0];
     }
     
@@ -137,10 +321,10 @@ export default class Base {
     
     // DEL - 删除
     static async del(cond?: TemplateStringsArray | Record<string, unknown>, ...values: unknown[]): Promise<unknown[]> {
-        const w = buildCondition(cond, ...values);
-        if (!w) throw new Error('Delete requires conditions');
-        const deleted = await this.get(cond, ...values);
-        await sql`DELETE FROM ${sql(this.table)} WHERE ${w}`;
+        const { where } = buildCondition(cond, ...values);
+        if (!where) throw new Error('Delete requires conditions');
+        const deleted = await this.get(cond, undefined, ...values);
+        await sql`DELETE FROM ${sql.unsafe(this.table)} WHERE ${where}`;
         return deleted;
     }
     
@@ -173,9 +357,12 @@ export default class Base {
         const d = { ...this } as Record<string, unknown>;
         delete d[pk as string];
         
-        const w = cond !== undefined ? buildCondition(cond, ...values) : (this[pk] ? buildCondition({ [pk]: this[pk] }) : null);
-        if (w) {
-            await sql`UPDATE ${sql(t)} SET ${sql(d)} WHERE ${w}`;
+        const { where } = cond !== undefined 
+            ? buildCondition(cond, ...values) 
+            : (this[pk] ? buildCondition({ [pk]: this[pk] }) : { where: null });
+        
+        if (where) {
+            await sql`UPDATE ${sql.unsafe(t)} SET ${sql(d)} WHERE ${where}`;
             const results = await cls.get(cond ?? { [pk]: this[pk] });
             if (results.length) Object.assign(this, results[0]);
         }
