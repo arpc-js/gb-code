@@ -8,7 +8,7 @@
       <input v-model="newCourse.title" placeholder="课程标题" />
       <input v-model="newCourse.description" placeholder="课程描述" />
       <input v-model.number="newCourse.price" type="number" placeholder="价格" />
-      <button @click="newCourse.add6()">添加课程</button>
+      <button @click="newCourse.add()">添加课程</button>
     </div>
     
     <!-- 课程列表 -->
@@ -66,7 +66,7 @@ let editCourse = null;
 async function addCourse() {
   if (!newCourse.title) return;
   
-  await newCourse.add1()//.catch((err) => {alert(err.message+'111');});
+  await newCourse.add()//.catch((err) => {alert(err.message+'111');});
   courses.push({ ...newCourse.toJSON() });
   log.value = `新增成功: ${newCourse.title} (ID: ${newCourse.id})`;
   

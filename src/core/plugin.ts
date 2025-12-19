@@ -8,38 +8,46 @@ export default function arpcPlugin(): Plugin {
         name: 'vite-plugin-arpc',
         enforce: 'pre',
         
-        // 拦截 arpc 模块解析（仅 CSR）
+        // 拦截 arpc 模块解析
         resolveId(source: string, _importer: string | undefined, options?: { ssr?: boolean }): ResolveIdResult {
-            // SSR 构建时不拦截，使用原始模块
-            if (options?.ssr) return null;
-            
             // ws 工具模块
             if (source === 'arpc/ws') {
-                return '\0virtual:arpc-ws';
+                return options?.ssr ? '\0virtual:arpc-ws-ssr' : '\0virtual:arpc-ws';
             }
             
             const match = source.match(/arpc\/(\w+)/);
             if (match) {
-                // 保持原始大小写
-                return `\0virtual:arpc-${match[1]}`;
+                // SSR 时返回 stub，CSR 时返回 RPC 代理
+                return options?.ssr 
+                    ? `\0virtual:arpc-ssr-${match[1]}`
+                    : `\0virtual:arpc-${match[1]}`;
             }
             return null;
         },
         
-        // 加载虚拟 arpc 模块（仅 CSR）
+        // 加载虚拟 arpc 模块
         load(id: string, options?: { ssr?: boolean }): string | null {
-            // SSR 构建时不加载虚拟模块
-            if (options?.ssr) return null;
+            // SSR ws stub
+            if (id === '\0virtual:arpc-ws-ssr') {
+                return `export const connect = () => Promise.resolve(); export const rpc = () => Promise.resolve(); export const onMessage = () => {}; export const close = () => {}; export const isConnected = () => false;`;
+            }
             
-            // WebSocket RPC 工具
+            // SSR 类 stub
+            if (id.startsWith('\0virtual:arpc-ssr-')) {
+                const name = id.replace('\0virtual:arpc-ssr-', '');
+                const className = name.charAt(0).toUpperCase() + name.slice(1);
+                return `export class ${className} { constructor(data = {}) { Object.assign(this, data); } static get() { return []; } static add() { return {}; } static async onMessage() {} async save() { return this; } }`;  
+            }
+            
+            // CSR WebSocket RPC 工具
             if (id === '\0virtual:arpc-ws') {
                 return generateWsRpc();
             }
             
+            // CSR RPC 类
             if (!id.startsWith('\0virtual:arpc-')) return null;
             
             const name = id.replace('\0virtual:arpc-', '');
-            // className 和 name 保持一致（首字母大写）
             const className = name.charAt(0).toUpperCase() + name.slice(1);
             
             return generateRpcClass(className, className);
@@ -69,88 +77,145 @@ if (typeof window !== 'undefined') {
     };
 }
 
-// 生成 RPC 类代码（注意：生成的是纯 JavaScript，不能包含 TypeScript 类型注解）
+// 生成 RPC 类代码（完全无感 WS）
 function generateRpcClass(name: string, className: string): string {
     return `
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 
-const __rpc = async (method, properties = {}, params = []) => {
-    // 自动携带 token
+// === WS 连接管理（全局单例） ===
+const __wsKey = '__arpc_ws__';
+function __getWs() {
+    if (typeof window === 'undefined') return { ws: null, ready: false, pending: new Map(), subscribers: new Map() };
+    if (!window[__wsKey]) {
+        const state = { ws: null, ready: false, pending: new Map(), reqId: 0, subscribers: new Map() };
+        window[__wsKey] = state;
+        
+        const connect = () => {
+            if (state.ws) return;
+            const wsUrl = (location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host + '/ws';
+            state.ws = new WebSocket(wsUrl);
+            
+            state.ws.onopen = () => { state.ready = true; };
+            state.ws.onclose = () => { state.ready = false; state.ws = null; setTimeout(connect, 3000); };
+            state.ws.onmessage = (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    // RPC 响应
+                    if (data.__id !== undefined) {
+                        const p = state.pending.get(data.__id);
+                        state.pending.delete(data.__id);
+                        if (data.error) p?.reject(new Error(data.error));
+                        else p?.resolve(data.result);
+                        return;
+                    }
+                    // 广播消息 - 分发给订阅者
+                    const channel = data.__channel || data.type || 'default';
+                    const subs = state.subscribers.get(channel) || [];
+                    subs.forEach(cb => cb(data));
+                    // 全局订阅者
+                    const allSubs = state.subscribers.get('*') || [];
+                    allSubs.forEach(cb => cb(data));
+                } catch {}
+            };
+        };
+        setTimeout(connect, 0);
+    }
+    return window[__wsKey];
+}
+
+// === RPC 调用 ===
+async function __rpc(method, properties = {}, params = []) {
+    const state = __getWs();
+    
+    // WS 可用时优先 WS
+    if (state.ready && state.ws?.readyState === WebSocket.OPEN) {
+        const id = ++state.reqId;
+        return new Promise((resolve, reject) => {
+            state.pending.set(id, { resolve, reject });
+            setTimeout(() => { if (state.pending.has(id)) { state.pending.delete(id); reject(new Error('超时')); } }, 30000);
+            state.ws.send(JSON.stringify({ path: '/${name}/' + method, properties, params, __id: id }));
+        });
+    }
+    
+    // HTTP 回退
     const headers = { 'Content-Type': 'application/json' };
     const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
     if (token) headers['Authorization'] = 'Bearer ' + token;
     
-    const res = await fetch('/${name}/' + method, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ properties, params })
-    });
-    
-    // 401 未授权，跳转登录页
-    if (res.status === 401) {
-        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
-        }
-        throw new Error('未登录，请先登录');
-    }
-    
+    const res = await fetch('/${name}/' + method, { method: 'POST', headers, body: JSON.stringify({ properties, params }) });
+    if (res.status === 401) { if (typeof window !== 'undefined' && location.pathname !== '/login') { localStorage.removeItem('token'); location.href = '/login'; } throw new Error('未登录'); }
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
-    if (Array.isArray(data)) return reactive(data);
-    if (data && typeof data === 'object') return reactive(data);
-    return data;
-};
+    return Array.isArray(data) ? reactive(data) : (data && typeof data === 'object') ? reactive(data) : data;
+}
 
-// 已知的数据字段名（返回值而非 RPC 函数）
-const __dataFields = ['id', 'title', 'description', 'price', 'name', 'email', 'duration', 'lessons', 'createdAt', 'updatedAt'];
+// === 订阅管理 ===
+function __subscribe(channel, callback) {
+    const state = __getWs();
+    if (!state.subscribers.has(channel)) state.subscribers.set(channel, []);
+    state.subscribers.get(channel).push(callback);
+    return () => {
+        const subs = state.subscribers.get(channel);
+        const idx = subs?.indexOf(callback);
+        if (idx >= 0) subs.splice(idx, 1);
+    };
+}
+
+// === 响应式列表（无感接收推送） ===
+function __liveList(channel = '${name.toLowerCase()}') {
+    const list = reactive([]);
+    __subscribe(channel, (data) => {
+        if (data.action === 'add' || data.type === 'add') list.push(data.item || data);
+        else if (data.action === 'update' && data.item?.id) {
+            const idx = list.findIndex(i => i.id === data.item.id);
+            if (idx >= 0) Object.assign(list[idx], data.item);
+        }
+        else if (data.action === 'delete' && data.id) {
+            const idx = list.findIndex(i => i.id === data.id);
+            if (idx >= 0) list.splice(idx, 1);
+        }
+        else list.push(data); // 默认追加
+    });
+    return list;
+}
+
+const __dataFields = ['id', 'title', 'description', 'price', 'name', 'email', 'duration', 'lessons', 'createdAt', 'updatedAt', 'message', 'userId', 'content'];
 
 class __${className}Base {
     constructor(data = {}) {
         Object.assign(this, data);
         const self = this;
-        //csr的rpc代理
         const proxy = new Proxy(this, {
             get(target, prop) {
-                // 已存在的属性直接返回
                 if (prop in target) return target[prop];
-                // 已知数据字段返回 undefined
+                if (prop === 'toJSON') return () => {
+                    const d = {};
+                    for (const k in target) if (typeof target[k] !== 'function') d[k] = target[k];
+                    return d;
+                };
                 if (__dataFields.includes(prop)) return undefined;
-                // 其他属性当作 RPC 方法
                 return async (...args) => {
-                    const result = await __rpc(prop, self.toJSON(), args);
-                    if (result && typeof result === 'object' && !Array.isArray(result)) {
-                        Object.assign(target, result);
-                    }
+                    const result = await __rpc(prop, self.toJSON ? self.toJSON() : self, args);
+                    if (result && typeof result === 'object' && !Array.isArray(result)) Object.assign(target, result);
                     return result;
                 };
             },
-            set(target, prop, value) {
-                target[prop] = value;
-                return true;
-            }
+            set(target, prop, value) { target[prop] = value; return true; }
         });
         return reactive(proxy);
-    }
-    
-    toJSON() {
-        const data = {};
-        for (const key in this) {
-            if (typeof this[key] !== 'function') data[key] = this[key];
-        }
-        return data;
     }
 }
 
 const ${className} = new Proxy(__${className}Base, {
     get(target, prop) {
         if (prop === 'prototype' || prop === 'name' || prop === 'length') return target[prop];
+        // 无感订阅列表
+        if (prop === 'list') return (channel) => __liveList(channel || '${name.toLowerCase()}');
+        // 订阅消息
+        if (prop === 'subscribe') return __subscribe;
         return (...args) => __rpc(prop, {}, args);
     },
-    construct(target, args) {
-        return new target(...args);
-    }
+    construct(target, args) { return new target(...args); }
 });
 
 export { ${className} };

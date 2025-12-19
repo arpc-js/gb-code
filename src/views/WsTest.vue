@@ -1,36 +1,30 @@
 <template>
   <div class="chat-container">
-    <h2>WebSocket RPC 测试</h2>
+    <h2>ARPC 无感测试</h2>
     
-    <div class="status" :class="{ connected }">
-      {{ connected ? '已连接' : '未连接' }} | 在线: {{ onlineCount }}
-    </div>
-    
-    <!-- 添加课程表单 -->
+    <!-- 添加课程 -->
     <div class="form-section">
-      <h3>添加课程 (WS RPC)</h3>
+      <h3>添加课程 (new Course 双向绑定)</h3>
       <div class="form-row">
-        <input v-model="courseForm.title" placeholder="课程标题" />
-        <input v-model.number="courseForm.price" type="number" placeholder="价格" />
-        <button @click="addCourse" :disabled="!connected">添加</button>
+        <input v-model="course.title" placeholder="课程标题" />
+        <input v-model.number="course.price" type="number" placeholder="价格" />
+        <button @click="addCourse">添加</button>
       </div>
     </div>
     
+    <!-- 聊天消息（无感订阅！） -->
     <div class="messages" ref="messagesRef">
-      <div v-for="(msg, i) in messages" :key="i" class="message" :class="msg.type">
-        <span class="time">{{ msg.time }}</span>
-        <span class="text">{{ msg.text }}</span>
+      <div v-for="(msg, i) in chatMessages" :key="i" class="message chat">
+        <span class="user">{{ msg.userId || '匿名' }}:</span>
+        <span class="text">{{ msg.message }}</span>
       </div>
+      <div v-if="!chatMessages.length" class="empty">暂无消息，发送第一条吧！</div>
     </div>
     
+    <!-- 发送消息 -->
     <div class="input-area">
-      <input 
-        v-model="inputText" 
-        @keyup.enter="send" 
-        placeholder="输入消息..."
-        :disabled="!connected"
-      />
-      <button @click="send" :disabled="!connected">发送</button>
+      <input v-model="inputText" @keyup.enter="send" placeholder="输入消息..." />
+      <button @click="send">发送</button>
     </div>
     
     <div class="actions">
@@ -41,119 +35,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick, reactive } from 'vue';
+import { ref, reactive, nextTick } from 'vue';
+import { Course } from 'arpc/Course';
+import { Chat } from 'arpc/Chat';
 
-const connected = ref(false);
-const onlineCount = ref(0);
-const messages = ref<{ type: string; text: string; time: string }[]>([]);
 const inputText = ref('');
 const messagesRef = ref<HTMLElement>();
 
-const courseForm = reactive({
-  title: '',
-  price: 0
-});
+// 直接 new Course 双向绑定
+const course = new Course({ title: '', price: 0 });
 
-// WS 工具（仅客户端）
-let wsTools: { connect: Function; rpc: Function; onMessage: Function; close: Function } | null = null;
+// 聊天消息列表
+const chatMessages = reactive<any[]>([]);
 
-const addMessage = (type: string, text: string) => {
-  const time = new Date().toLocaleTimeString();
-  messages.value.push({ type, text, time });
+// 订阅 topic，收到后追加
+Chat.subscribe('chat', (msg: any) => {
+  chatMessages.push(msg);
   nextTick(() => {
-    if (messagesRef.value) {
-      messagesRef.value.scrollTop = messagesRef.value.scrollHeight;
-    }
+    if (messagesRef.value) messagesRef.value.scrollTop = messagesRef.value.scrollHeight;
   });
-};
-
-// 连接 WebSocket
-const init = async () => {
-  if (typeof window === 'undefined') return;
-  
-  // 动态导入（仅客户端）
-  wsTools = await import('arpc/ws');
-  
-  try {
-    await wsTools.connect();
-    connected.value = true;
-    addMessage('system', '连接成功');
-    
-    // 监听广播消息
-    wsTools.onMessage((data: any) => {
-      if (data.type === 'chat') {
-        addMessage('chat', `${data.userId}: ${data.message}`);
-      } else if (data.type === 'online') {
-        onlineCount.value = data.count;
-      } else {
-        addMessage('info', JSON.stringify(data));
-      }
-    });
-  } catch (e) {
-    addMessage('error', '连接失败');
-  }
-};
+});
 
 // 添加课程
 const addCourse = async () => {
-  if (!courseForm.title || !wsTools) {
+  if (!course.title) {
     alert('请输入课程标题');
     return;
   }
-  
-  try {
-    const result = await wsTools.rpc('/Course/add', { 
-      title: courseForm.title, 
-      price: courseForm.price,
-      description: 'WS RPC 添加'
-    });
-    
-    alert('添加成功！ID: ' + result.id);
-    addMessage('rpc', `添加课程成功: ${result.title}`);
-    
-    courseForm.title = '';
-    courseForm.price = 0;
-  } catch (e) {
-    throw e;
-  }
+  await course.add();
+  alert('添加成功！ID: ' + course.id);
+  course.title = '';
+  course.price = 0;
 };
 
-// 发送聊天消息
+// 发送消息
 const send = async () => {
-  if (!inputText.value.trim() || !wsTools) return;
-  
-  try {
-    await wsTools.rpc('/Chat/send', {}, [inputText.value]);
-    addMessage('self', inputText.value);
-    inputText.value = '';
-  } catch (e) {
-    throw e;
-  }
+  if (!inputText.value.trim()) return;
+  await Chat.send(inputText.value);
+  inputText.value = '';
 };
 
 // 加入房间
 const joinRoom = async () => {
-  if (!wsTools) return;
   const room = prompt('输入房间名:', 'room1');
-  if (room) {
-    try {
-      const result = await wsTools.rpc('/Chat/joinRoom', {}, [room]);
-      addMessage('system', `已加入房间: ${result.joined}`);
-    } catch (e) {
-      throw e;
-    }
-  }
+  if (room) await Chat.joinRoom(room);
 };
 
 // 查询课程
 const getCourses = async () => {
-  if (!wsTools) return;
-  try {
-    const result = await wsTools.rpc('/Course/get', {}, [{ limit: 3 }, 'id,title,price']);
-    addMessage('rpc', `课程列表: ${JSON.stringify(result)}`);
-  } catch (e) {
-    throw e;
-  }
+  const list = await Course.get({ limit: 5 }, 'id,title,price');
+  alert('课程: ' + JSON.stringify(list));
 };
 
 // 全局异常处理
@@ -163,14 +94,6 @@ if (typeof window !== 'undefined') {
     e.preventDefault();
   });
 }
-
-onMounted(() => {
-  init();
-});
-
-onUnmounted(() => {
-  wsTools?.close();
-});
 </script>
 
 <style scoped>

@@ -6,8 +6,9 @@ export class Chat extends Base {
     static async send(message: string) {
         const userId = ctx.userId || ctx.get('wsId') || '匿名';
         
-        // 广播给所有订阅者
+        // 广播给所有订阅者，带 __channel 用于客户端无感订阅
         ws.publish('broadcast', { 
+            __channel: 'chat',  // 客户端用 Chat.list('chat') 订阅
             type: 'chat', 
             userId, 
             message,
