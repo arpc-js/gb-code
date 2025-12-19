@@ -2,44 +2,41 @@
   <div class="home">
     <h1>arpc框架CRUD演示</h1>
     
-    <!-- 新增课程表单 -->
-    <div class="add-form">
-      <h3>新增课程</h3>
-      <input v-model="newCourse.title" placeholder="课程标题" />
-      <input v-model="newCourse.description" placeholder="课程描述" />
-      <input v-model.number="newCourse.price" type="number" placeholder="价格" />
-      <button @click="addCourse">添加课程</button>
+    <!-- 顶部操作栏 -->
+    <div class="toolbar">
+      <button @click="openSave()" class="add-btn">+ 新增课程</button>
     </div>
     
     <!-- 课程列表 -->
     <div class="course-list">
-      <div v-for="course in courses" :key="course.id" class="course-card">
-        <div v-if="editingId === course.id" class="edit-mode">
-          <input v-model="course.title" />
-          <input v-model="course.description" />
-          <input v-model.number="course.price" type="number" />
-          <button @click="saveCourse(course)">保存</button>
-          <button @click="cancelEdit(course)">取消</button>
-        </div>
-        <div v-else>
-          <h3>{{ course.title }}</h3>
-          <p>{{ course.description }}</p>
-          <div class="card-footer">
-            <span class="price">￥{{ course.price }}</span>
-            <div class="actions">
-              <button @click="startEdit(course)" class="edit-btn">编辑</button>
-              <button @click="deleteCourse(course)" class="del-btn">删除</button>
-              <router-link :to="`/course/${course.id}`" class="detail-btn">详情</router-link>
-            </div>
+      <div v-for="course in list" :key="course.id" class="course-card">
+        <h3>{{ course.title }}</h3>
+        <p>{{ course.description }}</p>
+        <div class="card-footer">
+          <span class="price">￥{{ course.price }}</span>
+          <div class="actions">
+            <button @click="openSave(course)" class="edit-btn">编辑</button>
+            <button @click="del(course)" class="del-btn">删除</button>
+            <router-link :to="`/course/${course.id}`" class="detail-btn">详情</router-link>
           </div>
         </div>
       </div>
     </div>
     
-    <!-- 操作日志 -->
-    <div v-if="log" class="log">
-      <strong>最近操作:</strong> {{ log }}
+    <!-- 弹窗：新增/编辑共用 -->
+    <div v-if="showDialog" class="dialog-mask" @click.self="showDialog = false">
+      <div class="dialog">
+        <h3>{{ obj.id ? '编辑课程' : '新增课程' }}</h3>
+        <input v-model="obj.title" placeholder="课程标题" />
+        <input v-model="obj.description" placeholder="课程描述" />
+        <input v-model.number="obj.price" type="number" placeholder="价格" />
+        <div class="dialog-actions">
+          <button @click="save" class="save-btn">保存</button>
+          <button @click="showDialog = false" class="cancel-btn">取消</button>
+        </div>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -47,52 +44,32 @@
 import { ref } from 'vue';
 import { Course } from '../arpc/Course';
 
-// 编辑状态
-const editingId = ref<number | null>(null);
-const log = ref('');
+const showDialog = ref(false);
+const query = { order: 'id desc', page: 1, size: 3 };
+const list = ref(await Course.get(query));
+const refresh = async () => list.value = await Course.get(query);
 
-// 查询列表
-const courses = await Course.get({ order: 'id desc', limit: 20 });
+// 共用编辑对象
+let obj = new Course();
 
-// 新增用的对象
-const newCourse = new Course({ title: '', description: '', price: 0 });
-
-// 新增
-async function addCourse() {
-  if (!newCourse.title) return;
-  await newCourse.save();
-  // 创建新对象加入列表（避免引用问题）
-  courses.unshift(new Course({ ...newCourse }));
-  log.value = `新增成功: ${newCourse.title} (ID: ${newCourse.id})`;
-  // 重置表单
-  Object.assign(newCourse, { id: undefined, title: '', description: '', price: 0 });
-}
-
-// 开始编辑
-function startEdit(course: any) {
-  editingId.value = course.id;
+// 新增/编辑 - 共用
+function openSave(course?: Course) {
+  obj = course ?? new Course();
+  showDialog.value = true;
 }
 
 // 保存
-async function saveCourse(course: any) {
-  await course.save();
-  log.value = `更新成功: ${course.title}`;
-  editingId.value = null;
-}
-
-// 取消编辑（重新加载）
-async function cancelEdit(course: any) {
-  await course.reload?.();
-  editingId.value = null;
+async function save() {
+  await obj.save();
+  await refresh();
+  showDialog.value = false;
 }
 
 // 删除
-async function deleteCourse(course: any) {
+async function del(course: Course) {
   if (!confirm('确定删除这个课程吗？')) return;
   await course.del();
-  const idx = courses.findIndex(c => c.id === course.id);
-  if (idx !== -1) courses.splice(idx, 1);
-  log.value = `删除成功: ${course.title}`;
+  await refresh();
 }
 </script>
 
@@ -109,38 +86,21 @@ async function deleteCourse(course: any) {
   margin-bottom: 30px;
 }
 
-.add-form {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
+.toolbar {
+  margin-bottom: 20px;
 }
 
-.add-form h3 {
-  width: 100%;
-  margin: 0 0 10px 0;
-}
-
-.add-form input {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  flex: 1;
-  min-width: 150px;
-}
-
-.add-form button {
+.add-btn {
   background: #42b983;
   color: white;
   border: none;
-  padding: 8px 20px;
-  border-radius: 4px;
+  padding: 10px 24px;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 14px;
 }
+
+.add-btn:hover { background: #3aa876; }
 
 .course-list {
   display: grid;
@@ -201,30 +161,61 @@ async function deleteCourse(course: any) {
 .del-btn { background: #e74c3c; color: white; }
 .detail-btn { background: #42b983; color: white; }
 
-.edit-mode {
+/* 弹窗样式 */
+.dialog-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dialog {
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  width: 400px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.edit-mode input {
-  padding: 8px;
+.dialog h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.dialog input {
+  padding: 10px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  font-size: 14px;
 }
 
-.edit-mode button {
-  padding: 6px 12px;
+.dialog-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.save-btn {
+  flex: 1;
+  background: #42b983;
+  color: white;
   border: none;
+  padding: 10px;
   border-radius: 4px;
   cursor: pointer;
 }
 
-.log {
-  margin-top: 20px;
-  padding: 15px;
-  background: #d4edda;
-  border-radius: 8px;
-  color: #155724;
+.cancel-btn {
+  flex: 1;
+  background: #ddd;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>

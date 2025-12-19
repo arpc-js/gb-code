@@ -163,11 +163,11 @@ const ${className} = new Proxy(__${className}Base, {
         if (prop === 'prototype' || prop === 'name' || prop === 'length') return target[prop];
         if (prop === 'get') return async (...args) => {
             const result = await __rpc('get', {}, args);
-            return Array.isArray(result) ? result.map(__wrap) : result;
+            return reactive(Array.isArray(result) ? result.map(__wrap) : result);
         };
         if (prop === 'save') return async (data) => {
             const result = await __rpc('save', {}, [data]);
-            return Array.isArray(result) ? result.map(__wrap) : result;
+            return reactive(Array.isArray(result) ? result.map(__wrap) : result);
         };
         if (prop === 'del') return async (cond) => __rpc('del', {}, [cond]);
         return (...args) => __rpc(String(prop), {}, args);
@@ -285,11 +285,11 @@ const ${className} = new Proxy(__${className}Base, {
         if (prop === 'subscribe') return __subscribe;
         if (prop === 'get') return async (...args) => {
             const result = await __rpc('get', {}, args);
-            return Array.isArray(result) ? result.map(__wrap) : result;
+            return reactive(Array.isArray(result) ? result.map(__wrap) : result);
         };
         if (prop === 'save') return async (data) => {
             const result = await __rpc('save', {}, [data]);
-            return Array.isArray(result) ? result.map(__wrap) : result;
+            return reactive(Array.isArray(result) ? result.map(__wrap) : result);
         };
         if (prop === 'del') return async (cond) => __rpc('del', {}, [cond]);
         return (...args) => __rpc(String(prop), {}, args);
