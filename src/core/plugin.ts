@@ -118,6 +118,7 @@ async function __rpc(method, properties = {}, params = []) {
         throw new Error('未登录'); 
     }
     if (!res.ok) throw new Error(await res.text());
+    if (res.status === 204) return {};
     return await res.json();
 }
 
@@ -204,7 +205,7 @@ function __getWs() {
                         const p = state.pending.get(data.__id);
                         state.pending.delete(data.__id);
                         if (data.error) p?.reject(new Error(data.error));
-                        else p?.resolve(data.result);
+                        else p?.resolve(data.result ?? {});
                         return;
                     }
                     const channel = data.__channel || data.type || 'default';

@@ -2,7 +2,11 @@ import { SQL } from 'bun';
 import { AsyncLocalStorage } from 'async_hooks';
 
 // 数据库连接 - 切换数据库修改此 DSN
-const sql = new SQL('sqlite://data.db');
+//const DSN = "mysql://root:root@localhost:3306/mydb";
+const DSN = 'sqlite://data.db';
+//const DSN = 'postgres://user:pass@localhost:5432/mydb';
+const sql = new SQL(DSN);
+const isMySQL = DSN.startsWith('mysql');
 
 // 事务上下文存储
 const txStorage = new AsyncLocalStorage<ReturnType<typeof sql.begin extends (fn: (tx: infer T) => any) => any ? T : never>>();
@@ -232,7 +236,7 @@ function buildCondition(cond?: TemplateStringsArray | Record<string, unknown>, .
 export default class Base {
     // 主键
     static primaryKey = 'id';
-    id?: number;
+    id?: unknown;
     
     // 自动获取表名：User -> users, Course -> courses
     static get table(): string {
@@ -370,8 +374,14 @@ export default class Base {
         
         // 批量新增
         if (toInsert.length) {
-            const inserted = await d`INSERT INTO ${sql.unsafe(this.table)} ${sql(toInsert)} RETURNING *`;
-            results.push(...inserted);
+            if (isMySQL){
+                await d`INSERT INTO ${sql.unsafe(this.table)} ${sql(toInsert)}`;
+                const [{ inserted }] = await d`SELECT LAST_INSERT_ID() as id`;
+                results.push(inserted);
+            }else {
+                const inserted = await d`INSERT INTO ${sql.unsafe(this.table)} ${sql(toInsert)} RETURNING id`;
+                results.push(...inserted.map(x=>x.id));
+            }
         }
         
         // 批量更新（逐条）
@@ -380,8 +390,7 @@ export default class Base {
             const updateData = { ...item };
             delete updateData[pk];
             await d`UPDATE ${sql.unsafe(this.table)} SET ${sql(updateData)} WHERE ${sql.unsafe(pk)} = ${id}`;
-            const updated = await d`SELECT * FROM ${sql.unsafe(this.table)} WHERE ${sql.unsafe(pk)} = ${id}`;
-            if (updated.length) results.push(updated[0]);
+            results.push(id)
         }
         
         return results;
@@ -391,23 +400,18 @@ export default class Base {
     static async del(cond?: TemplateStringsArray | Record<string, unknown>, ...values: unknown[]): Promise<unknown[]> {
         const { where } = buildCondition(cond, ...values);
         if (!where) throw new Error('Delete requires conditions');
-        const deleted = await this.get(cond, undefined, ...values);
         const d = db();
         await d`DELETE FROM ${sql.unsafe(this.table)} WHERE ${where}`;
-        return deleted;
     }
     
     // 实例方法 - 保存（新增或更新，返回新 AR 对象）
-    async save(): Promise<this> {
+    async save(): Promise<any> {
         const cls = this.constructor as typeof Base;
-        const pk = cls.primaryKey as keyof this;
         const data = { ...this } as Record<string, unknown>;
-        
-        const results = await cls.save(data);
-        if (results.length) {
-            Object.assign(this, results[0]);
-        }
-        return this;
+        const [id] = await cls.save(data);
+        console.log(11111111, id)
+
+        this.id=id
     }
     
     // UPDATE - 更新（实例方法，用 this 的值 SET，不返回实例）
