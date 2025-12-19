@@ -8,18 +8,18 @@
       <input v-model="newCourse.title" placeholder="课程标题" />
       <input v-model="newCourse.description" placeholder="课程描述" />
       <input v-model.number="newCourse.price" type="number" placeholder="价格" />
-      <button @click="newCourse.add()">添加课程</button>
+      <button @click="addCourse">添加课程</button>
     </div>
     
     <!-- 课程列表 -->
     <div class="course-list">
       <div v-for="course in courses" :key="course.id" class="course-card">
         <div v-if="editingId === course.id" class="edit-mode">
-          <input v-model="editCourse.title" />
-          <input v-model="editCourse.description" />
-          <input v-model.number="editCourse.price" type="number" />
-          <button @click="updateCourse">保存</button>
-          <button @click="editingId = null">取消</button>
+          <input v-model="course.title" />
+          <input v-model="course.description" />
+          <input v-model.number="course.price" type="number" />
+          <button @click="saveCourse(course)">保存</button>
+          <button @click="cancelEdit(course)">取消</button>
         </div>
         <div v-else>
           <h3>{{ course.title }}</h3>
@@ -44,66 +44,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref } from 'vue';
+import { ref } from 'vue';
 import { Course } from '../arpc/Course';
 
 // 编辑状态
-const editingId = ref(null);
+const editingId = ref<number | null>(null);
 const log = ref('');
 
-//一行代码完成列表查询
-const courses = await Course.get();
+// 查询列表
+const courses = await Course.get({ order: 'id desc', limit: 20 });
 
-//2行代码完成新增
-//第一行new对象，双向绑定表单
-//对象.add()插入数据库了
-const newCourse = new Course();
-Course.get1()
-// 编辑中的课程
-let editCourse = null;
+// 新增用的对象
+const newCourse = new Course({ title: '', description: '', price: 0 });
 
 // 新增
 async function addCourse() {
   if (!newCourse.title) return;
-  
-  await newCourse.add()//.catch((err) => {alert(err.message+'111');});
-  courses.push({ ...newCourse.toJSON() });
+  await newCourse.save();
+  // 创建新对象加入列表（避免引用问题）
+  courses.unshift(new Course({ ...newCourse }));
   log.value = `新增成功: ${newCourse.title} (ID: ${newCourse.id})`;
-  
-  // 重置
-  newCourse.id = undefined;
-  newCourse.title = '';
-  newCourse.description = '';
-  newCourse.price = 0;
+  // 重置表单
+  Object.assign(newCourse, { id: undefined, title: '', description: '', price: 0 });
 }
 
 // 开始编辑
-function startEdit(course) {
+function startEdit(course: any) {
   editingId.value = course.id;
-  editCourse = new Course({ ...course });
 }
 
-// 更新
-async function updateCourse() {
-  await editCourse.update();
-  
-  const index = courses.findIndex(c => c.id === editCourse.id);
-  if (index !== -1) courses[index] = { ...editCourse.toJSON() };
-  
-  log.value = `更新成功: ${editCourse.title}`;
+// 保存
+async function saveCourse(course: any) {
+  await course.save();
+  log.value = `更新成功: ${course.title}`;
+  editingId.value = null;
+}
+
+// 取消编辑（重新加载）
+async function cancelEdit(course: any) {
+  await course.reload?.();
   editingId.value = null;
 }
 
 // 删除
-async function deleteCourse(course) {
+async function deleteCourse(course: any) {
   if (!confirm('确定删除这个课程吗？')) return;
-  
-  const toDelete = new Course(course);
-  await toDelete.del();
-  
-  const index = courses.findIndex(c => c.id === course.id);
-  if (index !== -1) courses.splice(index, 1);
-  
+  await course.del();
+  const idx = courses.findIndex(c => c.id === course.id);
+  if (idx !== -1) courses.splice(idx, 1);
   log.value = `删除成功: ${course.title}`;
 }
 </script>

@@ -10,7 +10,7 @@ Arpc()
     // JWT 鉴权中间件
     .use(jwtAuth({
         secret: JWT_SECRET,
-        exclude: ['/User/login'],
+        exclude: ['/User/login', '/course/'],  // 排除课程接口
         skipNonRpc: true  // 跳过 GET 请求（页面路由）
     }))
     .use(ssr)

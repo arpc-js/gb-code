@@ -248,10 +248,11 @@ export default class Base {
         Object.assign(this, data);
     }
     
-    // GET - 查询
+    // GET - 查询（返回 AR 对象数组）
     // fields: 字段选择 'id,title' | 排除 '!password' | 统计 'count(*),sum(price)'
-    static async get(cond?: TemplateStringsArray | Record<string, unknown>, fields?: string, ...values: unknown[]): Promise<unknown[]> {
+    static async get(cond?: TemplateStringsArray | Record<string, unknown>, fields?: string, ...values: unknown[]): Promise<this[]> {
         const t = this.table;
+        const Cls = this;
         
         // 判断第二个参数是否为字段字符串
         let actualFields = fields;
@@ -348,23 +349,45 @@ export default class Base {
                 for (const key of Object.keys(row)) {
                     if (!excludeList.includes(key)) filtered[key] = row[key];
                 }
-                return filtered;
-            });
+                return new Cls(filtered) as InstanceType<typeof Cls>;
+            }) as this[];
         }
         
-        return results as unknown[];
+        // 返回 AR 对象数组
+        return (results as Record<string, unknown>[]).map(row => new Cls(row) as InstanceType<typeof Cls>) as this[];
     }
     
-    // ADD - 新增
-    static async add(data: Record<string, unknown> | Record<string, unknown>[]): Promise<unknown> {
+    // SAVE - 静态批量保存（根据 id 分组：无 id 新增，有 id 更新）
+    static async save(data: Record<string, unknown> | Record<string, unknown>[]): Promise<unknown[]> {
+        const items = Array.isArray(data) ? data : [data];
+        if (!items.length) return [];
+        
+        const pk = this.primaryKey;
+        const toInsert = items.filter(item => !item[pk]);
+        const toUpdate = items.filter(item => item[pk]);
+        const results: unknown[] = [];
         const d = db();
-        const result = await d`INSERT INTO ${sql.unsafe(this.table)} ${sql(data)} RETURNING *`;
-        return Array.isArray(data) ? result : result[0];
+        
+        // 批量新增
+        if (toInsert.length) {
+            const inserted = await d`INSERT INTO ${sql.unsafe(this.table)} ${sql(toInsert)} RETURNING *`;
+            results.push(...inserted);
+        }
+        
+        // 批量更新（逐条）
+        for (const item of toUpdate) {
+            const id = item[pk];
+            const updateData = { ...item };
+            delete updateData[pk];
+            await d`UPDATE ${sql.unsafe(this.table)} SET ${sql(updateData)} WHERE ${sql.unsafe(pk)} = ${id}`;
+            const updated = await d`SELECT * FROM ${sql.unsafe(this.table)} WHERE ${sql.unsafe(pk)} = ${id}`;
+            if (updated.length) results.push(updated[0]);
+        }
+        
+        return results;
     }
     
-
-    
-    // DEL - 删除
+    // DEL - 删除（返回删除的记录）
     static async del(cond?: TemplateStringsArray | Record<string, unknown>, ...values: unknown[]): Promise<unknown[]> {
         const { where } = buildCondition(cond, ...values);
         if (!where) throw new Error('Delete requires conditions');
@@ -374,29 +397,21 @@ export default class Base {
         return deleted;
     }
     
-    // 实例方法 - 保存（新增或更新）
+    // 实例方法 - 保存（新增或更新，返回新 AR 对象）
     async save(): Promise<this> {
-        const pk = (this.constructor as typeof Base).primaryKey as keyof this;
-        if (this[pk]) {
-            return await this.update();
-        } else {
-            return await this.add();
-        }
-    }
-    
-    // 实例方法 - 新增自身
-    async add(): Promise<this> {
-        const pk = (this.constructor as typeof Base).primaryKey;
+        const cls = this.constructor as typeof Base;
+        const pk = cls.primaryKey as keyof this;
         const data = { ...this } as Record<string, unknown>;
-        delete data[pk];  // 移除主键，让数据库自动生成
         
-        const result = await (this.constructor as typeof Base).add(data);
-        Object.assign(this, result);
+        const results = await cls.save(data);
+        if (results.length) {
+            Object.assign(this, results[0]);
+        }
         return this;
     }
     
-    // UPDATE - 更新（实例方法，用 this 的值 SET，参数为条件）
-    async update(cond?: TemplateStringsArray | Record<string, unknown>, ...values: unknown[]): Promise<this> {
+    // UPDATE - 更新（实例方法，用 this 的值 SET，不返回实例）
+    async update(cond?: TemplateStringsArray | Record<string, unknown>, ...values: unknown[]): Promise<{ updated: number }> {
         const cls = this.constructor as typeof Base;
         const pk = cls.primaryKey as keyof this;
         const t = cls.table;
@@ -410,27 +425,20 @@ export default class Base {
         if (where) {
             const conn = db();
             await conn`UPDATE ${sql.unsafe(t)} SET ${sql(data)} WHERE ${where}`;
-            const results = await cls.get(cond ?? { [pk]: this[pk] });
-            if (results.length) Object.assign(this, results[0]);
+            return { updated: 1 };
+        }
+        return { updated: 0 };
+    }
+    
+    // 实例方法 - 删除（返回被删除的 AR 对象）
+    async del(): Promise<this> {
+        const cls = this.constructor as typeof Base;
+        const pk = cls.primaryKey as keyof this;
+        
+        if (this[pk]) {
+            await cls.del({ [pk]: this[pk] } as Record<string, unknown>);
         }
         return this;
-    }
-    
-    // 实例方法 - 删除
-    async del(conditionOrStrings?: TemplateStringsArray | Record<string, unknown>, ...values: unknown[]): Promise<unknown[]> {
-        const pk = (this.constructor as typeof Base).primaryKey as keyof this;
-        
-        // 如果没有传条件，用自身主键作为条件
-        if (conditionOrStrings === undefined && this[pk]) {
-            return await (this.constructor as typeof Base).del({ [pk]: this[pk] } as Record<string, unknown>);
-        }
-        
-        return await (this.constructor as typeof Base).del(conditionOrStrings, ...values);
-    }
-    
-    // 实例方法 - 删除自身（别名）
-    async remove(): Promise<unknown[]> {
-        return await this.del();
     }
     
     // 实例方法 - 重新加载

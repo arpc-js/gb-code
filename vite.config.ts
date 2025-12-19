@@ -4,7 +4,7 @@ import arpc from './src/core/plugin'
 
 export default defineConfig(() => ({
   plugins: [
-    arpc(),//前端会rpc代理，后端不代理
+    arpc({ mode: 'http' }),  // 'http' | 'ws'
     vue()
   ],
 }))
