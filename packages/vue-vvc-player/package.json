@@ -23,6 +23,7 @@
     "scripts"
   ],
   "scripts": {
+    "postinstall": "node scripts/copy-sdk.js",
     "build": "vite build",
     "prepublishOnly": "npm run build",
     "sdk:install": "node scripts/copy-sdk.js"

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * vue-vvc-player 安装后脚本
- * 自动复制 SDK 资源到项目的 public/sdk 目录
+ * vue-vvc-player postinstall 脚本
+ * 自动复制 SDK 文件到项目的 public/sdk 目录
  */
 
 const fs = require('fs');
@@ -18,49 +18,59 @@ const sdkFiles = [
   'AsyncHelpers.js',
 ];
 
-function copySDK(targetDir) {
-  const srcDir = path.join(__dirname, '..', 'sdk');
+// 查找项目根目录（包含 public 文件夹的目录）
+function findProjectRoot() {
+  let dir = process.cwd();
+  
+  // 如果当前目录有 public，直接使用
+  if (fs.existsSync(path.join(dir, 'public'))) {
+    return dir;
+  }
+  
+  // 从脚本位置向上查找
+  dir = __dirname;
+  for (let i = 0; i < 10; i++) {
+    dir = path.dirname(dir);
+    if (fs.existsSync(path.join(dir, 'public')) && 
+        fs.existsSync(path.join(dir, 'package.json')) &&
+        !dir.includes('node_modules')) {
+      return dir;
+    }
+  }
+  return null;
+}
+
+function copySDK() {
+  const sdkSrc = path.join(__dirname, '..', 'sdk');
+  const projectRoot = findProjectRoot();
+  
+  if (!projectRoot) {
+    console.log('[vue-vvc-player] 未找到项目根目录，跳过 SDK 复制');
+    return;
+  }
+  
+  const targetDir = path.join(projectRoot, 'public', 'sdk');
+  
+  if (!fs.existsSync(sdkSrc)) {
+    console.log('[vue-vvc-player] SDK 源目录不存在');
+    return;
+  }
   
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
   }
   
+  console.log('[vue-vvc-player] 复制 SDK 文件...');
   let copied = 0;
   for (const file of sdkFiles) {
-    const src = path.join(srcDir, file);
+    const src = path.join(sdkSrc, file);
     const dest = path.join(targetDir, file);
-    
     if (fs.existsSync(src)) {
       fs.copyFileSync(src, dest);
       copied++;
-      console.log(`  ✓ ${file}`);
-    } else {
-      console.warn(`  ✗ ${file} (not found)`);
     }
   }
-  
-  console.log(`\n复制完成: ${copied}/${sdkFiles.length} 个文件`);
+  console.log(`[vue-vvc-player] 已复制 ${copied} 个文件到 ${targetDir}`);
 }
 
-// CLI
-const args = process.argv.slice(2);
-const targetDir = args[0] || './public/sdk';
-
-console.log(`\n📦 vue-vvc-player SDK 安装\n`);
-console.log(`目标目录: ${path.resolve(targetDir)}\n`);
-
-copySDK(targetDir);
-
-console.log(`
-✅ 安装完成!
-
-使用方法:
-  import { VvcPlayer } from 'vue-vvc-player';
-
-  <VvcPlayer 
-    src="video.mp4"
-    width="800"
-    height="450"
-    :show-controls="true"
-  />
-`);
+copySDK();

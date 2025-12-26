@@ -1,55 +1,48 @@
 <template>
-  <div class="vvc-player" :style="containerStyle">
-    <!-- URL 输入框 -->
-    <div v-if="showUrlInput" class="vvc-url-bar">
-      <input 
-        type="text" 
-        v-model="videoUrl" 
-        placeholder="输入 H.266 视频 URL"
-        class="vvc-url-input"
-        @keyup.enter="playVideo"
-      />
-      <button class="vvc-play-btn" @click="playVideo" :disabled="!ready || !videoUrl">
-        播放
-      </button>
-    </div>
-    
-    <!-- 海报图 -->
-    <div v-if="poster && !playing && !hasPlayed" class="vvc-poster" :style="{ backgroundImage: `url(${poster})` }">
-      <button v-if="ready" class="vvc-poster-play" @click="playVideo">▶</button>
-    </div>
-    
-    <!-- 播放器画布 -->
-    <div class="vvc-wrapper" :style="wrapperStyle">
+  <div class="vvc-player" :style="containerStyle" @mouseenter="showBar = true" @mouseleave="showBar = false">
+    <!-- 16:9 比例容器 -->
+    <div class="vvc-aspect" :style="aspectStyle">
+      <!-- 画布 -->
       <canvas ref="canvasRef" class="vvc-canvas"></canvas>
       
+      <!-- 海报图/大播放按钮 -->
+      <div v-if="ready && !hasPlayed" class="vvc-overlay" :style="poster ? { backgroundImage: `url(${poster})` } : {}" @click="playVideo">
+        <div class="vvc-play-big">&#9658;</div>
+      </div>
+      
+      <!-- 加载中 -->
+      <div v-if="!ready" class="vvc-overlay vvc-loading">
+        <div class="vvc-spinner"></div>
+      </div>
+      
       <!-- 控制栏 -->
-      <div class="vvc-controls" v-if="showControls && hasPlayed">
-        <button class="vvc-btn" @click="togglePlay" :disabled="!ready">
-          {{ playing ? '⏸' : '▶' }}
+      <div class="vvc-bar" :class="{ show: showBar || !playing }" v-if="showControls">
+        <!-- 播放按钮 -->
+        <button class="vvc-btn-play" @click="togglePlay" :disabled="!ready">
+          <span v-if="playing">&#10074;&#10074;</span>
+          <span v-else>&#9658;</span>
         </button>
-        <button class="vvc-btn" @click="stop" :disabled="!ready">⏹</button>
         
-        <!-- 音量 -->
-        <div class="vvc-volume" v-if="hasAudio">
-          <button class="vvc-btn" @click="toggleMute">
-            {{ muted ? '🔇' : '🔊' }}
-          </button>
-          <input type="range" min="0" max="100" v-model="volume" @input="updateVolume" />
+        <!-- 进度条 -->
+        <div class="vvc-progress">
+          <div class="vvc-progress-bar"></div>
         </div>
         
-        <!-- 状态 -->
-        <span class="vvc-status">{{ statusText }}</span>
+        <!-- 时间 -->
+        <span class="vvc-time">{{ timeText }}</span>
+        
+        <!-- 音量 -->
+        <button class="vvc-btn" @click="toggleMute">
+          <span v-if="muted">&#128263;</span>
+          <span v-else>&#128266;</span>
+        </button>
         
         <!-- 全屏 -->
-        <button class="vvc-btn vvc-fullscreen" @click="toggleFullScreen">⛶</button>
+        <button class="vvc-btn" @click="toggleFullScreen">&#x26F6;</button>
       </div>
     </div>
     
-    <!-- 加载中 -->
-    <div v-if="!ready" class="vvc-loading">加载中...</div>
-    
-    <!-- 错误提示 -->
+    <!-- 错误 -->
     <div v-if="error" class="vvc-error">{{ error }}</div>
   </div>
 </template>
@@ -62,10 +55,10 @@ import type { VvcPlayerProps, FrameInfo, MetadataInfo } from './types';
 const props = withDefaults(defineProps<VvcPlayerProps>(), {
   src: '',
   width: '100%',
-  height: 'auto',
+  height: '',
+  aspectRatio: '16/9',
   sdkPath: '/sdk/',
   showControls: true,
-  showUrlInput: false,
   threads: 2,
   autoPlay: false,
   loop: false,
@@ -95,18 +88,22 @@ const hasPlayed = ref(false);
 const hasAudio = ref(false);
 const muted = ref(false);
 const volume = ref(100);
-const statusText = ref('初始化中...');
 const error = ref<string | null>(null);
 const videoUrl = ref(props.src);
+const showBar = ref(false);
+const timeText = ref('0:00');
 
 // Computed
 const containerStyle = computed(() => ({
   width: typeof props.width === 'number' ? `${props.width}px` : props.width,
 }));
 
-const wrapperStyle = computed(() => ({
-  height: typeof props.height === 'number' ? `${props.height}px` : props.height,
-}));
+const aspectStyle = computed(() => {
+  if (props.height) {
+    return { height: typeof props.height === 'number' ? `${props.height}px` : props.height };
+  }
+  return { aspectRatio: props.aspectRatio };
+});
 
 // Watch
 watch(() => props.src, (newUrl) => {
@@ -121,42 +118,27 @@ async function initPlayer() {
   if (!canvasRef.value) return;
   
   try {
-    // 动态导入 SDK（从 public/sdk/ 加载）
     const sdkUrl = props.sdkPath.endsWith('/') ? props.sdkPath : props.sdkPath + '/';
     const { default: VVCPlayer } = await import(/* @vite-ignore */ sdkUrl + 'VVCPlayer.mjs');
     
-    const playerOptions = {
+    player.value = new VVCPlayer(canvasRef.value, sdkUrl, {
       workerPath: sdkUrl + 'decoderWorker.js',
       libPath: sdkUrl,
-    };
-    
-    player.value = new VVCPlayer(canvasRef.value, sdkUrl, playerOptions);
+    });
     player.value.numDecoderThreads = props.threads;
     
-    // 绑定事件
     player.value.onReady = () => {
       ready.value = true;
-      statusText.value = '就绪';
       emit('ready');
-      
-      if (props.autoPlay && props.src) {
-        play(props.src);
-      }
+      if (props.autoPlay && props.src) play(props.src);
     };
     
     player.value.onStatusChange = (status: string) => {
       playing.value = status === 'play';
-      if (status === 'stop') {
-        statusText.value = '已停止';
-        emit('stop');
-      }
+      if (status === 'stop') emit('stop');
     };
     
-    player.value.onDrawFrame = (frame: FrameInfo) => {
-      statusText.value = `${frame.width}x${frame.height}`;
-      emit('frame', frame);
-    };
-    
+    player.value.onDrawFrame = (frame: FrameInfo) => emit('frame', frame);
     player.value.onMetadata = (data: MetadataInfo) => {
       hasAudio.value = data.hasAudio || false;
       emit('metadata', data);
@@ -168,19 +150,14 @@ async function initPlayer() {
     };
     
     player.value.onEOF = () => {
-      statusText.value = '播放结束';
       playing.value = false;
       emit('ended');
-      
-      if (props.loop && videoUrl.value) {
-        play(videoUrl.value);
-      }
+      if (props.loop && videoUrl.value) play(videoUrl.value);
     };
     
   } catch (e: any) {
-    error.value = '初始化失败: ' + e.message;
-    statusText.value = '初始化失败';
-    console.error(e);
+    error.value = e.message;
+    emit('error', e.message);
   }
 }
 
@@ -292,155 +269,174 @@ defineExpose({
 .vvc-player {
   position: relative;
   background: #000;
-  border-radius: 8px;
+  border-radius: 4px;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-.vvc-url-bar {
-  display: flex;
-  gap: 8px;
-  padding: 8px;
+.vvc-aspect {
+  position: relative;
+  width: 100%;
   background: #1a1a1a;
 }
 
-.vvc-url-input {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #333;
-  border-radius: 4px;
-  background: #222;
-  color: #fff;
-  font-size: 14px;
+.vvc-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.vvc-url-input:focus {
-  outline: none;
-  border-color: #007bff;
-}
-
-.vvc-play-btn {
-  padding: 8px 16px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.vvc-play-btn:hover:not(:disabled) {
-  background: #0056b3;
-}
-
-.vvc-play-btn:disabled {
-  background: #555;
-  cursor: not-allowed;
-}
-
-.vvc-poster {
+/* 覆盖层 */
+.vvc-overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-size: cover;
-  background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
-}
-
-.vvc-poster-play {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  font-size: 32px;
-  border: 2px solid white;
+  background: #111 no-repeat center/cover;
   cursor: pointer;
-  transition: transform 0.2s;
 }
 
-.vvc-poster-play:hover {
-  transform: scale(1.1);
-}
-
-.vvc-wrapper {
-  position: relative;
-  min-height: 200px;
-}
-
-.vvc-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.vvc-controls {
+.vvc-play-big {
+  width: 60px;
+  height: 60px;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px;
-  background: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  padding-left: 4px;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.vvc-play-big:hover {
+  transform: scale(1.1);
+  background: rgba(0,0,0,0.9);
+}
+
+/* 加载 */
+.vvc-loading {
+  background: #000;
+}
+
+.vvc-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 控制栏 */
+.vvc-bar {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
+  height: 36px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
-.vvc-btn {
-  background: #444;
-  color: white;
+.vvc-bar.show {
+  opacity: 1;
+}
+
+/* 播放按钮 */
+.vvc-btn-play {
+  width: 28px;
+  height: 28px;
+  background: transparent;
   border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
-  cursor: pointer;
+  color: #fff;
   font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.vvc-btn-play:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.vvc-btn-play:disabled {
+  opacity: 0.4;
+}
+
+/* 进度条 */
+.vvc-progress {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.vvc-progress-bar {
+  height: 100%;
+  background: #fff;
+  border-radius: 2px;
+  width: 0;
+}
+
+/* 时间 */
+.vvc-time {
+  color: #fff;
+  font-size: 12px;
+  font-family: monospace;
+  min-width: 36px;
+}
+
+/* 按钮 */
+.vvc-btn {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
 }
 
 .vvc-btn:hover {
-  background: #666;
+  background: rgba(255,255,255,0.2);
 }
 
-.vvc-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.vvc-volume {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.vvc-volume input {
-  width: 60px;
-}
-
-.vvc-status {
-  color: #aaa;
-  font-size: 12px;
-  margin-left: auto;
-}
-
-.vvc-fullscreen {
-  margin-left: 8px;
-}
-
-.vvc-loading {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #aaa;
-  font-size: 14px;
-}
-
+/* 错误 */
 .vvc-error {
-  color: #ff6b6b;
-  padding: 8px;
-  background: #2a1515;
+  position: absolute;
+  bottom: 40px;
+  left: 8px;
+  right: 8px;
+  background: rgba(200,0,0,0.9);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
   font-size: 12px;
 }
 </style>

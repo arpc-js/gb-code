@@ -3,14 +3,14 @@ export interface VvcPlayerProps {
   src?: string;
   /** 播放器宽度 */
   width?: string | number;
-  /** 播放器高度 */
+  /** 播放器高度（设置后忽略 aspectRatio） */
   height?: string | number;
+  /** 宽高比（默认 16/9） */
+  aspectRatio?: string;
   /** SDK 静态资源路径（默认 /sdk/） */
   sdkPath?: string;
   /** 是否显示控制栏 */
   showControls?: boolean;
-  /** 是否显示 URL 输入框 */
-  showUrlInput?: boolean;
   /** 解码线程数（默认 2） */
   threads?: number;
   /** 是否自动播放 */
