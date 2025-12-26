@@ -7,4 +7,11 @@ export default defineConfig(() => ({
     arpc({ mode: 'http' }),  // 'http' | 'ws'
     vue()
   ],
+  server: {
+    headers: {
+      // H.266 解码器 (vvdec.wasm) 需要 SharedArrayBuffer
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'credentialless',
+    }
+  }
 }))

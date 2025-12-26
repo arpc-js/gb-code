@@ -1,11 +1,12 @@
 import Arpc from './core/Arpc';
-import {errorHandler, ssr } from './core/middlewares';
+import { cors, errorHandler, ssr } from './core/middlewares';
 import { jwtAuth } from './middleware/jwt';
 
 // JWT 密钥（生产环境应从环境变量读取）
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key-change-in-production';
 
 Arpc()
+    .use(cors)  // CORS + SharedArrayBuffer 头
     .use(errorHandler)
     // JWT 鉴权中间件
     .use(jwtAuth({

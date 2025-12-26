@@ -11,6 +11,9 @@ export const cors: Middleware = async (ctx, next) => {
     ctx.headers['Access-Control-Allow-Headers'] = '*';
     ctx.headers['Access-Control-Allow-Credentials'] = 'true';
     ctx.headers['Access-Control-Max-Age'] = '86400';
+    // H.266 解码器 (vvdec.wasm) 需要 SharedArrayBuffer
+    ctx.headers['Cross-Origin-Opener-Policy'] = 'same-origin';
+    ctx.headers['Cross-Origin-Embedder-Policy'] = 'credentialless';
     
     if (ctx.method === 'OPTIONS') {
         ctx.res = new Response(null, { status: 204, headers: ctx.headers });
@@ -43,6 +46,7 @@ export const errorHandler: Middleware = async (ctx, next) => {
 const mimeTypes: Record<string, string> = {
     '.html': 'text/html',
     '.js': 'application/javascript',
+    '.mjs': 'application/javascript',
     '.css': 'text/css',
     '.json': 'application/json',
     '.png': 'image/png',
@@ -52,6 +56,9 @@ const mimeTypes: Record<string, string> = {
     '.ico': 'image/x-icon',
     '.woff': 'font/woff',
     '.woff2': 'font/woff2',
+    '.wasm': 'application/wasm',
+    '.mp4': 'video/mp4',
+    '.webm': 'video/webm',
 };
 
 // SSR 中间件（懒加载初始化）

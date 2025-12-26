@@ -1,4 +1,4 @@
-有<template>
+<template>
   <div class="home">
     <div class="course-grid">
       <div v-for="course in list" :key="course.id" class="course-card">

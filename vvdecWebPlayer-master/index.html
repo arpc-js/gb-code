@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="lib/bootstrap.min.css" rel="stylesheet">
+  <link href="lib/bootstrap-icons.css" rel="stylesheet">
+  <title>h266编码移植</title>
+  <style type="text/css">
+    #canvas {
+      background-image: url("img/VVC_vertical.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 200px;
+      background-color: white !important;
+    }
+    #canvas:fullscreen {
+      background-color: black !important;
+    }
+
+    .logoBadge {
+      height: 100px;
+      width: 320px;
+      padding: 8px;
+    }
+
+    .logoBadge>div {
+      font-size: 28px;
+    }
+
+    .logoBadge>div>.bi-github {
+      font-size: 42px;
+    }
+
+    .progressContainer {
+      position: relative;
+      height: 8px;
+      padding-top: 5px;
+      margin-top: -8px;
+    }
+
+    /*
+    disabled for now, because it suggests seeking is possible
+     .progressContainer:hover {
+      padding-top: 0px;
+    } */
+
+    .inlineFormInput {
+      display: block;
+      min-height: 1.5rem;
+      padding-left: 1.5em;
+      margin-bottom: 0.125rem;
+    }
+
+    .inlineFormInput>.form-control:disabled,
+    .inlineFormInput>.form-control:disabled~label {
+      pointer-events: none;
+      filter: none;
+      opacity: 0.5;
+      background-color: var(--bs-white);
+    }
+
+    .inlineFormInput>input {
+      float: left;
+      width: var(--width);
+      height: 1.25em;
+      margin-top: 0.125em;
+      margin-left: calc(-0.5em - var(--width));
+      padding: 0% 0.1em;
+      vertical-align: unset;
+      text-align: right;
+    }
+
+    .inlineFormInput>input:invalid {
+      color: #212529;
+      background-color: #fff;
+      outline: 0;
+      border-color: rgba(220, 53, 69);
+      box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    }
+
+  </style>
+</head>
+
+<body class="bg-light">
+  <!-- ------------ header bar ------------ -->
+  <header class="bg-dark bg-gradient text-light navbar navbar-dark border-bottom px-4">
+    <div class="navbar-brand d-flex gap-2">
+      <img class="align-self-center" src="img/Logo_FHG_cube_only.svg" style="height: 1.6rem;">
+      <span class="fs-4">h266编码移植</span>
+    </div>
+    <div class="d-inline-flex gap-2">
+      <input type="text" class="form-control" id="inputUrl" placeholder="输入视频URL" style="width: 400px;">
+      <button id="btnPlayUrl" type="button" class="btn btn-primary btn-sm">播放</button>
+      <select class="form-select lh-1" id="selectBitstream">
+        <!--
+        <option>/openGOP/BodeMuseum_1920x1080_60fps_3mbit_1sRA_concat.mp4</option>
+        <option selected>/VTM-10.0/RA/ClassB/RA_Cactus_QP37.266</option>
+        <option>/VTM-10.0/RA/ClassB/RA_BasketballDrive_QP22.266</option>
+        <option>/VTM-10.0/RA/ClassF/RA_ArenaOfValor_QP37.mp4</option>
+        <option>vvc.mp4</option>
+        <option>/ext/bitstreams/AMVR_B_HHI_3/AMVR_B_HHI_3.bit</option>
+        -->
+      </select>
+      <a id="btnDownload" type="button" title="download bitstream"
+        class="btn btn-sm btn-light-border border text-light bi bi-download"></a>
+      <label hidden for="repeat">Repeat:</label>
+      <input hidden id="repeat" type="number" min="0" value="1" style="width: 5em;">
+    </div>
+  </header>
+
+  <main>
+    <!-- ------------ the player ------------ -->
+    <div class="container-fluid d-flex flex-column bg-secondary pt-2">
+
+      <div class="m-1" style="position: absolute;">
+        <h1 id="videoTitle" class="d-inline-box text-light">&nbsp;</h1>
+      </div>
+
+      <figure class="mx-auto bg-black rounded p-3" style="margin-top: 5rem; margin-bottom: 5rem;">
+        <div id="videoWrapper">
+          <canvas id="canvas" class="img-fluid bg-dark d-block" style="width: 800px;"></canvas>
+
+          <div class="progressContainer">
+            <div class="progress rounded-0 bg-black h-100 position-relative" style="--bs-bg-opacity: 0.3;" hidden>
+              <div id="downloadProgress" class="progress-bar position-absolute h-100 opacity-50" role="progressbar"
+                style="width: 0%; transition: none;"></div>
+              <div id="progress" class="progress-bar position-absolute h-100" role="progressbar"
+                style="width: 0%; transition: none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex mt-2 gap-3">
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group" role="group">
+              <button id="btnPlay" type="button" class="btn btn-light btn-sm border bi bi-play-fill" disabled></button>
+              <button id="btnStop" type="button" class="btn btn-light btn-sm border bi bi-stop-fill" disabled></button>
+            </div>
+          </div>
+          
+          <!-- Audio Volume Control -->
+          <div class="btn-toolbar" role="toolbar" id="volumeControl" style="display: none;">
+            <div class="btn-group align-items-center" role="group">
+              <button id="btnMute" type="button" class="btn btn-light btn-sm border bi bi-volume-up-fill" title="静音"></button>
+              <input id="volumeSlider" type="range" class="form-range mx-2" min="0" max="100" value="100" style="width: 80px;" title="音量">
+            </div>
+          </div>
+
+          <div class="align-self-center text-light">
+            <span id="status"><span>
+          </div>
+          <div class="ms-auto"></div>
+
+          <div class="align-self-center text-light">
+            <span id="actRendition"></span>
+          </div>
+
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group" role="group">
+              <button id="btnDecRend" type="button" class="btn btn-light btn-sm border" hidden>
+                <span class="bi bi-caret-down-fill d-inline-block" style="transform: translateY(0.1em);"></span>
+              </button>
+              <button id="btnIncRend" type="button" class="btn btn-light btn-sm border" hidden>
+                <span class="bi bi-caret-up-fill d-inline-block" style="transform: translateY(-0.1em);"></span>
+              </button>
+            </div>
+          </div>
+
+          <img class="overflow-hidden" style="width: 100px;" src="img/VVC-horizontal-White.svg">
+        </div>
+      </figure>
+
+      <div class="ms-auto">
+        <button class="border border-bottom-0 border-dark rounded-top px-3 bg-light text-secondary"
+          data-bs-toggle="collapse" data-bs-target="#collapseContainer">advanced</button>
+      </div>
+
+    </div>
+
+    <!-- ------------ log and advanced settings output ------------ -->
+    <div class="container-fluid collapse p-5 pb-0" id="collapseContainer">
+
+      <div class="card mw-100 w-100">
+        <div class="card-body pb-0">
+          <h5 class="card-title">Bit Rate</h5>
+          <div id="plotContainer"></div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-4 mt-4">
+
+        <div class="card flex-grow-1" style="width: 24em;">
+          <div class="card-body">
+            <h5 class="card-title">Benchmarking options</h5>
+            <div class="px-3">
+              <div class="form-check">
+                <input class="form-check-input disabledDuringPlayback" type="checkbox" value="" id="checkIgnoreFPS"
+                  title="Ignore the FPS read from the file metadata.">
+                <label class="form-check-label" for="checkIgnoreFPS">Playback as fast as possible</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input disabledDuringPlayback" type="checkbox" value="" id="checkNoOutput"
+                  title="For benchmarking the decoder, when the browser WebGL performance is low.">
+                <label class="form-check-label" for="checkNoOutput">Disable video output</label>
+              </div>
+              <div class="inlineFormInput">
+                <input class="form-control disabledDuringPlayback" type="text" value="10" id="inputNumThreads"
+                  maxlength="2" placeholder="-1" pattern="-1|[0-9]+" style="--width: 1.5em;"
+                  title="Number of decoder threads">
+                <label class="form-control-label" for="inputNumThreads">Number of decoder threads</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card flex-grow-1" style="width: 24em;">
+          <div class="card-body">
+            <h5 class="card-title">Demo Options</h5>
+            <div class="px-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="checkFixedSize" checked
+                  title="Keep the display size fixed on resolution switches.">
+                <label class="form-check-label" for="checkFixedSize">Use track max video size</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="checkLoopPlayback"
+                  title="Loop over sequences">
+                <label class="form-check-label" for="checkLoopPlayback">Loop over sequences</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <textarea id="output" class="form-control mt-4" rows="24" spellcheck="false" readonly="true" disabled></textarea>
+    </div>
+
+    <!-- ------------ link badges ------------ -->
+    <div class="container-fluid d-flex flex-wrap gap-5 p-5">
+      <a href="https://github.com/fraunhoferhhi/vvdec" target="_blank"
+        class="mw-100 link-secondary text-decoration-none">
+        <div class="logoBadge img-thumbnail border shadow">
+          <div class="d-flex overflow-hidden justify-content-center align-items-center h-100">
+            <div class="bi bi-github me-2"></div>VVdeC @ github
+          </div>
+        </div>
+      </a>
+      <a href="https://www.hhi.fraunhofer.de/en/departments/vca/technologies-and-solutions/h266-vvc.html"
+        target="_blank" class="mw-100">
+        <img src="img/Logo_Fraunhofer_HHI.svg" class="logoBadge img-thumbnail border shadow"></a>
+      <a href="https://www.mc-if.org/versatile-video-coding/" target="_blank" class="mw-100">
+        <img src="img/VVC_horizontal.svg" class="logoBadge img-thumbnail border shadow"></a>
+    </div>
+  </main>
+
+  <!-- ------------ error/warning popups ------------ -->
+  <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11">
+    <template id="toastTemplate">
+      <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <div class="bi bi-exclamation-triangle-fill text-warning me-2"></div>
+          <strong class="me-auto">Warning</strong>
+          <!-- <small>11 mins ago</small> -->
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Hello, world! This is a toast message.
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <script type="text/javascript" src="lib/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="lib/uPlot.min.css">
+  <script type="text/javascript" src="lib/mpd-parser.js"></script>
+  <script type="text/javascript" src="AsyncHelpers.js"></script>
+  <script type="module" src="shell.mjs"></script>
+</body>
+
+</html>
