@@ -237,17 +237,29 @@ function setMuted(m: boolean) {
 
 function destroy() {
   if (player.value) {
-    player.value.stop();
+    // 调用 destroy 方法终止 Worker
+    if (typeof player.value.destroy === 'function') {
+      player.value.destroy();
+    } else {
+      player.value.stop();
+    }
     player.value = null;
   }
 }
 
+// 页面刷新/关闭时清理资源
+function handleBeforeUnload() {
+  destroy();
+}
+
 // Lifecycle
 onMounted(() => {
+  window.addEventListener('beforeunload', handleBeforeUnload);
   initPlayer();
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload);
   destroy();
 });
 

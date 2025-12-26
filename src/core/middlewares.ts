@@ -1,8 +1,42 @@
 import { join, extname } from 'path';
 import { renderToString } from 'vue/server-renderer';
+import { gzipSync, brotliCompressSync } from 'zlib';
 import type { App } from 'vue';
 import type { Router } from 'vue-router';
 import type { Middleware } from './Arpc';
+
+// 压缩缓存 (key: path+encoding, value: compressed buffer)
+const compressionCache = new Map<string, { data: Buffer; mtime: number }>();
+
+// 可压缩的 MIME 类型
+const compressibleTypes = new Set([
+    'text/html', 'text/css', 'text/plain', 'text/xml',
+    'application/javascript', 'application/json', 'application/xml',
+    'application/wasm',  // WASM 压缩效果好
+    'image/svg+xml'
+]);
+
+// 压缩工具函数
+function compress(data: Buffer | Uint8Array, encoding: 'br' | 'gzip'): Buffer {
+    if (encoding === 'br') {
+        return brotliCompressSync(data);
+    }
+    return gzipSync(data);
+}
+
+// 获取客户端支持的压缩方式
+function getAcceptedEncoding(acceptEncoding: string | null): 'br' | 'gzip' | null {
+    if (!acceptEncoding) return null;
+    if (acceptEncoding.includes('br')) return 'br';
+    if (acceptEncoding.includes('gzip')) return 'gzip';
+    return null;
+}
+
+// 是否可压缩
+function isCompressible(contentType: string): boolean {
+    const type = contentType.split(';')[0].trim();
+    return compressibleTypes.has(type);
+}
 
 // CORS 中间件
 export const cors: Middleware = async (ctx, next) => {
@@ -86,8 +120,40 @@ export const ssr: Middleware = (() => {
         const file = Bun.file(filePath);
         if (await file.exists()) {
             const ext = extname(filePath);
-            ctx.headers['Content-Type'] = mimeTypes[ext] || 'application/octet-stream';
-            ctx.res = new Response(file, { headers: ctx.headers });
+            const contentType = mimeTypes[ext] || 'application/octet-stream';
+            ctx.headers['Content-Type'] = contentType;
+            
+            // 获取客户端支持的压缩方式
+            const acceptEncoding = ctx.req.headers.get('accept-encoding');
+            const encoding = getAcceptedEncoding(acceptEncoding);
+            
+            // 不压缩或不支持压缩
+            if (!encoding || !isCompressible(contentType)) {
+                ctx.res = new Response(file, { headers: ctx.headers });
+                return;
+            }
+            
+            // 检查缓存
+            const cacheKey = `${ctx.path}:${encoding}`;
+            const fileMtime = file.lastModified;
+            const cached = compressionCache.get(cacheKey);
+            
+            if (cached && cached.mtime === fileMtime) {
+                // 缓存命中
+                ctx.headers['Content-Encoding'] = encoding;
+                ctx.headers['Vary'] = 'Accept-Encoding';
+                ctx.res = new Response(cached.data, { headers: ctx.headers });
+                return;
+            }
+            
+            // 实时压缩并缓存
+            const raw = Buffer.from(await file.arrayBuffer());
+            const compressed = compress(raw, encoding);
+            compressionCache.set(cacheKey, { data: compressed, mtime: fileMtime });
+            
+            ctx.headers['Content-Encoding'] = encoding;
+            ctx.headers['Vary'] = 'Accept-Encoding';
+            ctx.res = new Response(compressed, { headers: ctx.headers });
             return;
         }
         
@@ -118,6 +184,18 @@ export const ssr: Middleware = (() => {
         const html = template.replace('<div id="app"></div>', `<div id="app">${appHtml}</div>`);
         
         ctx.headers['Content-Type'] = 'text/html';
-        ctx.res = new Response(html, { headers: ctx.headers });
+        
+        // SSR 页面也压缩
+        const acceptEncoding = ctx.req.headers.get('accept-encoding');
+        const encoding = getAcceptedEncoding(acceptEncoding);
+        
+        if (encoding) {
+            const compressed = compress(Buffer.from(html), encoding);
+            ctx.headers['Content-Encoding'] = encoding;
+            ctx.headers['Vary'] = 'Accept-Encoding';
+            ctx.res = new Response(compressed, { headers: ctx.headers });
+        } else {
+            ctx.res = new Response(html, { headers: ctx.headers });
+        }
     };
 })();
