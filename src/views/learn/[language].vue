@@ -98,21 +98,10 @@
       <!-- 右侧悬浮导航 -->
       <aside v-if="activeChapter" class="quick-nav">
         <div v-for="lesson in activeChapter.lessons" :key="lesson.id" class="nav-group">
-          <div 
-            class="nav-item" 
-            :class="{ expanded: expandedLessons.has(lesson.id) }"
-            @click="toggleLesson(lesson.id)"
-          >
-            <span class="arrow-icon">{{ expandedLessons.has(lesson.id) ? '▾' : '▸' }}</span>
+          <div class="nav-item" @click="scrollToElement('lesson-' + lesson.id)">
             <span class="dot">●</span>{{ lesson.title }}
           </div>
-          <div 
-            v-show="expandedLessons.has(lesson.id)"
-            v-for="block in lesson.blocks.filter(b => b.type === 'heading')" 
-            :key="block.id" 
-            class="nav-sub" 
-            @click="scrollToElement('block-' + block.id)"
-          >
+          <div v-for="block in lesson.blocks.filter(b => b.type === 'heading')" :key="block.id" class="nav-sub" @click="scrollToElement('block-' + block.id)">
             {{ block.content }}
           </div>
         </div>
@@ -146,7 +135,6 @@ const currentCourse = computed(() => getCourse(courseId.value))
 const pathCourses = computed(() => currentCourse.value ? getPathCourses(currentCourse.value.pathId) : [])
 
 const expandedCourses = ref<Set<string>>(new Set())
-const expandedLessons = ref<Set<string>>(new Set())
 const activeChapter = ref<Chapter | null>(null)
 const showMenu = ref(false)
 const videoUrl = ref('')
@@ -220,16 +208,6 @@ function goHome() {
 
 function goLogin() {
   router.push('/login')
-}
-
-function toggleLesson(lessonId: string) {
-  if (expandedLessons.value.has(lessonId)) {
-    expandedLessons.value.delete(lessonId)
-  } else {
-    // 点击一个知识点后，其他的自动收起
-    expandedLessons.value.clear()
-    expandedLessons.value.add(lessonId)
-  }
 }
 
 function scrollToElement(id: string) {
@@ -477,14 +455,7 @@ function scrollToElement(id: string) {
   align-items: center;
   gap: 4px;
 }
-.arrow-icon {
-  font-size: 14px;
-  color: #999;
-  transition: transform 0.2s;
-  flex-shrink: 0;
-}
-.nav-item.expanded .arrow-icon { transform: rotate(0deg); }
-.dot { font-size: 8px; color: #4A90D9; flex-shrink: 0; }
+.dot { font-size: 8px; color: #4A90D9; }
 .nav-item:hover { color: #4A90D9; background: #f5f5f5; }
 .nav-sub {
   padding: 2px 6px 2px 18px;
