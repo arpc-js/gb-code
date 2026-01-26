@@ -3,7 +3,10 @@
     <!-- 顶部导航 -->
     <nav class="top-nav">
       <div class="nav-container">
-        <div class="logo">挂壁课堂</div>
+        <div class="nav-header">
+          <div class="logo">挂壁课堂</div>
+          <span class="login-btn" @click="goLogin">登录</span>
+        </div>
         <ul class="nav-list">
           <li 
             v-for="item in navItems" 
@@ -53,6 +56,10 @@ const list = homeCoursesData
 function goToLearn(pathId: string) {
   router.push(`/learn/${pathId}`)
 }
+
+function goLogin() {
+  router.push('/login')
+}
 </script>
 
 <style scoped>
@@ -76,6 +83,11 @@ function goToLearn(pathId: string) {
   align-items: center;
   padding: 12px 16px;
   gap: 24px;
+}
+.nav-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 .logo {
   font-size: 18px;
@@ -104,6 +116,13 @@ function goToLearn(pathId: string) {
   background: #f0f0f0;
   color: #333;
 }
+.login-btn {
+  font-size: 14px;
+  color: #4A90D9;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.login-btn:hover { text-decoration: underline; }
 
 /* 移动端 */
 @media (max-width: 768px) {
@@ -112,7 +131,10 @@ function goToLearn(pathId: string) {
     gap: 10px;
     padding: 10px 12px;
   }
-  .logo { text-align: center; }
+  .nav-header {
+    width: 100%;
+    justify-content: space-between;
+  }
   .nav-list { 
     display: grid;
     grid-template-columns: repeat(5, 1fr);

@@ -1,7 +1,7 @@
 // ========== 通用课程数据结构 ==========
 
 // Block类型
-export type BlockType = 'text' | 'heading' | 'code' | 'image' | 'video' | 'table' | 'tip' | 'list'
+export type BlockType = 'text' | 'heading' | 'code' | 'image' | 'video' | 'table' | 'tip' | 'warning' | 'quote' | 'list'
 
 // 内容块
 export interface Block {
@@ -11,6 +11,7 @@ export interface Block {
   items?: string[]           // list
   src?: string               // image/video
   language?: string          // code语言
+  filename?: string          // code文件名
   code?: string              // code内容
   headers?: string[]         // table表头
   rows?: string[][]          // table数据行
