@@ -143,7 +143,11 @@ const copiedId = ref('')
 
 function init() {
   if (currentCourse.value) {
+    // 确保当前课程在左侧展开（清除其他，只保留当前）
+    expandedCourses.value.clear()
     expandedCourses.value.add(currentCourse.value.id)
+    
+    // 自动选择第一个章节
     if (currentCourse.value.chapters.length) {
       activeChapter.value = currentCourse.value.chapters[0]
     }
@@ -152,7 +156,6 @@ function init() {
 
 onMounted(init)
 watch(courseId, () => {
-  expandedCourses.value.clear()
   activeChapter.value = null
   init()
 })

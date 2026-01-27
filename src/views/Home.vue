@@ -12,7 +12,7 @@
             v-for="item in navItems" 
             :key="item.id"
             class="nav-item"
-            @click="goToLearn(item.id)"
+            @click="goToPath(item.path)"
           >
             {{ item.name }}
           </li>
@@ -52,6 +52,10 @@ import { navItems, homeCoursesData } from '@/mock/courseData'
 
 const router = useRouter()
 const list = homeCoursesData
+
+function goToPath(path: string) {
+  router.push(path)
+}
 
 function goToLearn(pathId: string) {
   router.push(`/learn/${pathId}`)
