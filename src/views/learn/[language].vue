@@ -87,6 +87,9 @@
                 <div v-else-if="block.type === 'tip'" :id="'block-' + block.id" class="block-tip">💡 {{ block.content }}</div>
                 <div v-else-if="block.type === 'warning'" :id="'block-' + block.id" class="block-warning">⚠️ {{ block.content }}</div>
                 <blockquote v-else-if="block.type === 'quote'" :id="'block-' + block.id" class="block-quote">{{ block.content }}</blockquote>
+                <a v-else-if="block.type === 'download'" :id="'block-' + block.id" class="block-download" :href="block.url" download>
+                  💾 {{ block.text || '下载文件' }}
+                </a>
               </template>
             </div>
           </div>
@@ -161,6 +164,12 @@ watch(courseId, () => {
 })
 
 function toggleCourse(course: any) {
+  // 如果是交互式页面课程，直接跳转
+  if (course.interactivePage) {
+    router.push(course.interactivePage)
+    return
+  }
+  
   if (expandedCourses.value.has(course.id)) {
     expandedCourses.value.delete(course.id)
   } else {
@@ -428,6 +437,20 @@ function scrollToElement(id: string) {
   font-size: 14px;
   font-style: italic;
   background: #f9f9f9;
+}
+.block-download {
+  display: inline-block;
+  margin: 10px 0;
+  padding: 10px 20px;
+  background: #4A90D9;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.block-download:hover {
+  background: #3a7bc8;
 }
 
 .empty { text-align: center; padding: 60px; color: #999; }

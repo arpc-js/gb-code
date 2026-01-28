@@ -1,7 +1,7 @@
 // ========== 通用课程数据结构 ==========
 
 // Block类型
-export type BlockType = 'text' | 'heading' | 'code' | 'image' | 'video' | 'table' | 'tip' | 'warning' | 'quote' | 'list'
+export type BlockType = 'text' | 'heading' | 'code' | 'image' | 'video' | 'table' | 'tip' | 'warning' | 'quote' | 'list' | 'download'
 
 // 内容块
 export interface Block {
@@ -15,6 +15,8 @@ export interface Block {
   code?: string              // code内容
   headers?: string[]         // table表头
   rows?: string[][]          // table数据行
+  text?: string              // download按钮文字
+  url?: string               // download链接
 }
 
 // 知识点
@@ -40,6 +42,7 @@ export interface Course {
   title: string
   desc?: string
   icon?: string
+  interactivePage?: string   // 交互式页面路由（如AI面试）
   chapters: Chapter[]
 }
 

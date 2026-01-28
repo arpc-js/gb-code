@@ -3,6 +3,7 @@ import type { Course, NavItem } from '@/types/course'
 // 顶部导航
 export const navItems: NavItem[] = [
   { id: 'java', name: 'Java', path: '/learn/java-basic' },
+  { id: 'interview', name: '面试', path: '/learn/java-interview' },
   { id: 'python', name: 'Python', path: '/learn/python-basic' },
   { id: 'go', name: 'Go', path: '/learn/go-basic' },
   { id: 'frontend', name: '前端', path: '/learn/frontend-basic' },
@@ -2050,6 +2051,667 @@ export const courses: Course[] =[
     ]
   },
   {
+    "id": "java-interview",
+    "pathId": "interview",
+    "title": "面试八股文",
+    "desc": "Java面试必背知识点",
+    "icon": "📝",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "Java基础",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "Java基础面试题",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "heading",
+                "content": "1. ==和equals的区别？"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "==比较的是内存地址，equals比较的是内容。\n• 基本类型：==比较值\n• 引用类型：==比较地址，equals默认也比较地址，但String等类重写了equals比较内容"
+              },
+              {
+                "id": "b3",
+                "type": "heading",
+                "content": "2. String、StringBuilder、StringBuffer区别？"
+              },
+              {
+                "id": "b4",
+                "type": "text",
+                "content": "• String：不可变，每次修改都创建新对象\n• StringBuilder：可变，线程不安全，性能高\n• StringBuffer：可变，线程安全（synchronized），性能略低"
+              },
+              {
+                "id": "b5",
+                "type": "heading",
+                "content": "3. final关键字的作用？"
+              },
+              {
+                "id": "b6",
+                "type": "text",
+                "content": "• 修饰类：类不能被继承\n• 修饰方法：方法不能被重写\n• 修饰变量：变量不能被修改（引用类型是地址不能变）"
+              },
+              {
+                "id": "b7",
+                "type": "heading",
+                "content": "4. 接口和抽象类的区别？"
+              },
+              {
+                "id": "b8",
+                "type": "text",
+                "content": "• 接口：只能定义抽象方法，支持多继承\n• 抽象类：可以有普通方法和成员变量，只能单继承\n• Java8后接口可以有default方法"
+              },
+              {
+                "id": "b9",
+                "type": "heading",
+                "content": "5. 重载和重写的区别？"
+              },
+              {
+                "id": "b10",
+                "type": "text",
+                "content": "• 重载（Overload）：同一个类中，方法名相同，参数不同\n• 重写（Override）：子类重新实现父类方法，方法签名必须相同"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "集合框架",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "集合框架面试题",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "heading",
+                "content": "1. ArrayList和LinkedList的区别？"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "• ArrayList：基于数组，查询快O(1)，增删慢O(n)\n• LinkedList：基于双向链表，查询慢O(n)，增删快O(1)"
+              },
+              {
+                "id": "b3",
+                "type": "heading",
+                "content": "2. HashMap的底层实现？"
+              },
+              {
+                "id": "b4",
+                "type": "text",
+                "content": "JDK1.8：数组 + 链表 + 红黑树\n• 默认容量16，负载因子0.75\n• 链表长度>8且数组长度>=64时转红黑树\n• 红黑树节点<6时退化为链表"
+              },
+              {
+                "id": "b5",
+                "type": "heading",
+                "content": "3. HashMap和Hashtable的区别？"
+              },
+              {
+                "id": "b6",
+                "type": "text",
+                "content": "• HashMap：线程不安全，允许null键值\n• Hashtable：线程安全（synchronized），不允许null\n• 推荐用ConcurrentHashMap替代Hashtable"
+              },
+              {
+                "id": "b7",
+                "type": "heading",
+                "content": "4. ConcurrentHashMap线程安全原理？"
+              },
+              {
+                "id": "b8",
+                "type": "text",
+                "content": "JDK1.8：CAS + synchronized\n• put时如果桶为空，用CAS插入\n• 如果桶不为空，用synchronized锁住头节点\n• 放弃了分段锁，改为锁桶头节点"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "多线程",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "多线程面试题",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "heading",
+                "content": "1. 创建线程的方式？"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "• 继承Thread类\n• 实现Runnable接口\n• 实现Callable接口（有返回值）\n• 线程池ExecutorService"
+              },
+              {
+                "id": "b3",
+                "type": "heading",
+                "content": "2. 线程池核心参数？"
+              },
+              {
+                "id": "b4",
+                "type": "text",
+                "content": "• corePoolSize：核心线程数\n• maximumPoolSize：最大线程数\n• keepAliveTime：空闲线程存活时间\n• workQueue：任务队列\n• handler：拒绝策略"
+              },
+              {
+                "id": "b5",
+                "type": "heading",
+                "content": "3. synchronized和Lock的区别？"
+              },
+              {
+                "id": "b6",
+                "type": "text",
+                "content": "• synchronized：JVM层面，自动释放锁\n• Lock：API层面，需手动unlock\n• Lock更灵活：可中断、可超时、可公平锁"
+              },
+              {
+                "id": "b7",
+                "type": "heading",
+                "content": "4. volatile的作用？"
+              },
+              {
+                "id": "b8",
+                "type": "text",
+                "content": "• 保证可见性：一个线程修改，其他线程立即可见\n• 禁止指令重排序\n• 不保证原子性（i++不是原子操作）"
+              },
+              {
+                "id": "b9",
+                "type": "heading",
+                "content": "5. 线程状态有哪些？"
+              },
+              {
+                "id": "b10",
+                "type": "text",
+                "content": "NEW → RUNNABLE → BLOCKED/WAITING/TIMED_WAITING → TERMINATED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "Spring框架",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "Spring面试题",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "heading",
+                "content": "1. Spring IOC是什么？"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "IOC（控制反转）：将对象的创建和管理交给Spring容器\n• 不再手动new对象，而是通过注入获取\n• 降低类之间的耦合度"
+              },
+              {
+                "id": "b3",
+                "type": "heading",
+                "content": "2. Spring AOP是什么？"
+              },
+              {
+                "id": "b4",
+                "type": "text",
+                "content": "AOP（面向切面编程）：在不修改原代码的情况下增强功能\n• 常用场景：日志、事务、权限控制\n• 实现方式：JDK动态代理、CGLIB代理"
+              },
+              {
+                "id": "b5",
+                "type": "heading",
+                "content": "3. @Autowired和@Resource的区别？"
+              },
+              {
+                "id": "b6",
+                "type": "text",
+                "content": "• @Autowired：Spring注解，按类型注入\n• @Resource：JDK注解，默认按名称注入\n• 同类型多个Bean时，@Autowired需配合@Qualifier"
+              },
+              {
+                "id": "b7",
+                "type": "heading",
+                "content": "4. Spring Bean的作用域？"
+              },
+              {
+                "id": "b8",
+                "type": "text",
+                "content": "• singleton：单例（默认）\n• prototype：每次请求创建新实例\n• request/session/application：Web环境专用"
+              },
+              {
+                "id": "b9",
+                "type": "heading",
+                "content": "5. SpringBoot自动配置原理？"
+              },
+              {
+                "id": "b10",
+                "type": "text",
+                "content": "• @SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan\n• 加载META-INF/spring.factories中的自动配置类\n• 根据条件注解决定是否生效"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch5",
+        "title": "MySQL",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "MySQL面试题",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "heading",
+                "content": "1. 索引的作用和类型？"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "作用：加快查询速度\n• 主键索引：唯一且不为空\n• 唯一索引：值唯一，允许为空\n• 普通索引：无限制\n• 组合索引：多列组合"
+              },
+              {
+                "id": "b3",
+                "type": "heading",
+                "content": "2. 为什么用B+树而不是B树？"
+              },
+              {
+                "id": "b4",
+                "type": "text",
+                "content": "• B+树叶子节点存数据，非叶子只存索引\n• 叶子节点有链表，范围查询更快\n• 树更矮，磁盘IO更少"
+              },
+              {
+                "id": "b5",
+                "type": "heading",
+                "content": "3. 事务的ACID是什么？"
+              },
+              {
+                "id": "b6",
+                "type": "text",
+                "content": "• 原子性（Atomicity）：要么全成功，要么全失败\n• 一致性（Consistency）：事务前后数据一致\n• 隔离性（Isolation）：事务之间互不干扰\n• 持久性（Durability）：提交后永久保存"
+              },
+              {
+                "id": "b7",
+                "type": "heading",
+                "content": "4. 事务隔离级别？"
+              },
+              {
+                "id": "b8",
+                "type": "text",
+                "content": "• 读未提交：能读到未提交数据（脏读）\n• 读已提交：只读提交数据（不可重复读）\n• 可重复读：同一事务读取结果一致（MySQL默认）\n• 串行化：完全隔离，性能最差"
+              },
+              {
+                "id": "b9",
+                "type": "heading",
+                "content": "5. 如何优化慢SQL？"
+              },
+              {
+                "id": "b10",
+                "type": "text",
+                "content": "• EXPLAIN分析执行计划\n• 添加合适的索引\n• 避免 SELECT *\n• 避免在索引列上计算"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch6",
+        "title": "Redis",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "Redis面试题",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "heading",
+                "content": "1. Redis支持哪些数据类型？"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "• String：字符串，最常用\n• Hash：哈希表，存对象\n• List：列表，消息队列\n• Set：集合，去重\n• ZSet：有序集合，排行榜"
+              },
+              {
+                "id": "b3",
+                "type": "heading",
+                "content": "2. 缓存穿透、击穿、雪崩？"
+              },
+              {
+                "id": "b4",
+                "type": "text",
+                "content": "• 穿透：查询不存在的数据，缓存和数据库都没有 → 布隆过滤器\n• 击穿：热点key过期，大量请求直接打到数据库 → 互斥锁/永不过期\n• 雪崩：大量key同时过期 → 过期时间加随机值"
+              },
+              {
+                "id": "b5",
+                "type": "heading",
+                "content": "3. Redis持久化方式？"
+              },
+              {
+                "id": "b6",
+                "type": "text",
+                "content": "• RDB：快照，定时备份，恢复快，可能丢失数据\n• AOF：追加日志，数据更安全，文件大\n• 生产环境建议两者都开启"
+              },
+              {
+                "id": "b7",
+                "type": "heading",
+                "content": "4. Redis为什么这么快？"
+              },
+              {
+                "id": "b8",
+                "type": "text",
+                "content": "• 内存操作，读写速度快\n• 单线程，避免上下文切换\n• IO多路复用，一个线程处理多个连接"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "java-interview-guide",
+    "pathId": "interview",
+    "title": "面试教程",
+    "desc": "项目介绍、话术、简历模板",
+    "icon": "🎯",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "面试介绍",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "面试流程概述",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "面试一般分为以下几个环节：\n1、简历筛选\n2、技术面试（一面/二面）\n3、HR面试\n4、Offer沟通"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "技术面试内容：\n• 自我介绍\n• 项目介绍\n• 八股文拷问\n• 手写代码\n• 反问环节"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "项目介绍",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "商城项目介绍",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "项目名称：XX商城\n技术栈：SpringBoot + MyBatis + SQLite/MySQL + JWT"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "核心功能："
+              },
+              {
+                "id": "b3",
+                "type": "list",
+                "items": [
+                  "JWT登录：用户名密码登录，颁发JWT令牌，拦截器统一验证",
+                  "创建订单：接收商品列表，计算总价，写入数据库",
+                  "支付回调：微信支付回调通知，更新订单状态",
+                  "减库存：乐观锁防止超卖，UPDATE stock SET num=num-1 WHERE id=? AND num>0"
+                ]
+              },
+              {
+                "id": "b4",
+                "type": "text",
+                "content": "主要表结构：\n• users表：用户信息\n• orders表：订单信息\n• products表：商品信息、库存"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "JWT登录详解",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "面试官问：你们项目登录怎么实现的？"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "回答要点：\n1、用户输入用户名密码\n2、后端查询数据库验证\n3、验证成功后，生成JWT令牌返回前端\n4、前端保存token，每次请求在Header中携带\n5、后端拦截器统一验证token有效性"
+              },
+              {
+                "id": "b3",
+                "type": "text",
+                "content": "JWT优势：\n• 无状态，服务器不用存Session\n• 跨端支持，APP/小程序/Web都能用\n• 扩展性好，分布式架构友好"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "减库存乐观锁详解",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "面试官问：你们怎么防止超卖的？"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "回答要点：\n我们用乐观锁解决超卖问题。\n在UPDATE语句中加上WHERE num>0条件，\n只有库存大于0才能减库存。"
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "sql",
+                "filename": "减库存SQL",
+                "code": "-- 乐观锁减库存\nupdate products set stock = stock - 1\nwhere id = #{productId} and stock > 0;"
+              },
+              {
+                "id": "b4",
+                "type": "text",
+                "content": "返回影响行数=0表示库存不足，下单失败。\n这样即使并发请求，数据库也能保证不会超卖。"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "支付回调详解",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "面试官问：支付流程是怎么实现的？"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "回答要点：\n1、用户点击支付，后端调用微信支付API创建订单\n2、返回支付参数，前端调起微信支付\n3、用户支付完成后，微信服务器回调我们的接口\n4、回调接口验证签名，更新订单状态为已支付"
+              },
+              {
+                "id": "b3",
+                "type": "text",
+                "content": "注意事项：\n• 回调接口要做幂等处理，防止重复回调\n• 必须验证微信签名，防止伪造请求"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "面试话术",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "自我介绍话术",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "自我介绍模板："
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "面试官您好，我叫XXX，毕业于XX学校XX专业。\n\n我主要使用Java进行后端开发，熟悉SpringBoot、MyBatis等框架。\n\n之前做过一个商城项目，主要负责用户登录、订单模块的开发。\n\n以上是我的自我介绍，谢谢。"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "控制在1分钟内，突出技术栈和项目经验。"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "项目介绍话术",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "项目介绍模板："
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "这个项目是一个电商商城系统，技术栈是SpringBoot + MyBatis + MySQL。\n\n我主要负责用户模块和订单模块：\n• 用户模块：实现了JWT登录，拦截器统一验证\n• 订单模块：实现了下单、支付回调、乐观锁减库存\n\n项目中遇到的难点是并发减库存的超卖问题，\n最终用数据库乐观锁解决了这个问题。"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "反问环节话术",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "面试官问：你有什么问题想问我？"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "推荐问题：\n• 请问团队目前的技术栈是什么？\n• 如果我入职，主要负责哪个模块？\n• 团队的开发流程是怎样的？"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "不要问薪资、加班等敏感问题，显得不够专业。"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "简历模板",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "简历写作要点",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "简历结构：\n1、基本信息（姓名、电话、邮箱）\n2、技术栈（Java/SpringBoot/MyBatis/MySQL）\n3、项目经验（项目名称、技术栈、职责、亮点）\n4、教育背景"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "写作要点：\n• 突出技术栈，和JD匹配\n• 项目用STAR法则（情境-任务-行动-结果）\n• 突出量化成果（优化了XX%、支撑XX并发）\n• 控制在1页，重点突出"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "简历是面试的引导，写什么就问什么，突出自己擅长的。"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "下载简历模板",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "点击下方按钮下载简历模板（PDF格式）："
+              },
+              {
+                "id": "b2",
+                "type": "download",
+                "text": "下载简历模板",
+                "url": "/my.pdf"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "模板仅供参考，请根据自身情况修改。"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ai-mock-interview",
+    "pathId": "interview",
+    "title": "AI模拟面试",
+    "desc": "语音提问，AI实时回答",
+    "icon": "🤖",
+    "interactivePage": "/aiinterview",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "开始面试",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "进入AI模拟面试",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "🎙️ 语音提问，AI实时回答\n\n功能介绍：\n• 点击录音按钮，说出你的面试问题\n• AI自动识别问题并给出简洁答案\n• 支持Java基础、集合、多线程、Spring、MySQL、Redis等高频面试题"
+              },
+              {
+                "id": "b2",
+                "type": "tip",
+                "content": "点击上方“开始面试”按钮进入AI模拟面试页面"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "python-basic",
     "pathId": "python",
     "title": "Python基础",
@@ -2102,21 +2764,1748 @@ export const courses: Course[] =[
   {
     "id": "frontend-basic",
     "pathId": "frontend",
-    "title": "前端基础",
-    "icon": "💻",
+    "title": "HTML基础",
+    "desc": "写商品文章页面",
+    "icon": "🌐",
     "chapters": [
       {
         "id": "ch1",
-        "title": "课程介绍",
+        "title": "第一个网页",
         "lessons": [
           {
             "id": "l1",
-            "title": "概述",
+            "title": "网页是什么",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "课程建设中..."
+                "content": "网页 = HTML文件，浏览器打开后渲染显示。\n\n学习目标：写一个商品详情页（文字、图片、下单表单）"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "创建HTML文件",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "新建 index.html 文件："
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "filename": "index.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <title></title>\n</head>\n<body>\n    第一个网页,我们即将做一个商城网站\n</body>\n</html>"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "双击html文件即可在浏览器中打开"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "商品文章内容",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "标题和段落",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "html",
+                "code": "<h1>iPhone 15 Pro</h1>\n<p>这是一段商品介绍文字</p>\n<p>价格：¥9999</p>"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "• h1-h6：标题，数字越大字越小\n• p：段落，普通文字"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "链接",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "html",
+                "code": "<a href=\"https://taobao.com\">查看更多商品</a>\n<a href=\"order.html\">去下单</a>"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "a标签创建链接，href指定跳转地址"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "图片",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "html",
+                "code": "<img src=\"iphone.jpg\" alt=\"商品图片\">\n<img src=\"https://xxx.com/img.jpg\" alt=\"网络图片\">"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "• src：图片地址（本地或网络）\n• alt：图片加载失败时的文字"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "列表",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "html",
+                "code": "<ul>\n    <li>128G ¥7999</li>\n    <li>256G ¥8999</li>\n    <li>512G ¥9999</li>\n</ul>"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "ul无序列表，li列表项"
+              }
+            ]
+          },
+          {
+            "id": "l5",
+            "title": "表格",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "同样的商品规格，用表格展示更清晰："
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "code": "<table>\n    <tr>\n        <th>容量</th>\n        <th>价格</th>\n    </tr>\n    <tr>\n        <td>128G</td>\n        <td>¥7999</td>\n    </tr>\n    <tr>\n        <td>256G</td>\n        <td>¥8999</td>\n    </tr>\n    <tr>\n        <td>512G</td>\n        <td>¥9999</td>\n    </tr>\n</table>"
+              },
+              {
+                "id": "b3",
+                "type": "text",
+                "content": "• table：表格容器\n• tr：表格行\n• th：表头单元格（加粗）\n• td：普通单元格"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "下单表单",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "表单结构",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "html",
+                "code": "<form>\n    <input type=\"text\" placeholder=\"收货人\">\n    <input type=\"text\" placeholder=\"收货地址\">\n    <input type=\"number\" placeholder=\"购买数量\">\n    <button type=\"submit\">立即下单</button>\n</form>"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "• form：表单容器\n• input：输入框\n• button：按钮"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "输入框类型",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "table",
+                "headers": ["type", "用途", "示例"],
+                "rows": [
+                  ["text", "普通文字", "姓名、地址"],
+                  ["number", "数字", "数量、价格"],
+                  ["password", "密码", "登录密码"],
+                  ["tel", "电话", "手机号"]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "div和span",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "div块级容器",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "div是块级元素，独占一行，用来划分页面区域"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "code": "<div>商品图片区域</div>\n<div>商品信息区域</div>\n<div>下单表单区域</div>"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "div本身没样式，配合CSS使用"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "span行内元素",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "span是行内元素，不换行，用来包裹一小段文字"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "code": "<p>价格：<span>¥9999</span></p>\n<p>库存：<span>100</span>件</p>"
+              },
+              {
+                "id": "b3",
+                "type": "text",
+                "content": "span常用于给部分文字加样式（如价格红色）"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "div和span区别",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "html",
+                "code": "<!-- div独占一行 -->\n<div>第一块</div>\n<div>第二块</div>\n\n<!-- span不换行 -->\n<span>同一行</span>\n<span>同一行</span>"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["", "div", "span"],
+                "rows": [
+                  ["类型", "块级", "行内"],
+                  ["换行", "独占一行", "不换行"],
+                  ["用途", "划分区域", "包裹文字"]
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "css-basic",
+    "pathId": "frontend",
+    "title": "CSS样式",
+    "desc": "美化页面+Flex布局",
+    "icon": "🎨",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "引入CSS",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "style标签",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "html",
+                "code": "<head>\n    <style>\n        h1 { color: red; }\n    </style>\n</head>"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "在style标签内写CSS样式"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "选择器",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": "/* 标签选择器 */\nh1 { color: red; }\n\n/* class选择器（最常用） */\n.price { color: #f00; }\n\n/* id选择器 */\n#title { font-size: 20px; }"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "code": "<h1 id=\"title\">iPhone</h1>\n<p class=\"price\">¥9999</p>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "文字样式",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "颜色和字号",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": ".title {\n    color: #333;         /* 颜色 */\n    font-size: 24px;     /* 字号 */\n    font-weight: bold;   /* 加粗 */\n}\n.desc {\n    color: #666;\n    font-size: 14px;\n    line-height: 1.6;    /* 行高 */\n}"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "文字对齐",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": ".center {\n    text-align: center;  /* 居中 */\n}\n.right {\n    text-align: right;   /* 右对齐 */\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "盒子模型",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "宽高",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": ".card {\n    width: 200px;        /* 宽度 */\n    height: 300px;       /* 高度 */\n    width: 100%;         /* 百分比宽度 */\n}"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "内边距和外边距",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": ".card {\n    padding: 16px;       /* 内边距：内容到边框 */\n    margin: 12px;        /* 外边距：元素之间 */\n    \n    /* 分别设置四个方向 */\n    padding: 10px 20px;  /* 上下10 左右20 */\n    margin-top: 20px;    /* 只设置上边距 */\n}"
+              },
+              {
+                "id": "b2",
+                "type": "tip",
+                "content": "padding向内擑，margin向外推"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "背景和边框",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": ".card {\n    background: #fff;       /* 背景色 */\n    border: 1px solid #eee; /* 边框 */\n    border-radius: 8px;     /* 圆角 */\n    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* 阴影 */\n}"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "显示和隐藏",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": ".hidden {\n    display: none;       /* 隐藏元素 */\n}\n.show {\n    display: block;      /* 显示为块级 */\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "Flex布局",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "开启Flex",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "Flex是最常用的布局方式"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "css",
+                "code": ".container {\n    display: flex;    /* 开启Flex布局 */\n}"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "row水平排列",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "默认flex-direction: row，子元素水平排列"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "css",
+                "code": "/* 导航栏：logo左边，菜单右边 */\n.nav {\n    display: flex;\n    flex-direction: row;            /* 水平（默认） */\n    justify-content: space-between; /* 两端对齐 */\n    align-items: center;            /* 垂直居中 */\n}"
+              },
+              {
+                "id": "b3",
+                "type": "text",
+                "content": "justify-content常用值：\n• flex-start 左对齐\n• center 居中\n• flex-end 右对齐\n• space-between 两端对齐"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "column垂直排列",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "flex-direction: column，子元素垂直排列"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "css",
+                "code": "/* 商品详情：图片、标题、价格上下排列 */\n.product-detail {\n    display: flex;\n    flex-direction: column;  /* 垂直排列 */\n    align-items: center;     /* 水平居中 */\n    gap: 16px;               /* 间距 */\n}"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "商品列表布局",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": "/* 商品卡片水平排列，自动换行 */\n.product-list {\n    display: flex;\n    flex-wrap: wrap;  /* 换行 */\n    gap: 16px;        /* 间距 */\n}\n.product-card {\n    width: 200px;\n}"
+              }
+            ]
+          },
+          {
+            "id": "l5",
+            "title": "元素占比",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": "/* 侧边栏固定宽度，内容区占满剩余 */\n.sidebar {\n    width: 200px;\n}\n.content {\n    flex: 1;  /* 占满剩余空间 */\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch5",
+        "title": "常用样式",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "鼠标样式",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": ".btn {\n    cursor: pointer;     /* 鼠标手型 */\n}\n.btn:hover {\n    background: #0066cc; /* 鼠标悬停样式 */\n}"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "图片自适应",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": "img {\n    width: 100%;         /* 宽度占满容器 */\n    height: auto;        /* 高度自动 */\n}"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "按钮样式",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "css",
+                "code": ".btn {\n    background: #007bff;\n    color: #fff;\n    border: none;\n    padding: 10px 20px;\n    border-radius: 4px;\n    cursor: pointer;\n}\n.btn:hover {\n    background: #0056b3;\n}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "js-basic",
+    "pathId": "frontend",
+    "title": "JavaScript",
+    "desc": "计算+存储+事件+异步",
+    "icon": "⚡",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "计算",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "第一个程序",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "html",
+                "code": "<script type=\"module\">\n    console.log(10 + 3)  // 输出13\n</script>"
+              },
+              {
+                "id": "b2",
+                "type": "tip",
+                "content": "F12打开控制台查看输出"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "算术运算",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "对数值进行加减乘除运算"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["运算符", "含义", "示例", "结果"],
+                "rows": [
+                  ["+", "加法", "10 + 3", "13"],
+                  ["-", "减法", "10 - 3", "7"],
+                  ["*", "乘法", "10 * 3", "30"],
+                  ["/", "除法", "10 / 3", "3.33"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "code": "console.log(10 + 3)   // 13\nconsole.log(10 - 3)   // 7\nconsole.log(10 * 3)   // 30\nconsole.log(10 / 3)   // 3.33"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "比较运算",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "比较两个值的大小关系，返回布尔值。\n\n布尔值(boolean)：只有两种取值——true(真)和false(假)。"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["运算符", "含义", "示例", "结果"],
+                "rows": [
+                  [">", "大于", "5 > 3", "true"],
+                  ["<", "小于", "5 < 3", "false"],
+                  ["==", "等于", "5 == 3", "false"],
+                  ["!=", "不等于", "5 != 3", "true"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "code": "console.log(5 > 3)    // true\nconsole.log(5 < 3)    // false\nconsole.log(5 == 3)   // false\nconsole.log(5 != 3)   // true"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "逻辑运算",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "将两个比较计算的结果组合起来，进行逻辑运算"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["名称", "运算符", "规则", "示例"],
+                "rows": [
+                  ["与(并且)", "&&", "两边都满足才为真", "5>3 && 2>1 // true"],
+                  ["或(或者)", "||", "满足一个就为真", "5>3 || 1>2 // true"],
+                  ["非(取反)", "!", "真变假，假变真", "!(5>3) // false"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "code": "// 与：必须同时满足\nconsole.log((10 > 5) && (3 < 1))  // false\n\n// 或：满足其中一个即可\nconsole.log((10 > 5) || (3 < 1))  // true\n\n// 非：结果取反\nconsole.log(!(10 > 5))            // false"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "存储",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "变量",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "变量用来存储数据\n\n定义语法：let 变量名 = 值\n\n业务模拟：你在商店买了2元牛奶和5元面包,请计算总价"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "let total = 0          // 定义变量，存储总价\nconsole.log(total)     // 输出0\n\ntotal = total + 2      // 计算牛奶价格，存储到总价\nconsole.log(total)     // 输出2\n\ntotal = total + 5      // 计算面包价格，存储到总价\nconsole.log(total)     // 输出7"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "数据类型",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "数据有不同类型：数字、字符串、布尔等"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["类型", "含义", "定义示例"],
+                "rows": [
+                  ["数字", "整数或小数", "let price = 9.9"],
+                  ["字符串", "文本内容", "let name = '张三'"],
+                  ["布尔", "真/假", "let isPaid = true"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "text",
+                "content": "业务模拟：张三买了3袋2.5元牛奶和2袋5.5元面包，请算账并记账"
+              },
+              {
+                "id": "b4",
+                "type": "code",
+                "language": "javascript",
+                "code": "let userName = '张三'       // 保存用户姓名\n\nlet spu1 = '牛奶'            // 商品名称\nlet spu1_price = 2.5         // 价格\nlet spu1_count = 3           // 数量\n\nlet spu2 = '面包'\nlet spu2_price = 5.5\nlet spu2_count = 2\n\nlet total = spu1_price * spu1_count + spu2_price * spu2_count\nlet isPaid = true            // 支付状态\n\nconsole.log('购物车:', spu1, spu1_price + '元', spu2, spu2_price + '元')\nconsole.log('总价:', total + '元')\nconsole.log('已支付:', isPaid)"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "对象",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "上面代码太乱！每个商品要定义3个变量，10个商品就是30个变量。\n\n解决方案：用对象{}把商品的名称、价格、数量打包成一个整体"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "let spu1 = { name: '牛奶', price: 2.5, count: 3 }\nlet spu2 = { name: '面包', price: 5.5, count: 2 }\n\nlet total = spu1.price * spu1.count + spu2.price * spu2.count\n\nconsole.log('购物清单：')\nconsole.log(spu1.name + ' x ' + spu1.count + ' = ' + spu1.price * spu1.count + '元')\nconsole.log(spu2.name + ' x ' + spu2.count + ' = ' + spu2.price * spu2.count + '元')\nconsole.log('总价：' + total + '元')"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "数组",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "上面只能存固定数量的商品，如果用户买了50个商品怎么办？\n\n解决方案：用数组[]存储多个商品对象"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "let cart = [\n    { name: '牛奶', price: 2.5, count: 3 },\n    { name: '面包', price: 5.5, count: 2 },\n    { name: '可乐', price: 3.0, count: 5 }\n]\n\nconsole.log('购物清单：')\nlet total = 0\nfor (let spu of cart) {\n    let subtotal = spu.price * spu.count\n    console.log(spu.name + ' x ' + spu.count + ' = ' + subtotal + '元')\n    total = total + subtotal\n}\nconsole.log('总价：' + total + '元')\nconsole.log('共' + cart.length + '件商品')"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "流程控制",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "if判断",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "根据条件执行不同的代码"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "let stock = 10\n\n// 如果有货\nif (stock > 0) {\n    console.log('有货，可下单')\n}"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "if-else",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "两种情况二选一"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "let stock = 0\n\nif (stock > 0) {\n    console.log('有货')\n} else {\n    console.log('无货')  // 执行这行\n}"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "for循环",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "重复执行代码N次"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "// 输出1到5\nfor (let i = 1; i <= 5; i++) {\n    console.log(i)\n}\n// 1, 2, 3, 4, 5"
+              },
+              {
+                "id": "b3",
+                "type": "text",
+                "content": "i=1：从1开始\ni<=5：到5结束\ni++：每次加1"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "遍历数组",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "用for...of遍历数组更简洁"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "let cart = [\n    { name: 'iPhone', price: 9999 },\n    { name: '小米', price: 3999 }\n]\n\nfor (let spu of cart) {\n    console.log(spu.name, spu.price)\n}\n// iPhone 9999\n// 小米 3999"
+              },
+              {
+                "id": "b3",
+                "type": "text",
+                "content": "每次循环spu就是数组中的一个元素"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "事件",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "onclick点击",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "用户点击时触发"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "code": "<button onclick=\"order()\">立即下单</button>\n\n<script>\nfunction order() {\n    alert('下单成功!')\n}\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "oninput输入",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "用户输入时实时触发"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "code": "<input oninput=\"search(this.value)\" placeholder=\"搜索商品\">\n\n<script>\nfunction search(keyword) {\n    console.log('搜索:', keyword)\n}\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "onsubmit提交",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "表单提交时触发"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "code": "<form onsubmit=\"login(); return false\">\n    <input id=\"username\" placeholder=\"用户名\">\n    <input id=\"password\" type=\"password\" placeholder=\"密码\">\n    <button type=\"submit\">登录</button>\n</form>\n\n<script>\nfunction login() {\n    let user = document.getElementById('username').value\n    let pwd = document.getElementById('password').value\n    console.log('登录:', user, pwd)\n}\n</script>"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "return false 阻止页面刷新"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "计算总价案例",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "html",
+                "code": "<p>单价: <span id=\"price\">9999</span></p>\n<input id=\"count\" type=\"number\" value=\"1\">\n<button onclick=\"calc()\">计算总价</button>\n<p>总价: <span id=\"total\">9999</span></p>\n\n<script>\nfunction calc() {\n    let price = 9999\n    let count = document.getElementById('count').value\n    let total = price * count\n    document.getElementById('total').innerText = total\n}\n</script>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch5",
+        "title": "本地存储",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "localStorage",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "localStorage在浏览器本地存储，关闭浏览器也不丢失"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "// 存储\nlocalStorage.setItem('token', 'xxx123')\n\n// 读取\nlet token = localStorage.getItem('token')\n\n// 删除\nlocalStorage.removeItem('token')"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "存储JSON对象",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "code": "// 存储对象需转字符串\nlet user = { id: 1, name: '张三' }\nlocalStorage.setItem('user', JSON.stringify(user))\n\n// 读取时转回对象\nlet saved = JSON.parse(localStorage.getItem('user'))\nconsole.log(saved.name)  // '张三'"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch6",
+        "title": "同步异步",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "定义异步函数",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "在function前加async关键字"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "// 定义异步函数\nasync function getData() {\n    return '数据'\n}"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "不等待的效果",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "直接调用异步函数，不会等待结果，继续执行下一行"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "console.log('1')\ngetData()  // 调用后不等待，继续执行\nconsole.log('2')\n// 输出顺序: 1, 2"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "await等待结果",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "await等待异步函数执行完毕，拿到结果后才继续"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "console.log('1')\nlet data = await getData()  // 等待结果\nconsole.log(data)           // '数据'\nconsole.log('2')\n// 输出顺序: 1, 数据, 2"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "script type=\"module\"才能直接用await"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "Promise和.then",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "异步函数返回值是Promise类型，可以用.then或await获取结果"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "// .then方式（了解即可）\ngetData().then(data => {\n    console.log(data)  // '数据'\n})\n\n// await方式（推荐）\nlet data = await getData()\nconsole.log(data)  // '数据'"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch7",
+        "title": "fetch请求",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "GET请求",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "fetch用于向服务器发请求，它是异步函数"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "// GET请求 - 查询商品列表\nlet res = await fetch('/api/products')\nlet data = await res.json()  // 解析JSON\nconsole.log(data)"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "GET带参数",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "code": "// GET请求参数放在URL上\nlet productId = 123\nlet res = await fetch(`/api/product?id=${productId}`)\nlet product = await res.json()"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "POST提交JSON",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "code": "// POST请求 - 提交订单\nlet order = {\n    productId: 1,\n    count: 2,\n    address: '北京市xxx'\n}\n\nlet res = await fetch('/api/order', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(order)\n})\nlet result = await res.json()\nconsole.log(result)"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "完整示例",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "html",
+                "code": "<button onclick=\"loadProducts()\">加载商品</button>\n<div id=\"list\"></div>\n\n<script type=\"module\">\nasync function loadProducts() {\n    let res = await fetch('/api/products')\n    let products = await res.json()\n    \n    let html = ''\n    for (let p of products) {\n        html += `<div>${p.name} - ¥${p.price}</div>`\n    }\n    document.getElementById('list').innerHTML = html\n}\n</script>"
+              },
+              {
+                "id": "b2",
+                "type": "tip",
+                "content": "学完JS基础，即可用Vue更高效地开发前端"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch8",
+        "title": "DOM操作",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "获取元素",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "code": "// 通过id获取\nlet title = document.getElementById('title')\n\n// 通过选择器获取\nlet price = document.querySelector('.price')"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "修改内容",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "code": "// 修改文字\ndocument.getElementById('price').innerText = '¥19998'\n\n// 修改样式\ndocument.getElementById('btn').style.background = 'red'"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "痛点演示",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "问题：每次数据变化，都要手动更新页面，非常麻烦！"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "code": "<p>数量: <span id=\"count\">1</span></p>\n<button onclick=\"add()\">加一</button>\n\n<script>\nlet count = 1\n\nfunction add() {\n    count++  // ① 数据变了\n    // ② 还要手动更新页面！\n    document.getElementById('count').innerText = count\n}\n</script>"
+              },
+              {
+                "id": "b3",
+                "type": "warning",
+                "content": "每次数据变化都要写一遍 DOM 更新代码，复杂页面会非常繁琐"
+              },
+              {
+                "id": "b4",
+                "type": "tip",
+                "content": "Vue解决了这个问题：数据变化 → 页面自动更新"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "vue-basic",
+    "pathId": "frontend",
+    "title": "Vue开发",
+    "desc": "响应式+组件+路由",
+    "icon": "🗼",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "为什么用Vue",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "JS的痛点",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "JS原生开发：每次数据变化，都要手动更新DOM"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "code": "<!DOCTYPE html>\n<html>\n<body>\n  <p id=\"count\">1</p>\n  <button onclick=\"add()\">加一</button>\n  <script>\n    let count = 1\n    function add() {\n      count++\n      document.getElementById('count').innerText = count\n    }\n  </script>\n</body>\n</html>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "Vue解决痛点",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "Vue响应式：数据变化 → 页面自动更新"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "html",
+                "code": "<!DOCTYPE html>\n<html>\n<body>\n  <script src=\"https://unpkg.com/vue@3/dist/vue.global.js\"></script>\n  <div id=\"app\">\n    <p>{{ count }}</p>\n    <button @click=\"count++\">+1</button>\n  </div>\n  <script>\n    const { createApp, ref } = Vue\n    createApp({\n      setup: () => ({ count: ref(1) })\n    }).mount('#app')\n  </script>\n</body>\n</html>"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "创建工程化项目",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "bash",
+                "code": "npm create vite@latest my-shop -- --template vue\ncd my-shop\nnpm install\nnpm run dev"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "my-shop/\n├── src/\n│   ├── App.vue\n│   └── main.js\n└── package.json"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "指令",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "{{}}插值",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <h1>{{ title }}</h1>\n  <p>价格: {{ price }}</p>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst title = ref('iPhone 15')\nconst price = ref(9999)\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "v-bind和:缩写",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <img :src=\"imgUrl\">\n  <a :href=\"link\">查看详情</a>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst imgUrl = ref('/product.jpg')\nconst link = ref('/detail/1')\n</script>"
+              },
+              {
+                "id": "b2",
+                "type": "tip",
+                "content": ":src 等于 v-bind:src"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "ref响应式",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "ref：数字/字符串"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <p>数量: {{ count }}</p>\n  <button @click=\"count++\">+1</button>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst count = ref(1)\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "reactive响应式",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "reactive：对象/数组"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <p>商品: {{ product.name }} - {{ product.price }}元</p>\n  <button @click=\"product.price -= 100\">降价</button>\n</template>\n\n<script setup>\nimport { reactive } from 'vue'\nconst product = reactive({ name: 'iPhone', price: 9999 })\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l5",
+            "title": "v-model双向绑定",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <input v-model=\"address\" placeholder=\"收货地址\">\n  <p>地址: {{ address }}</p>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst address = ref('')\n</script>"
+              },
+              {
+                "id": "b2",
+                "type": "tip",
+                "content": "输入框改 → 数据变 → 页面变"
+              }
+            ]
+          },
+          {
+            "id": "l6",
+            "title": "@click事件缩写",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <button @click=\"handleClick\">点击</button>\n  <button @click=\"count++\">+1</button>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst count = ref(0)\nfunction handleClick() {\n  alert('点击了')\n}\n</script>"
+              },
+              {
+                "id": "b2",
+                "type": "tip",
+                "content": "@click 等于 v-on:click"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "条件渲染",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "v-if",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <p v-if=\"stock > 0\">有货</p>\n  <p v-else>无货</p>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst stock = ref(10)\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "v-show",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <p v-show=\"visible\">显示内容</p>\n  <button @click=\"visible = !visible\">切换</button>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst visible = ref(true)\n</script>"
+              },
+              {
+                "id": "b2",
+                "type": "tip",
+                "content": "v-if删除元素，v-show只隐藏(display:none)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "列表渲染",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "v-for",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <div v-for=\"item in products\" :key=\"item.id\">\n    <h3>{{ item.name }}</h3>\n    <p>{{ item.price }}</p>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst products = ref([\n  { id: 1, name: 'iPhone', price: 9999 },\n  { id: 2, name: '小米', price: 3999 }\n])\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "带索引的v-for",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <div v-for=\"(item, index) in products\" :key=\"item.id\">\n    <p>{{ index + 1 }}. {{ item.name }}</p>\n  </div>\n</template>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch5",
+        "title": "组件化",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "创建组件",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "ProductCard.vue",
+                "code": "<template>\n  <div class=\"card\">\n    <h3>{{ name }}</h3>\n    <p>{{ price }}</p>\n  </div>\n</template>\n\n<script setup>\ndefineProps(['name', 'price'])\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "使用组件",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "App.vue",
+                "code": "<template>\n  <ProductCard name=\"iPhone\" :price=\"9999\" />\n  <ProductCard name=\"小米\" :price=\"3999\" />\n</template>\n\n<script setup>\nimport ProductCard from './ProductCard.vue'\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "组件传值props",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "父组件 → 子组件：通过props传数据"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "vue",
+                "filename": "Child.vue",
+                "code": "<template>\n  <p>收到: {{ msg }}</p>\n</template>\n\n<script setup>\ndefineProps(['msg'])\n</script>"
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "vue",
+                "filename": "Parent.vue",
+                "code": "<template>\n  <Child msg=\"你好\" />\n</template>"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "子传父emit",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "子组件 → 父组件：通过emit发事件"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "vue",
+                "filename": "Child.vue",
+                "code": "<template>\n  <button @click=\"emit('add')\">加一</button>\n</template>\n\n<script setup>\nconst emit = defineEmits(['add'])\n</script>"
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "vue",
+                "filename": "Parent.vue",
+                "code": "<template>\n  <p>{{ count }}</p>\n  <Child @add=\"count++\" />\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst count = ref(0)\n</script>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch6",
+        "title": "路由",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "安装路由",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "bash",
+                "code": "npm install vue-router"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "配置路由",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "filename": "router.js",
+                "code": "import { createRouter, createWebHistory } from 'vue-router'\nimport Home from './views/Home.vue'\nimport Detail from './views/Detail.vue'\n\nexport const router = createRouter({\n  history: createWebHistory(),\n  routes: [\n    { path: '/', component: Home },\n    { path: '/detail', component: Detail }\n  ]\n})"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "路由跳转",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "code": "<template>\n  <router-link to=\"/\">首页</router-link>\n  <router-link to=\"/detail?id=1\">商品详情</router-link>\n  <router-view />\n</template>"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "页面传值",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "query参数：/detail?id=1"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "vue",
+                "filename": "Detail.vue",
+                "code": "<template>\n  <p>商品ID: {{ id }}</p>\n</template>\n\n<script setup>\nimport { useRoute } from 'vue-router'\nconst route = useRoute()\nconst id = route.query.id\n</script>"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "route.query.参数名 获取查询参数"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "project-practice",
+    "pathId": "frontend",
+    "title": "项目实战",
+    "desc": "商城首页+详情+登录",
+    "icon": "🛍",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "创建项目",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "Vite初始化",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "bash",
+                "code": "npm create vite@latest my-shop -- --template vue\ncd my-shop\nnpm install\nnpm install vue-router\nnpm run dev"
+              },
+              {
+                "id": "b2",
+                "type": "tip",
+                "content": "访问http://localhost:5173查看"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "项目结构",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "my-shop/\n├── src/\n│   ├── views/       页面组件\n│   ├── router/      路由配置\n│   ├── App.vue      根组件\n│   └── main.js      入口\n└── package.json"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "商城首页",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "商品列表",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "views/Home.vue",
+                "code": "<template>\n  <h1>商城首页</h1>\n  <div v-for=\"p in products\" :key=\"p.id\" @click=\"goDetail(p.id)\">\n    <h3>{{ p.name }}</h3>\n    <p>¥{{ p.price }}</p>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nimport { useRouter } from 'vue-router'\n\nconst router = useRouter()\nconst products = ref([\n  { id: 1, name: 'iPhone 15', price: 9999 },\n  { id: 2, name: '小米 14', price: 3999 }\n])\n\nfunction goDetail(id) {\n  router.push(`/detail/${id}`)\n}\n</script>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "商品详情",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "详情页",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "views/Detail.vue",
+                "code": "<template>\n  <h1>{{ product.name }}</h1>\n  <p>价格: ¥{{ product.price }}</p>\n  <button @click=\"addCart\">加入购物车</button>\n</template>\n\n<script setup>\nimport { ref, onMounted } from 'vue'\nimport { useRoute } from 'vue-router'\n\nconst route = useRoute()\nconst product = ref({})\n\nonMounted(async () => {\n  let id = route.params.id\n  let res = await fetch(`/api/product?id=${id}`)\n  product.value = await res.json()\n})\n\nfunction addCart() {\n  alert('已加入购物车')\n}\n</script>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "登录认证",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "登录页",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "views/Login.vue",
+                "code": "<template>\n  <h1>登录</h1>\n  <input v-model=\"username\" placeholder=\"用户名\">\n  <input v-model=\"password\" type=\"password\" placeholder=\"密码\">\n  <button @click=\"login\">登录</button>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nimport { useRouter } from 'vue-router'\n\nconst router = useRouter()\nconst username = ref('')\nconst password = ref('')\n\nasync function login() {\n  let res = await fetch('/api/login', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({\n      username: username.value,\n      password: password.value\n    })\n  })\n  let data = await res.json()\n  \n  // 保存token到本地\n  localStorage.setItem('token', data.token)\n  router.push('/')  // 跳转首页\n}\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "携带token请求",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "登录后请求需要带上token"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "code": "// 携带token发请求\nlet token = localStorage.getItem('token')\nlet res = await fetch('/api/cart', {\n  headers: {\n    'Authorization': `Bearer ${token}`\n  }\n})\nlet cart = await res.json()"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch5",
+        "title": "路由配置",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "router配置",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "filename": "router/index.js",
+                "code": "import { createRouter, createWebHistory } from 'vue-router'\nimport Home from '../views/Home.vue'\nimport Detail from '../views/Detail.vue'\nimport Login from '../views/Login.vue'\n\nconst router = createRouter({\n  history: createWebHistory(),\n  routes: [\n    { path: '/', component: Home },\n    { path: '/detail/:id', component: Detail },\n    { path: '/login', component: Login }\n  ]\n})\n\nexport default router"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "main.js入口",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "filename": "main.js",
+                "code": "import { createApp } from 'vue'\nimport App from './App.vue'\nimport router from './router'\n\ncreateApp(App).use(router).mount('#app')"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "App.vue",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "App.vue",
+                "code": "<template>\n  <router-view />\n</template>"
               }
             ]
           }
@@ -2279,7 +4668,7 @@ export const courses: Course[] =[
 // 根据ID获取课程（优先从localStorage）
 const STORAGE_KEY = 'gb-course-data'
 const VERSION_KEY = 'gb-course-version'
-const CURRENT_VERSION = '1.0.3' // 版本号变更会强制刷新
+const CURRENT_VERSION = '1.1.6' // 版本号变更会强制刷新
 
 function getStoredCourses(): Course[] {
   if (typeof window === 'undefined') return courses
