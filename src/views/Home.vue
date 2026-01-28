@@ -81,7 +81,7 @@ function goLogin() {
   z-index: 100;
 }
 .nav-container {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -154,14 +154,14 @@ function goLogin() {
 
 /* 课程网格 */
 .course-grid {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 16px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
 }
-@media (max-width: 1200px) { .course-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1200px) { .course-grid { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 768px) { 
   .course-grid { 
     grid-template-columns: repeat(2, 1fr); 

@@ -252,7 +252,7 @@ function scrollToElement(id: string) {
 
 /* 侧边栏 - 固定 */
 .sidebar {
-  width: 150px;
+  width: 180px;
   background: #fff;
   border-right: 1px solid #eee;
   height: calc(100vh - 50px);
