@@ -93,7 +93,7 @@
                 <div v-else-if="block.type === 'flowchart'" :id="'block-' + block.id" class="fc">
                   <div class="fc-node start">{{ block.steps?.[0]?.text }}</div>
                   <div class="fc-line">|</div>
-                  <div class="fc-node decision">{{ block.steps?.[1]?.text }}</div>
+                  <div class="fc-node decision" id="fc-step2">{{ block.steps?.[1]?.text }}</div>
                   <div class="fc-tree">
                     <span class="fc-branch-line left">/</span>
                     <span class="fc-branch-line right">\</span>
@@ -106,8 +106,8 @@
                     <div class="fc-child">
                       <div class="fc-node">{{ block.steps?.[2]?.text }}</div>
                       <div class="fc-line">|</div>
-                      <div class="fc-node">{{ block.steps?.[3]?.text }}</div>
-                      <div class="fc-back">⤴️回到2</div>
+                      <div class="fc-node fc-step4">{{ block.steps?.[3]?.text }}</div>
+                      <div class="fc-back-txt">进入下次循环 ↑</div>
                     </div>
                     <div class="fc-child">
                       <div class="fc-node end">{{ block.steps?.[4]?.text }}</div>
@@ -486,6 +486,7 @@ function scrollToElement(id: string) {
   font-family: monospace;
   font-size: 12px;
   line-height: 1.2;
+  position: relative;
 }
 .fc-node {
   padding: 3px 8px;
@@ -496,12 +497,32 @@ function scrollToElement(id: string) {
 .fc-node.start { border-radius: 10px; background: #d4edda; border-color: #28a745; }
 .fc-node.decision { background: #fff3cd; border-color: #ffc107; }
 .fc-node.end { border-radius: 10px; background: #f8d7da; border-color: #dc3545; }
+.fc-node.fc-step4 { position: relative; }
+.fc-node.fc-step4::before {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  width: 10px;
+  height: 1px;
+  background: #4A90D9;
+}
+.fc-node.fc-step4::after {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  width: 1px;
+  height: 80px;
+  background: #4A90D9;
+  transform: translateY(-100%);
+}
 .fc-line { color: #666; }
 .fc-tree { display: flex; gap: 50px; color: #666; font-size: 14px; }
 .fc-labels { display: flex; gap: 20px; font-size: 10px; color: #666; }
 .fc-children { display: flex; gap: 16px; }
 .fc-child { display: flex; flex-direction: column; align-items: center; }
-.fc-back { font-size: 10px; color: #4A90D9; margin-top: 2px; }
+.fc-back-txt { font-size: 9px; color: #4A90D9; margin-top: 4px; }
 
 .empty { text-align: center; padding: 60px; color: #999; }
 

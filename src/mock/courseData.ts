@@ -518,8 +518,9 @@ export const courses: Course[] =[
               },
               {
                 "id": "b2",
-                "type": "text",
-                "content": "语法结构：for (初始值; 条件; 变化) { 代码块 }"
+                "type": "code",
+                "language": "java",
+                "code": "for(初始化; 布尔表达式; 更新) {\n    //代码语句\n}"
               },
               {
                 "id": "b2-1",
@@ -528,7 +529,7 @@ export const courses: Course[] =[
                   { "text": "1.执行初始值", "type": "start" },
                   { "text": "2.判断条件", "type": "decision" },
                   { "text": "3.执行代码块", "branch": "yes" },
-                  { "text": "4.执行变化→回到2" },
+                  { "text": "4.执行变化" },
                   { "text": "跳出循环", "type": "end", "branch": "no" }
                 ]
               },
