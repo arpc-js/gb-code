@@ -1,7 +1,14 @@
 // ========== 通用课程数据结构 ==========
 
 // Block类型
-export type BlockType = 'text' | 'heading' | 'code' | 'image' | 'video' | 'table' | 'tip' | 'warning' | 'quote' | 'list' | 'download'
+export type BlockType = 'text' | 'heading' | 'code' | 'image' | 'video' | 'table' | 'tip' | 'warning' | 'quote' | 'list' | 'download' | 'flowchart'
+
+// 流程图步骤
+export interface FlowStep {
+  text: string
+  type?: 'start' | 'process' | 'decision' | 'end'
+  branch?: 'yes' | 'no'  // 分支标记
+}
 
 // 内容块
 export interface Block {
@@ -17,6 +24,7 @@ export interface Block {
   rows?: string[][]          // table数据行
   text?: string              // download按钮文字
   url?: string               // download链接
+  steps?: FlowStep[]         // flowchart步骤
 }
 
 // 知识点

@@ -90,6 +90,30 @@
                 <a v-else-if="block.type === 'download'" :id="'block-' + block.id" class="block-download" :href="block.url" download>
                   💾 {{ block.text || '下载文件' }}
                 </a>
+                <div v-else-if="block.type === 'flowchart'" :id="'block-' + block.id" class="fc">
+                  <div class="fc-node start">{{ block.steps?.[0]?.text }}</div>
+                  <div class="fc-line">|</div>
+                  <div class="fc-node decision">{{ block.steps?.[1]?.text }}</div>
+                  <div class="fc-tree">
+                    <span class="fc-branch-line left">/</span>
+                    <span class="fc-branch-line right">\</span>
+                  </div>
+                  <div class="fc-labels">
+                    <span>满足</span>
+                    <span>不满足</span>
+                  </div>
+                  <div class="fc-children">
+                    <div class="fc-child">
+                      <div class="fc-node">{{ block.steps?.[2]?.text }}</div>
+                      <div class="fc-line">|</div>
+                      <div class="fc-node">{{ block.steps?.[3]?.text }}</div>
+                      <div class="fc-back">⤴️回到2</div>
+                    </div>
+                    <div class="fc-child">
+                      <div class="fc-node end">{{ block.steps?.[4]?.text }}</div>
+                    </div>
+                  </div>
+                </div>
               </template>
             </div>
           </div>
@@ -452,6 +476,32 @@ function scrollToElement(id: string) {
 .block-download:hover {
   background: #3a7bc8;
 }
+
+/* 流程图 - 树状 */
+.fc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.2;
+}
+.fc-node {
+  padding: 3px 8px;
+  border: 1px solid #4A90D9;
+  border-radius: 3px;
+  background: #e8f4fc;
+}
+.fc-node.start { border-radius: 10px; background: #d4edda; border-color: #28a745; }
+.fc-node.decision { background: #fff3cd; border-color: #ffc107; }
+.fc-node.end { border-radius: 10px; background: #f8d7da; border-color: #dc3545; }
+.fc-line { color: #666; }
+.fc-tree { display: flex; gap: 50px; color: #666; font-size: 14px; }
+.fc-labels { display: flex; gap: 20px; font-size: 10px; color: #666; }
+.fc-children { display: flex; gap: 16px; }
+.fc-child { display: flex; flex-direction: column; align-items: center; }
+.fc-back { font-size: 10px; color: #4A90D9; margin-top: 2px; }
 
 .empty { text-align: center; padding: 60px; color: #999; }
 
