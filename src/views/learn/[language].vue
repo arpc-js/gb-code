@@ -495,27 +495,37 @@ function scrollToElement(id: string) {
   background: #e8f4fc;
 }
 .fc-node.start { border-radius: 10px; background: #d4edda; border-color: #28a745; }
-.fc-node.decision { background: #fff3cd; border-color: #ffc107; }
+.fc-node.decision { background: #fff3cd; border-color: #ffc107; position: relative; }
+.fc-node.decision::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 4px solid transparent;
+  border-left: 5px solid #4A90D9;
+}
 .fc-node.end { border-radius: 10px; background: #f8d7da; border-color: #dc3545; }
 .fc-node.fc-step4 { position: relative; }
 .fc-node.fc-step4::before {
   content: '';
   position: absolute;
-  left: -15px;
+  left: -10px;
   top: 50%;
-  width: 10px;
+  width: 6px;
   height: 1px;
   background: #4A90D9;
 }
 .fc-node.fc-step4::after {
   content: '';
   position: absolute;
-  left: -15px;
-  top: 50%;
-  width: 1px;
-  height: 80px;
-  background: #4A90D9;
-  transform: translateY(-100%);
+  left: -10px;
+  bottom: 50%;
+  width: 48px;
+  height: 87px;
+  border-left: 1px solid #4A90D9;
+  border-top: 1px solid #4A90D9;
+  border-radius: 3px 0 0 0;
 }
 .fc-line { color: #666; }
 .fc-tree { display: flex; gap: 50px; color: #666; font-size: 14px; }
