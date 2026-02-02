@@ -99,18 +99,92 @@
                     <span class="fc-branch-line right">\</span>
                   </div>
                   <div class="fc-labels">
-                    <span>满足</span>
-                    <span>不满足</span>
+                    <span>没到&nbsp;</span>
+                    <span>&nbsp;&nbsp;到了&nbsp;&nbsp;</span>
                   </div>
                   <div class="fc-children">
                     <div class="fc-child">
                       <div class="fc-node">{{ block.steps?.[2]?.text }}</div>
                       <div class="fc-line">|</div>
                       <div class="fc-node fc-step4">{{ block.steps?.[3]?.text }}</div>
-                      <div class="fc-back-txt">进入下次循环 ↑</div>
+                      <div class="fc-back-txt">进入下次循环,第5次结束</div>
                     </div>
                     <div class="fc-child">
                       <div class="fc-node end">{{ block.steps?.[4]?.text }}</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- if单分支流程图 -->
+                <div v-else-if="block.type === 'flowchart-if'" :id="'block-' + block.id" class="fc-if">
+                  <div class="fc-node decision">{{ block.steps?.[0]?.text }}</div>
+                  <div class="fc-if-tree">
+                    <span>/</span>
+                    <span>\</span>
+                  </div>
+                  <div class="fc-if-labels">
+                    <span>true</span>
+                    <span>false</span>
+                  </div>
+                  <div class="fc-if-children">
+                    <div class="fc-if-child">
+                      <div class="fc-node">{{ block.steps?.[1]?.text }}</div>
+                    </div>
+                    <div class="fc-if-child fc-if-empty"></div>
+                  </div>
+                </div>
+                <!-- if-else二选一流程图 -->
+                <div v-else-if="block.type === 'flowchart-if-else'" :id="'block-' + block.id" class="fc-if">
+                  <div class="fc-node decision">{{ block.steps?.[0]?.text }}</div>
+                  <div class="fc-if-tree">
+                    <span>/</span>
+                    <span>\</span>
+                  </div>
+                  <div class="fc-if-labels">
+                    <span>true</span>
+                    <span>false</span>
+                  </div>
+                  <div class="fc-if-children">
+                    <div class="fc-if-child">
+                      <div class="fc-node">{{ block.steps?.[1]?.text }}</div>
+                    </div>
+                    <div class="fc-if-child">
+                      <div class="fc-node">{{ block.steps?.[2]?.text }}</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- if-else if-else多选一流程图 -->
+                <div v-else-if="block.type === 'flowchart-if-chain'" :id="'block-' + block.id" class="fc-if">
+                  <div class="fc-node decision">{{ block.steps?.[0]?.text }}</div>
+                  <div class="fc-if-tree">
+                    <span>/</span>
+                    <span>\</span>
+                  </div>
+                  <div class="fc-if-labels">
+                    <span>true</span>
+                    <span>false</span>
+                  </div>
+                  <div class="fc-if-children">
+                    <div class="fc-if-child">
+                      <div class="fc-node">{{ block.steps?.[1]?.text }}</div>
+                    </div>
+                    <div class="fc-if-child">
+                      <div class="fc-node decision">{{ block.steps?.[2]?.text }}</div>
+                      <div class="fc-if-tree">
+                        <span>/</span>
+                        <span>\</span>
+                      </div>
+                      <div class="fc-if-labels">
+                        <span>true</span>
+                        <span>false</span>
+                      </div>
+                      <div class="fc-if-children">
+                        <div class="fc-if-child">
+                          <div class="fc-node">{{ block.steps?.[3]?.text }}</div>
+                        </div>
+                        <div class="fc-if-child">
+                          <div class="fc-node">{{ block.steps?.[4]?.text }}</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -532,7 +606,27 @@ function scrollToElement(id: string) {
 .fc-labels { display: flex; gap: 20px; font-size: 10px; color: #666; }
 .fc-children { display: flex; gap: 16px; }
 .fc-child { display: flex; flex-direction: column; align-items: center; }
-.fc-back-txt { font-size: 9px; color: #4A90D9; margin-top: 4px; }
+.fc-back-txt { font-size: 11px; color: #4A90D9; margin-top: 4px; }
+
+/* if单分支/二选一流程图 */
+.fc-if {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.2;
+}
+.fc-if .fc-node { padding: 3px 8px; border: 1px solid #4A90D9; border-radius: 3px; background: #e8f4fc; }
+.fc-if .fc-node.decision { background: #fff3cd; border-color: #ffc107; }
+.fc-if .fc-node.end { border-radius: 10px; background: #f8d7da; border-color: #dc3545; }
+.fc-if-tree { display: flex; gap: 20px; color: #666; font-size: 14px; }
+.fc-if-labels { display: flex; gap: 10px; font-size: 10px; color: #666; }
+.fc-if-children { display: flex; gap: 10px; align-items: flex-start; }
+.fc-if-child { display: flex; flex-direction: column; align-items: center; }
+.fc-if-empty { min-width: 60px; height: 20px; }
+.fc-if-merge-tree { display: flex; gap: 40px; color: #666; font-size: 14px; }
 
 .empty { text-align: center; padding: 60px; color: #999; }
 

@@ -87,7 +87,7 @@ export const courses: Course[] =[
                 "id": "b1",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
+                "filename": "Main.java示例",
                 "code": "void main() {\n    IO.println(\"Hello Java\");//第一个程序\n}"
               },
               {
@@ -169,7 +169,7 @@ export const courses: Course[] =[
                 "id": "b3",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
+                "filename": "Main.java示例",
                 "code": "void main() {\n    IO.println(1 + 1);   // 2\n    IO.println(2 - 1);   // 1\n    IO.println(2 * 2);   // 4\n    IO.println(4 / 2);   // 2\n}"
               }
             ]
@@ -224,7 +224,7 @@ export const courses: Course[] =[
                 "id": "b4",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
+                "filename": "Main.java示例",
                 "code": "void main() {\n    IO.println(5 > 3);    // true\n    IO.println(5 < 3);    // false\n    IO.println(5 == 3);   // false\n    IO.println(5 != 3);   // true\n}"
               }
             ]
@@ -273,7 +273,7 @@ export const courses: Course[] =[
                 "id": "b3",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
+                "filename": "Main.java示例",
                 "code": "void main() {\n    // 与：必须同时满足\n    IO.println(5 > 3 && 2 > 1); // true，两个都为真，结果为真\n    IO.println(5 > 3 && 1 > 2); // false，第一个为真，第二个为假，结果为假\n\n    // 或：满足其中一个即可\n    IO.println(5 > 3 || 1 > 2); // true\n\n    // 非：结果取反\n    IO.println(!5 > 3);           // false\n}"
               }
             ]
@@ -293,24 +293,21 @@ export const courses: Course[] =[
               {
                 "id": "b1",
                 "type": "text",
-                "content": "变量用来存储数据"
+                "content": "变量是用来存储数据的容器"
               },
               {
                 "id": "b2",
-                "type": "text",
-                "content": "定义语法：类型 变量名 = 值;"
-              },
-              {
-                "id": "b2",
-                "type": "text",
-                "content": "业务模拟：你在商店买了2元牛奶和5元面包,请计算总价"
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "类型 变量名 = 值;"
               },
               {
                 "id": "b3",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
-                "code": "void main() {\n    int total = 0; //定义整数变量，存储总价,int是整数的意思\n    IO.println(total);//输出0\n\n    total = total+2;//计算牛奶的价格，然后存储到总价变量\n    IO.println(total);//输出2\n\n    total = total+5;//计算面包的价格，然后存储到总价变量\n    IO.println(total);//输出最终总价为7\n}"
+                "filename": "Main.java示例",
+                "code": "void main() {\n    int price = 1; //定义price变量存价格为1块钱\n    IO.println(price);//输出1\n    price = 2;//修改价格为2块钱\n    IO.println(price);//输出2\n }"
               }
             ]
           },
@@ -346,31 +343,21 @@ export const courses: Course[] =[
                   [
                     "String",
                     "字符串(要加双引号)",
-                    "String userName = \"张三\";(买家姓名)"
+                    "String name = \"牛奶\";(商品名称)"
                   ],
                   [
                     "boolean",
                     "布尔类型(存真假true,false)",
-                    "boolean status = true; (是否已付款)"
+                    "boolean status = true; (是否已支付)"
                   ]
                 ]
-              },
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "业务模拟:张三在你商店买了3袋2.5元牛奶和2袋子5.5元面包,请算账并记账保存数据"
-              },
-              {
-                "id": "b2",
-                "type": "text",
-                "content": "实现方案:我们要用字符串变量保存张三的名字和牛奶面包的商品名称,用小数保存牛奶面包价格和总价,用布尔变量保存用户是否已支付"
               },
               {
                 "id": "b3",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
-                "code": "void main() {\n    String userName = \"张三\";                 // 保存用户姓名，用来知道是谁来买东西\n\n    String spu1 = \"牛奶\";                     // 保存第一个商品名称：牛奶\n    double spu1_price = 2.5;                  // 保存牛奶的价格\n    int spu1_count = 3;                   // 保存购买牛奶的数量\n\n    String spu2 = \"面包\";                     // 保存第二个商品名称：面包\n    double spu2_price = 5.5;                  // 保存面包的价格，单位是元\n    int spu2_count = 2;                  // 保存购买面包的数量\n\n\n    IO.println(\"购物车信息:\");                // 提示下面开始输出购物车内容\n    IO.println(spu1 + \" : \" + spu1_price + \" 元\"); // 输出牛奶和它的价格\n    IO.println(spu2 + \" : \" + spu2_price + \" 元\"); // 输出面包和它的价格\n\n    double total = 0;                          // 定义总价变量，用来保存计算出来的总金额\n    total = total + spu1_count*spu1_price;                // 算牛奶总价，保存\n    total = total + spu2_count*spu2_price;           // 算面包+牛奶总价，保存\n\n    String payTime = \"2026-01-27\";       // 保存用户支付完成的时间\n    boolean status = true;                     // 保存支付状态，true 表示已经付钱\n\n    IO.println(\"算账完成，总价为：\" + total + \" 元\"); // 输出计算完成后的总价\n    IO.println(\"用户已支付：\" + status);        // 输出用户是否已经完成支付\n    //账单记录\n    IO.println(userName + payTime + \"购买\" + spu1_count + \"个\" + spu1 + spu2_count + \"个\" + spu2 + \",共计\" + total + \"元\");\n\n\n}\n"
+                "filename": "Main.java示例",
+                "code": "//不同类型变量存储订单信息\nvoid main() {\n    String name = \"牛奶\";//字符串注意加双引号\n    double price = 2.5;\n    int count = 3;\n    boolean status = true;\n    \n    IO.println(\"商品名称：\" + name);\n    IO.println(\"商品价格：\" + price + \" 元\");\n    IO.println(\"购买数量：\" + count);\n    IO.println(\"已支付：\" + status);\n}"
               }
             ]
           },
@@ -382,24 +369,21 @@ export const courses: Course[] =[
               {
                 "id": "b1",
                 "type": "text",
-                "content": "上面的代码太乱了！每个商品要定义3个变量(name/price/count)，10个商品就是30个变量。\n解决方案：用类把商品的名称、价格、数量打包成一个整体。"
+                "content": "类：把多个变量打包成一类整体，方便管理和使用。是一种特殊数据类型"
+              },
+              {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "//1.定义类\npublic class 类名 {\n    public 类型 属性1;\n    public 类型 属性2;\n}\n\n//2.实例化（创建对象）\n类名 变量名 = new 类名();\n\n//3.访问属性\n变量名.属性名 = 值;  //赋值\n变量名.属性名;     //取值"
               },
               {
                 "id": "b2",
-                "type": "list",
-                "items": [
-                  "定义：\n               public    class 类名 {\n                   public  类型 属性;\n                  public   类型 属性;\n                   }",
-                  "实例化(创建多个商品)：类名 变量 = new 类名();",
-                  "赋值：对象.属性 = 值",
-                  "取值：对象.属性"
-                ]
-              },
-              {
-                "id": "b3",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
-                "code": "public class Spu {\n  public  String name;\n  public  double price;\n  public  int count;\n}\n\nvoid main() {\n    Spu spu1 = new Spu();\n    spu1.name = \"牛奶\";\n    spu1.price = 2.5;\n    spu1.count = 3;\n\n    Spu spu2 = new Spu();\n    spu2.name = \"面包\";\n    spu2.price = 5.5;\n    spu2.count = 2;\n\n    double total = spu1.price * spu1.count + spu2.price * spu2.count;\n    \n    IO.println(\"购物清单：\");\n    IO.println(spu1.name + \" x \" + spu1.count + \" = \" + spu1.price * spu1.count + \"元\");\n    IO.println(spu2.name + \" x \" + spu2.count + \" = \" + spu2.price * spu2.count + \"元\");\n    IO.println(\"总价：\" + total + \"元\");\n}"
+                "filename": "Main.java示例",
+                "code": "//定义订单类\npublic class Order {\n    public String name;\n    public double price;\n    public int count;\n    public boolean isPaid;\n}\n\nvoid main() {\n    //创建对象\n    Order order = new Order();\n    order.name = \"牛奶\"; //字符串注意加双引号\n    order.price = 2.5;\n    order.count = 3;\n    order.isPaid = true;\n    \n    //输出信息\n    IO.println(\"商品名称：\" + order.name);\n    IO.println(\"商品价格：\" + order.price + \" 元\");\n    IO.println(\"购买数量：\" + order.count);\n    IO.println(\"已支付：\" + order.isPaid);\n}"
               }
             ]
           },
@@ -411,27 +395,21 @@ export const courses: Course[] =[
               {
                 "id": "b1",
                 "type": "text",
-                "content": "上面只能存固定数量的商品，如果用户买了50个商品怎么办？\n解决方案：用数组存储多个商品对象，想加多少加多少。"
+                "content": "数组：存储多个数据。是一种特殊数据类型"
+              },
+              {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "//1.定义数组\nList<类型> 变量名 = new ArrayList<>();\n\n//2.新增元素\n变量名.add(元素);\n\n//3.增强for遍历元素\nfor (类型 变量 : 变量名) {\n    //使用变量\n}"
               },
               {
                 "id": "b2",
-                "type": "text",
-                "content": "定义语法：List<类型> 变量名 = new ArrayList<>();  //类型有int,String，class等"
-              },
-              {
-                "id": "b3",
-                "type": "list",
-                "items": [
-                  "增：.add(元素)",
-                  "遍历：使用增强for循环（快捷键：list.for）"
-                ]
-              },
-              {
-                "id": "b4",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
-                "code": "import java.util.*;\n\npublic class Spu {\n public   String name;\n public   double price;\n public   int count;\n}\n\nvoid main() {\n    List<Spu> list = new ArrayList<>();\n\n    Spu spu1 = new Spu();\n    spu1.name = \"牛奶\";\n    spu1.price = 2.5;\n    spu1.count = 3;\n    list.add(spu1);\n    IO.println(\"添加牛奶后，数组内容：\");\n    for (Spu spu : list) {\n        IO.println(spu.name);\n    }\n\n    Spu spu2 = new Spu();\n    spu2.name = \"面包\";\n    spu2.price = 5.5;\n    spu2.count = 2;\n    list.add(spu2);\n    IO.println(\"\\n添加面包后，数组内容：\");\n    for (Spu spu : list) {\n        IO.println(spu.name);\n    }\n\n    IO.println(\"\\n购物清单：\");\n    double total = 0;\n    for (Spu spu : list) {\n        double subtotal = spu.price * spu.count;\n        IO.println(spu.name + \" x \" + spu.count + \" = \" + subtotal + \"元\");\n        total = total + subtotal;\n    }\n    IO.println(\"总价：\" + total + \"元\");\n    \n    IO.println(\"\\n记账信息：张三 2026-01-27 购买商品 \" + list.size() + \"件，共计\" + total + \"元\");\n}"
+                "filename": "Main.java示例",
+                "code": "import java.util.*;\n\npublic class Spu {\n    public String name;\n    public double price;\n    public int count;\n    public boolean isPaid;\n}\n\nvoid main() {\n    //创建数组存储多个Spu\n    List<Spu> list = new ArrayList<>();\n    \n    //创建第1个Spu并添加到数组\n    Spu spu1 = new Spu();\n    spu1.name = \"牛奶\";\n    spu1.price = 2.5;\n    spu1.count = 3;\n    spu1.isPaid = true;\n    list.add(spu1);\n    \n    //创建第2个Spu并添加到数组\n    Spu spu2 = new Spu();\n    spu2.name = \"面包\";\n    spu2.price = 5.5;\n    spu2.count = 2;\n    spu2.isPaid = false;\n    list.add(spu2);\n    \n    //遍历数组查看所有Spu信息\n    for (Spu spu : list) {\n        IO.println(\"商品名称：\" + spu.name);\n        IO.println(\"商品价格：\" + spu.price + \" 元\");\n        IO.println(\"购买数量：\" + spu.count);\n        IO.println(\"已支付：\" + spu.isPaid);\n        IO.println(\"————————\");\n    }\n}"
               }
             ]
           }
@@ -450,13 +428,29 @@ export const courses: Course[] =[
               {
                 "id": "b1",
                 "type": "text",
-                "content": "if语句：执行不同分支的代码,条件为true时执行代码块。如购物车算出总价后，需要判断是否打折。"
+                "content": "if语句：执行不同分支的代码,条件为true时执行代码块，比如判断是否要打折。"
+              },
+              {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "if(条件判断) {\n    //如果布尔表达式为true将执行的语句\n}"
+              },
+              {
+                "id": "b1-2",
+                "type": "flowchart-if",
+                "steps": [
+                  { "text": "判断条件", "type": "decision" },
+                  { "text": "执行代码块", "branch": "yes" },
+                  { "text": "继续执行", "type": "end" }
+                ]
               },
               {
                 "id": "b2",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
+                "filename": "Main.java示例",
                 "code": "void main() {\n    double total = 21;\n    //判断满20打8折\n    if (total >= 20) {\n        total = total * 0.8;\n        IO.println(\"满20打8折，实付：\" + total + \"元\");\n    }\n}"
               }
             ]
@@ -472,10 +466,27 @@ export const courses: Course[] =[
                 "content": "二选一：满足条件执行if，否则执行else。"
               },
               {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "if(条件判断) {\n    //如果布尔表达式为true将执行的语句\n} else {\n    //如果布尔表达式为false将执行的语句\n}"
+              },
+              {
+                "id": "b1-2",
+                "type": "flowchart-if-else",
+                "steps": [
+                  { "text": "判断条件", "type": "decision" },
+                  { "text": "if代码块", "branch": "yes" },
+                  { "text": "else代码块", "branch": "no" },
+                  { "text": "继续执行", "type": "end" }
+                ]
+              },
+              {
                 "id": "b2",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
+                "filename": "Main.java示例",
                 "code": "void main() {\n    double total = 21;\n    //判断是否大满20打8折\n    if (total >= 20) {\n        total = total * 0.8;\n        IO.println(\"满20打8折，实付：\" + total + \"元\");\n    } else {\n        IO.println(\"不满折扣条件，实付：\" + total + \"元\");\n    }\n}"
               }
             ]
@@ -491,11 +502,18 @@ export const courses: Course[] =[
                 "content": "多选一：满20打8折，满10打9折，否则不打折。"
               },
               {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "if(条件判断1) {\n    //条件1为true执行\n} else if(条件判断2) {\n    //条件2为true执行\n} else {\n    //以上都不满足执行\n}"
+              },
+              {
                 "id": "b2",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
-                "code": "void main() {\n    double total = 21;\n     if (total >= 20) {\n        total = total * 0.8;\n        IO.println(\"满20戉8折，实付：\" + total + \"元\");\n    } else if (total >= 10) {\n        total = total * 0.9;\n        IO.println(\"满10戉9折，实付：\" + total + \"元\");\n    } else {\n        IO.println(\"不满折扣条件，实付：\" + total + \"元\");\n    }\n}"
+                "filename": "Main.java示例",
+                "code": "void main() {\n    double total = 21;\n    if (total >= 20) {\n        total = total * 0.8;\n        IO.println(\"满20打8折，实付：\" + total + \"元\");\n    } else if (total >= 10) {\n        total = total * 0.9;\n        IO.println(\"满10打9折，实付：\" + total + \"元\");\n    } else {\n        IO.println(\"不满折扣条件，实付：\" + total + \"元\");\n    }\n}"
               }
             ]
           }
@@ -514,36 +532,38 @@ export const courses: Course[] =[
               {
                 "id": "b1",
                 "type": "text",
-                "content": "for循环：满足条件重复执行，不满足就结束循环。快捷键：fori"
+                "filename": "语法",
+                "content": "for循环：循环执行n次。语法："
               },
               {
                 "id": "b2",
                 "type": "code",
                 "language": "java",
-                "code": "for(初始化; 布尔表达式; 更新) {\n    //代码语句\n}"
-              },
-              {
-                "id": "b2-1",
-                "type": "flowchart",
-                "steps": [
-                  { "text": "1.执行初始值", "type": "start" },
-                  { "text": "2.判断条件", "type": "decision" },
-                  { "text": "3.执行代码块", "branch": "yes" },
-                  { "text": "4.执行变化" },
-                  { "text": "跳出循环", "type": "end", "branch": "no" }
-                ]
+                "filename": "语法",
+                "code": "for (int i =1; i <=n; i++) {\n    //代码语句\n}"
               },
               {
                 "id": "b3",
                 "type": "text",
-                "content": "例1：打印5次，看清执行流程"
+                "content": "例1：循环打印5次"
               },
               {
                 "id": "b4",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
-                "code": "void main() {\n    for (int i = 1; i <= 5; i++) {\n        IO.println(\"第\" + i + \"次执行\");\n    }\n}"
+                "filename": "Main.java示例",
+                "code": "void main() {\n    //快捷键：fori然后填入1开始,5结束,代表执行5次\n    for (int i = 1; i <= 5; i++) {\n        IO.println(\"第\" + i + \"次执行\");\n    }\n}"
+              },
+              {
+                "id": "b2-1",
+                "type": "flowchart",
+                "steps": [
+                  { "text": "1.初始值i=1", "type": "start" },
+                  { "text": "2.是否到第5次", "type": "decision" },
+                  { "text": "3.执行代码块", "branch": "yes" },
+                  { "text": "4.执行i++增加1" },
+                  { "text": "结束循环", "type": "end", "branch": "no" }
+                ]
               },
               {
                 "id": "b5",
@@ -554,7 +574,7 @@ export const courses: Course[] =[
                 "id": "b6",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
+                "filename": "Main.java示例",
                 "code": "void main() {\n    int total = 0;\n    for (int i = 1; i <= 5; i++) {\n        total = total + i;\n        IO.println(\"第\" + i + \"次累计，total = \" + total);\n    }\n    IO.println(\"最终结果：\" + total);\n}"
               }
             ]
@@ -573,7 +593,7 @@ export const courses: Course[] =[
                 "id": "b2",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
+                "filename": "Main.java示例",
                 "code": "void main() {\n    int total = 0;\n    for (int i = 1; i <= 5; i++) {\n        if (i == 3) {\n            IO.println(\"第\" + i + \"次达标，停止累计\");\n            break;\n        }\n        total = total + i;\n        IO.println(\"第\" + i + \"次累计，total = \" + total);\n    }\n    IO.println(\"最终结果：\" + total);\n}"
               }
             ]
@@ -592,7 +612,7 @@ export const courses: Course[] =[
                 "id": "b2",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
+                "filename": "Main.java示例",
                 "code": "void main() {\n    int total = 0;\n    for (int i = 1; i <= 5; i++) {\n        if (i == 3) {\n            IO.println(\"第\" + i + \"次跳过，不累计\");\n            continue;\n        }\n        total = total + i;\n        IO.println(\"第\" + i + \"次累计，total = \" + total);\n    }\n    IO.println(\"最终结果：\" + total);\n}"
               }
             ]
@@ -608,11 +628,18 @@ export const courses: Course[] =[
                 "content": "遍历数组，获取每一个元素。快捷键：数组变量.for"
               },
               {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "for (类型 变量 : 数组变量名) {\n    //使用变量\n}"
+              },
+              {
                 "id": "b2",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
-                "code": "void main() {\n    int[] list = {10, 20, 30, 40, 50};\n      int total = 0;\n    for (int num : list) {\n        total = total + num;\n        IO.println(\"加入 \" + num + \"，当前total = \" + total);\n    }\n    IO.println(\"最终结果：\" + total);\n}"
+                "filename": "Main.java示例",
+                "code": "void main() {\n    String[] names = {\"牛奶\", \"面包\", \"鸡蛋\"};\n    for (String name : names) {\n        IO.println(\"商品名称：\" + name);\n    }\n}"
               }
             ]
           }
@@ -620,181 +647,177 @@ export const courses: Course[] =[
       },
       {
         "id": "ch6",
-        "title": "函数",
-        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
-        "lessons": [
-          {
-            "id": "l1",
-            "title": "函数定义",
-            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "计算总价的代码写了很多次，每次都要复制粘贴。\n函数：把代码包装起来，取个名字，随时调用。"
-              },
-              {
-                "id": "b2",
-                "type": "code",
-                "language": "java",
-                "filename": "main.java",
-                "code": "void printHello() {\n    IO.println(\"欢迎光临\");\n}\n\nvoid main() {\n    printHello();\n    printHello();\n    printHello();\n}"
-              }
-            ]
-          },
-          {
-            "id": "l2",
-            "title": "带参数函数",
-            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "传入不同的值，执行不同的计算。"
-              },
-              {
-                "id": "b2",
-                "type": "code",
-                "language": "java",
-                "filename": "main.java",
-                "code": "void printPrice(double price, int count) {\n    double total = price * count;\n    IO.println(\"小计：\" + total + \"元\");\n}\n\nvoid main() {\n    printPrice(2.5, 3);\n    printPrice(5.5, 2);\n}"
-              }
-            ]
-          },
-          {
-            "id": "l3",
-            "title": "带返回值函数",
-            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "计算完把结果返回，让调用者继续使用。"
-              },
-              {
-                "id": "b2",
-                "type": "code",
-                "language": "java",
-                "filename": "main.java",
-                "code": "double calcTotal(double price, int count) {\n    return price * count;\n}\n\nvoid main() {\n    double t1 = calcTotal(2.5, 3);\n    double t2 = calcTotal(5.5, 2);\n    double total = t1 + t2;\n    IO.println(\"总价：\" + total + \"元\");\n}"
-              }
-            ]
-          },
-          {
-            "id": "l4",
-            "title": "完整购物结算",
-            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "将计算+存储+分支+循环+函数结合，完成购物结算。"
-              },
-              {
-                "id": "b2",
-                "type": "code",
-                "language": "java",
-                "filename": "main.java",
-                "code": "import java.util.*;\n\nclass Spu {\n    String name;\n    double price;\n    int count;\n}\n\ndouble calcTotal(List<Spu> list) {\n    double total = 0;\n    for (Spu spu : list) {\n        total = total + spu.price * spu.count;\n    }\n    return total;\n}\n\ndouble applyDiscount(double total) {\n    if (total >= 200) return total * 0.7;\n    if (total >= 100) return total * 0.8;\n    if (total >= 50) return total * 0.9;\n    return total;\n}\n\nvoid main() {\n    List<Spu> list = new ArrayList<>();\n\n    Spu spu1 = new Spu();\n    spu1.name = \"牛奶\";\n    spu1.price = 2.5;\n    spu1.count = 3;\n    list.add(spu1);\n\n    Spu spu2 = new Spu();\n    spu2.name = \"面包\";\n    spu2.price = 5.5;\n    spu2.count = 2;\n    list.add(spu2);\n\n    double total = calcTotal(list);\n    double pay = applyDiscount(total);\n    \n    IO.println(\"原价：\" + total + \"元\");\n    IO.println(\"实付：\" + pay + \"元\");\n}"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "ch7",
         "title": "面向对象",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
           {
             "id": "l1",
-            "title": "类与对象",
+            "title": "类和对象",
             "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "类是模板，对象是实例。购物时每件商品都是Spu类创建的对象。"
+                "content": "类：把多个变量打包成一个整体。\n对象：类的实例，存储具体数据。"
+              },
+              {
+                "id": "b1-tip",
+                "type": "tip",
+                "content": "Spu是类（模板），new Spu()创建的是对象（实例）。\n类只有一个，对象可以创建多个。"
+              },
+              {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "//定义类\nclass 类名 {\n    类型 属性名;\n}\n\n//创建对象\n类名 变量名 = new 类名();\n变量名.属性名 = 值;"
               },
               {
                 "id": "b2",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
-                "code": "class Spu {\n    String name;\n    double price;\n    int count;\n}\n\nvoid main() {\n    Spu spu1 = new Spu();\n    spu1.name = \"牛奶\";\n    spu1.price = 2.5;\n    spu1.count = 3;\n    \n    IO.println(spu1.name + \" x \" + spu1.count + \" = \" + (spu1.price * spu1.count) + \"元\");\n}"
+                "filename": "Main.java示例",
+                "code": "class Spu {\n    String name;      //字符串注意加双引号\n    double price;\n    int count;\n    boolean isPaid;\n}\n\nvoid main() {\n    Spu spu = new Spu();\n    spu.name = \"牛奶\";\n    spu.price = 2.5;\n    spu.count = 3;\n    spu.isPaid = true;\n    \n    IO.println(\"商品名称：\" + spu.name);\n    IO.println(\"商品价格：\" + spu.price + \" 元\");\n    IO.println(\"购买数量：\" + spu.count);\n    IO.println(\"已支付：\" + spu.isPaid);\n}"
               }
             ]
           },
           {
             "id": "l2",
-            "title": "封装private和@Data",
+            "title": "方法",
             "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "private隐藏属性，@Data注解自动生成getter/setter方法，简化代码。"
+                "content": "方法：把代码打包起来，通过对象调用。"
+              },
+              {
+                "id": "b1-tip",
+                "type": "tip",
+                "content": "方法必须通过对象调用：order.save()\n不能直接调用：save() ✗"
+              },
+              {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "class 类名 {\n    返回类型 方法名() {\n        //代码语句\n    }\n}\n\n//调用方法\n对象.方法名();"
               },
               {
                 "id": "b2",
                 "type": "code",
                 "language": "java",
-                "filename": "main.java",
-                "code": "import lombok.Data;\n\n@Data\nclass Spu {\n    private String name;\n    private double price;\n    private int count;\n}\n\nvoid main() {\n    Spu spu = new Spu();\n    spu.setName(\"牛奶\");\n    spu.setPrice(2.5);\n    spu.setCount(3);\n    \n    IO.println(spu.getName() + \" x \" + spu.getCount() + \" = \" + (spu.getPrice() * spu.getCount()) + \"元\");\n}"
+                "filename": "Main.java示例",
+                "code": "class Order {\n    String userName;\n    double total;\n    \n    void save() {\n        IO.println(\"保存订单：\" + userName + \", \" + total + \"元\");\n    }\n}\n\nvoid main() {\n    Order order = new Order();\n    order.userName = \"张三\";\n    order.total = 18.5;\n    order.save();\n}"
               }
             ]
           },
           {
             "id": "l3",
+            "title": "this关键字",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "this：指当前对象，用于区分属性和参数同名的情况。"
+              },
+              {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "class 类名 {\n    类型 属性名;\n    \n    void 方法名(类型 属性名) {\n        this.属性名 = 属性名;\n    }\n}"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "java",
+                "filename": "Main.java示例",
+                "code": "class Order {\n    String userName;\n    double total;\n    \n    void save(String userName, double total) {\n        this.userName = userName;\n        this.total = total;\n        IO.println(\"保存订单：\" + this.userName + \", \" + this.total + \"元\");\n    }\n}\n\nvoid main() {\n    Order order = new Order();\n    order.save(\"张三\", 18.5);\n}"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "方法参数和返回值",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "参数：传入数据。\n返回值：返回结果，void表示无返回值。"
+              },
+              {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "返回类型 方法名(类型 参数名) {\n    return 返回值;\n}"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "java",
+                "filename": "Main.java示例",
+                "code": "class Order {\n    String userName;\n    double total;\n    \n    boolean save(String userName, double total) {\n        this.userName = userName;\n        this.total = total;\n        IO.println(\"保存订单：\" + userName);\n        return true;\n    }\n}\n\nvoid main() {\n    Order order = new Order();\n    boolean ok = order.save(\"张三\", 18.5);\n    IO.println(\"保存结果：\" + ok);\n}"
+              }
+            ]
+          },
+          {
+            "id": "l5",
+            "title": "static静态",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "static：类级别属性/方法，所有对象共享，用于存储全局数据。"
+              },
+              {
+                "id": "b1-tip",
+                "type": "tip",
+                "content": "静态 vs 非静态：\n• 静态：类名.方法() → Order.findAll()\n• 非静态：对象.方法() → order.save()"
+              },
+              {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "class 类名 {\n    static 类型 属性名;           //静态属性\n    static 返回类型 方法名() {}    //静态方法\n}\n\n//通过类名访问\n类名.属性名;\n类名.方法名();"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "java",
+                "filename": "Main.java示例",
+                "code": "import java.util.*;\n\nclass Order {\n    String userName;\n    double total;\n    static List<Order> list = new ArrayList<>();\n    \n    void save() {\n        Order.list.add(this);\n        IO.println(\"保存订单：\" + userName);\n    }\n    \n    static void findAll() {\n        for (Order order : Order.list) {\n            IO.println(\"用户：\" + order.userName + \", 总价：\" + order.total + \"元\");\n        }\n    }\n}\n\nvoid main() {\n    Order order1 = new Order();\n    order1.userName = \"张三\";\n    order1.total = 18.5;\n    order1.save();\n    \n    Order order2 = new Order();\n    order2.userName = \"李四\";\n    order2.total = 25.0;\n    order2.save();\n    \n    Order.findAll();\n}"
+              }
+            ]
+          },
+          {
+            "id": "l6",
             "title": "继承",
             "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "子类复用父类代码。"
+                "content": "extends：子类继承父类，拥有父类的属性和方法。"
+              },
+              {
+                "id": "b1-1",
+                "type": "code",
+                "language": "java",
+                "filename": "语法",
+                "code": "class 父类 {\n    void 方法() {}\n}\n\nclass 子类 extends 父类 {\n    //自动拥有父类的方法\n}"
               },
               {
                 "id": "b2",
                 "type": "code",
                 "language": "java",
-                "code": "public class Animal {\n    void eat() { System.out.println(\"吃东西\"); }\n}\n\npublic class Dog extends Animal {\n    void bark() { System.out.println(\"汪汪\"); }\n}\n\nDog d = new Dog();\nd.eat();   // 继承的方法\nd.bark();  // 自己的方法"
-              }
-            ]
-          },
-          {
-            "id": "l5",
-            "title": "多态",
-            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "同一接口，不同实现。"
-              },
-              {
-                "id": "b2",
-                "type": "code",
-                "language": "java",
-                "code": "public class Animal {\n    void speak() { System.out.println(\"...\"); }\n}\npublic class Dog extends Animal {\n    @Override\n    void speak() { System.out.println(\"汪汪\"); }\n}\npublic class Cat extends Animal {\n    @Override\n    void speak() { System.out.println(\"喵喵\"); }\n}\n\nAnimal a = new Dog();\na.speak();  // 汪汪（运行时决定）"
-              }
-            ]
-          },
-          {
-            "id": "l6",
-            "title": "接口",
-            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "定义行为规范。"
-              },
-              {
-                "id": "b2",
-                "type": "code",
-                "language": "java",
-                "code": "public interface Flyable {\n    void fly();\n}\n\npublic class Bird implements Flyable {\n    @Override\n    public void fly() {\n        System.out.println(\"鸟在飞\");\n    }\n}"
+                "filename": "Main.java示例",
+                "code": "import java.util.*;\n\nclass Base<T> {\n    static List list = new ArrayList<>();\n    \n    void save() {\n        Base.list.add(this);\n    }\n    \n    static List findAll() {\n        return Base.list;\n    }\n}\n\nclass Order extends Base<Order> {\n    String userName;\n    double total;\n}\n\nvoid main() {\n    Order order = new Order();\n    order.userName = \"张三\";\n    order.total = 18.5;\n    order.save();\n    \n    IO.println(\"订单数：\" + Order.findAll().size());\n}"
               }
             ]
           }
@@ -3474,11 +3497,6 @@ export const courses: Course[] =[
             "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
-                "id": "b1",
-                "type": "text",
-                "content": "变量用来存储数据\n\n定义语法：let 变量名 = 值\n\n业务模拟：你在商店买了2元牛奶和5元面包,请计算总价"
-              },
-              {
                 "id": "b2",
                 "type": "code",
                 "language": "javascript",
@@ -3503,7 +3521,7 @@ export const courses: Course[] =[
                 "rows": [
                   ["数字", "整数或小数", "let price = 9.9"],
                   ["字符串", "文本内容", "let name = '张三'"],
-                  ["布尔", "真/假", "let isPaid = true"]
+                  ["布尔", "真/假", "let status = true"]
                 ]
               },
               {
@@ -3515,7 +3533,7 @@ export const courses: Course[] =[
                 "id": "b4",
                 "type": "code",
                 "language": "javascript",
-                "code": "let userName = '张三'       // 保存用户姓名\n\nlet spu1 = '牛奶'            // 商品名称\nlet spu1_price = 2.5         // 价格\nlet spu1_count = 3           // 数量\n\nlet spu2 = '面包'\nlet spu2_price = 5.5\nlet spu2_count = 2\n\nlet total = spu1_price * spu1_count + spu2_price * spu2_count\nlet isPaid = true            // 支付状态\n\nconsole.log('购物车:', spu1, spu1_price + '元', spu2, spu2_price + '元')\nconsole.log('总价:', total + '元')\nconsole.log('已支付:', isPaid)"
+                "code": "let userName = '张三'       // 保存用户姓名\n\nlet spu1 = '牛奶'            // 商品名称\nlet spu1_price = 2.5         // 价格\nlet spu1_count = 3           // 数量\n\nlet spu2 = '面包'\nlet spu2_price = 5.5\nlet spu2_count = 2\n\nlet total = spu1_price * spu1_count + spu2_price * spu2_count\nlet status = true            // 支付状态\n\nconsole.log('购物车:', spu1, spu1_price + '元', spu2, spu2_price + '元')\nconsole.log('总价:', total + '元')\nconsole.log('已支付:', status)"
               }
             ]
           },
