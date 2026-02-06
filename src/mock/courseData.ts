@@ -333,22 +333,22 @@ export const courses: Course[] =[
                   [
                     "int",
                     "整数类型",
-                    "int count = 3;(3袋牛奶)"
+                    "int spuCount = 3;(购买数量)"
                   ],
                   [
                     "double",
                     "小数类型",
-                    "double price = 2.5; (牛奶单价2块5)"
+                    "double spuPrice = 2.5; (商品单价)"
                   ],
                   [
                     "String",
                     "字符串(要加双引号)",
-                    "String name = \"牛奶\";(商品名称)"
+                    "String spuName = \"牛奶\";(商品名称)"
                   ],
                   [
                     "boolean",
                     "布尔类型(存真假true,false)",
-                    "boolean status = true; (是否已支付)"
+                    "boolean status = true; (支付状态)"
                   ]
                 ]
               },
@@ -357,7 +357,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "java",
                 "filename": "Main.java示例",
-                "code": "//不同类型变量存储订单信息\nvoid main() {\n    String name = \"牛奶\";//字符串注意加双引号\n    double price = 2.5;\n    int count = 3;\n    boolean status = true;\n    \n    IO.println(\"商品名称：\" + name);\n    IO.println(\"商品价格：\" + price + \" 元\");\n    IO.println(\"购买数量：\" + count);\n    IO.println(\"已支付：\" + status);\n}"
+                "code": "//不同类型变量存储订单信息\nvoid main() {\n    String userName = \"张三\";         //用户名称，字符串注意加双引号\n    String spuName = \"牛奶\";         //商品名称\n    double spuPrice = 2.5;         //商品单价\n    int spuCount = 3;              //购买数量\n    double total = 7.5;            //订单总价\n    boolean status = true;         //支付状态（true已支付/false未支付）\n    \n    IO.println(\"用户名称：\" + userName);\n    IO.println(\"商品名称：\" + spuName);\n    IO.println(\"商品单价：\" + spuPrice + \" 元\");\n    IO.println(\"购买数量：\" + spuCount);\n    IO.println(\"订单总价：\" + total + \" 元\");\n    IO.println(\"支付状态：\" + status);\n}"
               }
             ]
           },
@@ -383,7 +383,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "java",
                 "filename": "Main.java示例",
-                "code": "//定义订单类\npublic class Order {\n    public String name;\n    public double price;\n    public int count;\n    public boolean isPaid;\n}\n\nvoid main() {\n    //创建对象\n    Order order = new Order();\n    order.name = \"牛奶\"; //字符串注意加双引号\n    order.price = 2.5;\n    order.count = 3;\n    order.isPaid = true;\n    \n    //输出信息\n    IO.println(\"商品名称：\" + order.name);\n    IO.println(\"商品价格：\" + order.price + \" 元\");\n    IO.println(\"购买数量：\" + order.count);\n    IO.println(\"已支付：\" + order.isPaid);\n}"
+                "code": "//定义订单类\npublic class Order {\n    public String userName;\n    public String spuName;\n    public double spuPrice;\n    public int spuCount;\n    public double total;\n    public boolean status;\n}\n\nvoid main() {\n    //创建对象\n    Order order = new Order();\n    order.userName = \"张三\"; //字符串注意加双引号\n    order.spuName = \"牛奶\";\n    order.spuPrice = 2.5;\n    order.spuCount = 3;\n    order.total = 7.5;\n    order.status = true;\n    \n    //输出信息\n    IO.println(\"用户名称：\" + order.userName);\n    IO.println(\"商品名称：\" + order.spuName);\n    IO.println(\"商品单价：\" + order.spuPrice + \" 元\");\n    IO.println(\"购买数量：\" + order.spuCount);\n    IO.println(\"订单总价：\" + order.total + \" 元\");\n    IO.println(\"支付状态：\" + order.status);\n}"
               }
             ]
           },
@@ -409,7 +409,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "java",
                 "filename": "Main.java示例",
-                "code": "import java.util.*;\n\npublic class Spu {\n    public String name;\n    public double price;\n    public int count;\n    public boolean isPaid;\n}\n\nvoid main() {\n    //创建数组存储多个Spu\n    List<Spu> list = new ArrayList<>();\n    \n    //创建第1个Spu并添加到数组\n    Spu spu1 = new Spu();\n    spu1.name = \"牛奶\";\n    spu1.price = 2.5;\n    spu1.count = 3;\n    spu1.isPaid = true;\n    list.add(spu1);\n    \n    //创建第2个Spu并添加到数组\n    Spu spu2 = new Spu();\n    spu2.name = \"面包\";\n    spu2.price = 5.5;\n    spu2.count = 2;\n    spu2.isPaid = false;\n    list.add(spu2);\n    \n    //遍历数组查看所有Spu信息\n    for (Spu spu : list) {\n        IO.println(\"商品名称：\" + spu.name);\n        IO.println(\"商品价格：\" + spu.price + \" 元\");\n        IO.println(\"购买数量：\" + spu.count);\n        IO.println(\"已支付：\" + spu.isPaid);\n        IO.println(\"————————\");\n    }\n}"
+                "code": "import java.util.*;\n\npublic class Order {\n    public String userName;\n    public String spuName;\n    public double spuPrice;\n    public int spuCount;\n    public double total;\n    public boolean status;\n}\n\nvoid main() {\n    //创建数组存储多个Order\n    List<Order> list = new ArrayList<>();\n    \n    //创建第1个订单并添加到数组\n    Order order1 = new Order();\n    order1.userName = \"张三\";\n    order1.spuName = \"牛奶\";\n    order1.spuPrice = 2.5;\n    order1.spuCount = 3;\n    order1.total = 7.5;\n    order1.status = true;\n    list.add(order1);\n    \n    //创建第2个订单并添加到数组\n    Order order2 = new Order();\n    order2.userName = \"李四\";\n    order2.spuName = \"面包\";\n    order2.spuPrice = 5.5;\n    order2.spuCount = 2;\n    order2.total = 11.0;\n    order2.status = false;\n    list.add(order2);\n    \n    //遍历数组查看所有订单信息\n    for (Order order : list) {\n        IO.println(\"用户名称：\" + order.userName);\n        IO.println(\"商品名称：\" + order.spuName);\n        IO.println(\"商品单价：\" + order.spuPrice + \" 元\");\n        IO.println(\"购买数量：\" + order.spuCount);\n        IO.println(\"订单总价：\" + order.total + \" 元\");\n        IO.println(\"支付状态：\" + order.status);\n        IO.println(\"————————\");\n    }\n}"
               }
             ]
           }
@@ -663,7 +663,7 @@ export const courses: Course[] =[
               {
                 "id": "b1-tip",
                 "type": "tip",
-                "content": "Spu是类（模板），new Spu()创建的是对象（实例）。\n类只有一个，对象可以创建多个。"
+                "content": "Order是类（模板），new Order()创建的是对象（实例）。\n类只有一个，对象可以创建多个。"
               },
               {
                 "id": "b1-1",
@@ -677,7 +677,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "java",
                 "filename": "Main.java示例",
-                "code": "class Spu {\n    String name;      //字符串注意加双引号\n    double price;\n    int count;\n    boolean isPaid;\n}\n\nvoid main() {\n    Spu spu = new Spu();\n    spu.name = \"牛奶\";\n    spu.price = 2.5;\n    spu.count = 3;\n    spu.isPaid = true;\n    \n    IO.println(\"商品名称：\" + spu.name);\n    IO.println(\"商品价格：\" + spu.price + \" 元\");\n    IO.println(\"购买数量：\" + spu.count);\n    IO.println(\"已支付：\" + spu.isPaid);\n}"
+                "code": "class Order {\n    String userName;    //用户名称\n    String spuName;     //商品名称，字符串注意加双引号\n    double spuPrice;    //商品单价\n    int spuCount;       //购买数量\n    double total;       //订单总价\n    boolean status;     //支付状态\n}\n\nvoid main() {\n    Order order = new Order();\n    order.userName = \"张三\";\n    order.spuName = \"牛奶\";\n    order.spuPrice = 2.5;\n    order.spuCount = 3;\n    order.total = 7.5;\n    order.status = true;\n    \n    IO.println(\"用户名称：\" + order.userName);\n    IO.println(\"商品名称：\" + order.spuName);\n    IO.println(\"商品单价：\" + order.spuPrice + \" 元\");\n    IO.println(\"购买数量：\" + order.spuCount);\n    IO.println(\"订单总价：\" + order.total + \" 元\");\n    IO.println(\"支付状态：\" + order.status);\n}"
               }
             ]
           },
@@ -694,7 +694,7 @@ export const courses: Course[] =[
               {
                 "id": "b1-tip",
                 "type": "tip",
-                "content": "方法必须通过对象调用：order.save()\n不能直接调用：save() ✗"
+                "content": "方法必须通过对象调用：order.insert()\n不能直接调用：insert() ✗"
               },
               {
                 "id": "b1-1",
@@ -708,7 +708,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "java",
                 "filename": "Main.java示例",
-                "code": "class Order {\n    String userName;\n    double total;\n    \n    void save() {\n        IO.println(\"保存订单：\" + userName + \", \" + total + \"元\");\n    }\n}\n\nvoid main() {\n    Order order = new Order();\n    order.userName = \"张三\";\n    order.total = 18.5;\n    order.save();\n}"
+                "code": "class Order {\n    String userName;\n    String spuName;\n    double spuPrice;\n    int spuCount;\n    double total;\n    boolean status;\n    \n    void insert() {\n        IO.println(\"保存订单：\" + userName + \", \" + spuName + \", 总价\" + total + \"元\");\n    }\n}\n\nvoid main() {\n    Order order = new Order();\n    order.userName = \"张三\";\n    order.spuName = \"牛奶\";\n    order.spuPrice = 2.5;\n    order.spuCount = 3;\n    order.total = 7.5;\n    order.status = true;\n    order.insert();\n}"
               }
             ]
           },
@@ -734,7 +734,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "java",
                 "filename": "Main.java示例",
-                "code": "class Order {\n    String userName;\n    double total;\n    \n    void save(String userName, double total) {\n        this.userName = userName;\n        this.total = total;\n        IO.println(\"保存订单：\" + this.userName + \", \" + this.total + \"元\");\n    }\n}\n\nvoid main() {\n    Order order = new Order();\n    order.save(\"张三\", 18.5);\n}"
+                "code": "class Order {\n    String userName;\n    String spuName;\n    double spuPrice;\n    int spuCount;\n    double total;\n    boolean status;\n    \n    void insert(String userName, String spuName, double spuPrice, int spuCount, double total, boolean status) {\n        this.userName = userName;\n        this.spuName = spuName;\n        this.spuPrice = spuPrice;\n        this.spuCount = spuCount;\n        this.total = total;\n        this.status = status;\n        IO.println(\"保存订单：\" + this.userName + \", \" + this.spuName);\n    }\n}\n\nvoid main() {\n    Order order = new Order();\n    order.insert(\"张三\", \"牛奶\", 2.5, 3, 7.5, true);\n}"
               }
             ]
           },
@@ -760,7 +760,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "java",
                 "filename": "Main.java示例",
-                "code": "class Order {\n    String userName;\n    double total;\n    \n    boolean save(String userName, double total) {\n        this.userName = userName;\n        this.total = total;\n        IO.println(\"保存订单：\" + userName);\n        return true;\n    }\n}\n\nvoid main() {\n    Order order = new Order();\n    boolean ok = order.save(\"张三\", 18.5);\n    IO.println(\"保存结果：\" + ok);\n}"
+                "code": "class Order {\n    String userName;\n    String spuName;\n    double spuPrice;\n    int spuCount;\n    double total;\n    boolean status;\n    \n    boolean insert(String userName, String spuName, double spuPrice, int spuCount, double total, boolean status) {\n        this.userName = userName;\n        this.spuName = spuName;\n        this.spuPrice = spuPrice;\n        this.spuCount = spuCount;\n        this.total = total;\n        this.status = status;\n        IO.println(\"保存订单：\" + userName);\n        return true;\n    }\n}\n\nvoid main() {\n    Order order = new Order();\n    boolean ok = order.insert(\"张三\", \"牛奶\", 2.5, 3, 7.5, true);\n    IO.println(\"保存结果：\" + ok);\n}"
               }
             ]
           },
@@ -777,7 +777,7 @@ export const courses: Course[] =[
               {
                 "id": "b1-tip",
                 "type": "tip",
-                "content": "静态 vs 非静态：\n• 静态：类名.方法() → Order.findAll()\n• 非静态：对象.方法() → order.save()"
+                "content": "静态 vs 非静态：\n• 静态：类名.方法() → Order.selectList()\n• 非静态：对象.方法() → order.insert()"
               },
               {
                 "id": "b1-1",
@@ -791,7 +791,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "java",
                 "filename": "Main.java示例",
-                "code": "import java.util.*;\n\nclass Order {\n    String userName;\n    double total;\n    static List<Order> list = new ArrayList<>();\n    \n    void save() {\n        Order.list.add(this);\n        IO.println(\"保存订单：\" + userName);\n    }\n    \n    static void findAll() {\n        for (Order order : Order.list) {\n            IO.println(\"用户：\" + order.userName + \", 总价：\" + order.total + \"元\");\n        }\n    }\n}\n\nvoid main() {\n    Order order1 = new Order();\n    order1.userName = \"张三\";\n    order1.total = 18.5;\n    order1.save();\n    \n    Order order2 = new Order();\n    order2.userName = \"李四\";\n    order2.total = 25.0;\n    order2.save();\n    \n    Order.findAll();\n}"
+                "code": "import java.util.*;\n\nclass Order {\n    String userName;\n    String spuName;\n    double spuPrice;\n    int spuCount;\n    double total;\n    boolean status;\n    static List<Order> list = new ArrayList<>();\n    \n    void insert() {\n        Order.list.add(this);\n        IO.println(\"保存订单：\" + userName + \", \" + spuName);\n    }\n    \n    static void selectList() {\n        for (Order order : Order.list) {\n            IO.println(\"用户：\" + order.userName + \", 商品：\" + order.spuName + \", 总价：\" + order.total + \"元\");\n        }\n    }\n}\n\nvoid main() {\n    Order order1 = new Order();\n    order1.userName = \"张三\";\n    order1.spuName = \"牛奶\";\n    order1.spuPrice = 2.5;\n    order1.spuCount = 3;\n    order1.total = 7.5;\n    order1.status = true;\n    order1.insert();\n    \n    Order order2 = new Order();\n    order2.userName = \"李四\";\n    order2.spuName = \"面包\";\n    order2.spuPrice = 5.5;\n    order2.spuCount = 2;\n    order2.total = 11.0;\n    order2.status = false;\n    order2.insert();\n    \n    Order.selectList();\n}"
               }
             ]
           },
@@ -817,7 +817,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "java",
                 "filename": "Main.java示例",
-                "code": "import java.util.*;\n\nclass Base<T> {\n    static List list = new ArrayList<>();\n    \n    void save() {\n        Base.list.add(this);\n    }\n    \n    static List findAll() {\n        return Base.list;\n    }\n}\n\nclass Order extends Base<Order> {\n    String userName;\n    double total;\n}\n\nvoid main() {\n    Order order = new Order();\n    order.userName = \"张三\";\n    order.total = 18.5;\n    order.save();\n    \n    IO.println(\"订单数：\" + Order.findAll().size());\n}"
+                "code": "import java.util.*;\n\nclass Base<T> {\n    static List list = new ArrayList<>();\n    \n    void insert() {\n        Base.list.add(this);\n    }\n    \n    static List selectList() {\n        return Base.list;\n    }\n}\n\nclass Order extends Base<Order> {\n    String userName;\n    String spuName;\n    double spuPrice;\n    int spuCount;\n    double total;\n    boolean status;\n}\n\nvoid main() {\n    Order order = new Order();\n    order.userName = \"张三\";\n    order.spuName = \"牛奶\";\n    order.spuPrice = 2.5;\n    order.spuCount = 3;\n    order.total = 7.5;\n    order.status = true;\n    order.insert();\n    \n    IO.println(\"订单数：\" + Order.selectList().size());\n}"
               }
             ]
           }
@@ -844,244 +844,284 @@ export const courses: Course[] =[
               {
                 "id": "b1",
                 "type": "text",
-                "content": "我们的程序能下单了，但无法通过网页操作。\nHTTP接口 = 远程调函数。用户通过网页远程下单。"
+                "content": "程序能下单保存了，但无法通过网页操作。\nHTTP接口 = 远程调函数。用户通过网页远程下单。"
               }
             ]
           },
           {
             "id": "l2",
+            "title": "创建SpringBoot Web项目",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "SpringBoot是Java Web开发框架，自动配置了Web服务器、HTTP处理等功能。"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "创建SpringBoot Web项目的步骤："
+              },
+              {
+                "id": "b3",
+                "type": "list",
+                "items": [
+                  "第1步：打开IDEA，点击创建项目",
+                  "第2步：选择 Springboot maven项目，点下一步",
+                  "第4步：勾选 Spring Web 依赖（提供HTTP接口功能）",
+                  "第5步：点击创建",
+                ]
+              }
+            ]
+          },
+          {
+            "id": "l2-5",
+            "title": "GET接口",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "HTTP分为GET和POST接口，GET用来获取数据，创建GET接口："
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "第1步：在DemoApplication.java中添加@RestController注解"
+              },
+              {
+                "id": "b3",
+                "type": "text",
+                "content": "第2步：@GetMapping定义GET接口，@RequestParam定义请求参数"
+              },
+              {
+                "id": "b4",
+                "type": "code",
+                "language": "java",
+                "filename": "DemoApplication.java",
+                "code": "import org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\nimport org.springframework.web.bind.annotation.*;\n\n@SpringBootApplication\n@RestController\npublic class DemoApplication {\n    public static void main(String[] args) {\n        SpringApplication.run(DemoApplication.class, args);\n    }\n    // GET请求：查询问候语\n    @GetMapping(\"/hello\")\n    public String hello(@RequestParam String name, @RequestParam int age) {\n        return \"你好，\" + name + \"，你\" + age + \"岁了！\";\n    }\n}"
+              },
+              {
+                "id": "b5",
+                "type": "text",
+                "content": "第3步：启动项目，浏览器访问"
+              },
+              {
+                "id": "b6",
+                "type": "list",
+                "items": [
+                  "点击main方法左侧绿色箭头启动",
+                  "浏览器访问：http://localhost:8080/hello?name=张三&age=18",
+                  "页面显示：你好，张三，你18岁了！"
+                ]
+              },
+              {
+                "id": "b7",
+                "type": "tip",
+                "content": "URL结构说明：\nhttp://localhost:8080是服务器地址\n/hello是接口路径\n?name=张三&age=18是参数（用?开始，多个参数用&连接）"
+              }
+            ]
+          },
+          {
+            "id": "l2-6",
+            "title": "POST接口",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "POST接口用来创建数据，参数用JSON格式传递。"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "第1步：定义请求对象和响应对象"
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "java",
+                "filename": "HelloReq.java",
+                "code": "// 请求对象\npublic class HelloReq {\n    public String name;\n    public int age;\n}"
+              },
+              {
+                "id": "b4",
+                "type": "code",
+                "language": "java",
+                "filename": "HelloResp.java",
+                "code": "// 响应对象\npublic class HelloResp {\n    public String message;\n}"
+              },
+              {
+                "id": "b5",
+                "type": "text",
+                "content": "第2步：@PostMapping定义POST接口，@RequestBody接收JSON参数"
+              },
+              {
+                "id": "b6",
+                "type": "code",
+                "language": "java",
+                "filename": "DemoApplication.java",
+                "code": "    // POST请求：创建问候语\n    @PostMapping(\"/hello\")\n    public HelloResp createHello(@RequestBody HelloReq req) {\n        HelloResp resp = new HelloResp();\n        resp.message = \"你好，\" + req.name + \"，你\" + req.age + \"岁了！\";\n        return resp;\n    }"
+              },
+              {
+                "id": "b7",
+                "type": "text",
+                "content": "第3步：创建 test.http 文件测试 (post无法浏览器url访问,用http文件访问)"
+              },
+              {
+                "id": "b8",
+                "type": "code",
+                "language": "http",
+                "filename": "test.http",
+                "code": "### POST请求\nPOST http://localhost:8080/hello\nContent-Type: application/json\n\n{\"name\": \"张三\", \"age\": 18}"
+              },
+              {
+                "id": "b9",
+                "type": "tip",
+                "content": "JSON和请求对象的映射关系：\n{\"name\": \"张三\", \"age\": 18}\nname → HelloReq.name = \"张三\"\nage → HelloReq.age = 18"
+              },
+              {
+                "id": "b10",
+                "type": "text",
+                "content": "点击绿色箭头发送请求，响应结果："
+              },
+              {
+                "id": "b11",
+                "type": "code",
+                "language": "json",
+                "filename": "响应结果.json",
+                "code": "{\"message\": \"你好，张三，你18岁了！\"}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "下单接口",
+        "lessons": [
+          {
+            "id": "l1",
             "title": "下单接口",
             "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "定义HTTP接口的步骤：\n1、定义请求对象（接收用户传入的参数）\n2、定义响应对象（返回给用户的业务数据）\n3、定义公共响应对象BaseResp（统一返回格式）\n4、@PostMapping标注接口URL地址\n5、用户通过URL+JSON参数访问接口"
+                "content": "上一章我们用 order.insert() 保存订单。\n现在通过HTTP接口，让用户从网页远程调用这些方法。"
               },
               {
                 "id": "b2",
                 "type": "text",
-                "content": "第1步：定义请求对象\n请求对象封装用户传入的参数。"
+                "content": "定义请求对象和响应对象"
               },
               {
                 "id": "b3",
                 "type": "code",
                 "language": "java",
                 "filename": "CreateOrderReq.java",
-                "code": "// 请求对象：接收用户传入的参数\npublic class CreateOrderReq {\n    public String userName;           // 用户名称\n    public List<listItem> items;      // 商品列表\n}\n\n// 购物车商品\npublic class listItem {\n    public String name;    // 商品名称\n    public int count;      // 购买数量\n}"
+                "code": "// 请求对象：与Order属性一致\npublic class CreateOrderReq {\n    public String userName;\n    public String spuName;\n    public double spuPrice;\n    public int spuCount;\n    public double total;\n    public boolean status;\n}"
               },
               {
                 "id": "b4",
-                "type": "text",
-                "content": "第2步：定义响应对象\n响应对象只包含业务数据，不包含code、msg。"
-              },
-              {
-                "id": "b5",
                 "type": "code",
                 "language": "java",
                 "filename": "CreateOrderResp.java",
-                "code": "// 响应对象：只包含业务数据\npublic class CreateOrderResp {\n    public double total;   // 订单总价\n}"
+                "code": "// 响应对象\npublic class CreateOrderResp {\n    public int orderId;\n}"
+              },
+              {
+                "id": "b5",
+                "type": "text",
+                "content": "定义公共响应对象BaseResp（统一返回格式）"
               },
               {
                 "id": "b6",
-                "type": "text",
-                "content": "第3步：定义公共响应对象BaseResp\n所有接口统一返回BaseResp，包含：\ncode：状态码，0表示成功，非0表示失败\nmsg：提示信息\ndata：业务数据（放响应对象）"
-              },
-              {
-                "id": "b7",
                 "type": "code",
                 "language": "java",
                 "filename": "BaseResp.java",
-                "code": "// 公共响应对象：所有接口统一返回这个格式\npublic class BaseResp<T> {\n    public int code;      // 0成功，非0失败\n    public String msg;    // 提示信息\n    public T data;        // 业务数据\n    \n    // 便捷方法：返回成功\n    public static <T> BaseResp<T> ok(T data) {\n        BaseResp<T> resp = new BaseResp<>();\n        resp.code = 0;\n        resp.msg = \"success\";\n        resp.data = data;\n        return resp;\n    }\n    \n    // 便捷方法：返回失败\n    public static <T> BaseResp<T> error(int code, String msg) {\n        BaseResp<T> resp = new BaseResp<>();\n        resp.code = code;\n        resp.msg = msg;\n        return resp;\n    }\n}"
-              },
-              {
-                "id": "b8",
-                "type": "text",
-                "content": "第4步：@PostMapping标注接口URL\n@PostMapping(\"/createOrder\")把函数变成HTTP接口。\n用户访问http://localhost:8080/createOrder就会调用这个函数。\n@RequestBody把JSON参数自动转成请求对象。"
-              },
-              {
-                "id": "b9",
-                "type": "code",
-                "language": "java",
-                "filename": "DemoApplication.java",
-                "code": "import java.util.*;\n\n@SpringBootApplication\n@RestController\npublic class DemoApplication {\n\n    // 商品数据（单价）\n    static Map<String, Double> prices = new HashMap<>();\n    static {\n        prices.put(\"牛奶\", 2.5);\n        prices.put(\"面包\", 5.5);\n        prices.put(\"可乐\", 3.0);\n    }\n    \n    // 订单列表（保存所有订单）\n    static List<Order> orders = new ArrayList<>();\n\n    public static void main(String[] args) {\n        SpringApplication.run(DemoApplication.class, args);\n    }\n\n    // 下单接口\n    @PostMapping(\"/createOrder\")\n    public BaseResp<CreateOrderResp> createOrder(@RequestBody CreateOrderReq req) {\n        // 计算总价\n        double total = 0;\n        StringBuilder itemStr = new StringBuilder();\n        for (listItem item : req.items) {\n            Double price = prices.get(item.name);\n            if (price == null) {\n                return BaseResp.error(1, \"商品不存在: \" + item.name);\n            }\n            total = total + price * item.count;\n            itemStr.append(item.name).append(\"x\").append(item.count).append(\",\");\n        }\n        \n        // 保存订单到全局list（默认未支付）\n        Order order = new Order();\n        order.id = orders.size() + 1;\n        order.userName = req.userName;\n        order.item = itemStr.toString();\n        order.total = total;\n        order.paid = 0;  // 默认未支付\n        order.createdAt = \"2026-01-28\";\n        orders.add(order);\n        \n        // 返回成功\n        CreateOrderResp data = new CreateOrderResp();\n        data.total = total;\n        return BaseResp.ok(data);\n    }\n}"
-              },
-              {
-                "id": "b10",
-                "type": "text",
-                "content": "第5步：URL + JSON参数访问接口\n\nJSON是什么？数据传输格式，用文本表示数据。\nJSON格式规则：\n• 花括号{}表示对象\n• 键值对用冒号分隔，字符串用双引号\n• 数字不需要引号"
-              },
-              {
-                "id": "b11",
-                "type": "text",
-                "content": "JSON和请求对象的映射关系：\nJSON的key → 对象的字段名\nJSON的value → 字段的值\n\n例如：{\"name\": \"牛奶\", \"count\": 3}\nname → CreateOrderReq.name = \"牛奶\"\ncount → CreateOrderReq.count = 3"
-              },
-              {
-                "id": "b12",
-                "type": "text",
-                "content": "IDEA新建 test.http 文件，点击绿色箭头发送请求："
-              },
-              {
-                "id": "b13",
-                "type": "code",
-                "language": "http",
-                "filename": "test.http",
-                "code": "### 下单：购买3瓶牛奶和2个面包\nPOST http://localhost:8080/createOrder\nContent-Type: application/json\n\n{\"userName\": \"张三\", \"items\": [{\"name\": \"牛奶\", \"count\": 3}, {\"name\": \"面包\", \"count\": 2}]}"
-              },
-              {
-                "id": "b14",
-                "type": "text",
-                "content": "响应结果（JSON格式）：\ncode=0表示成功，data里面是业务数据"
-              },
-              {
-                "id": "b15",
-                "type": "code",
-                "language": "json",
-                "filename": "响应结果.json",
-                "code": "{\n  \"code\": 0,\n  \"msg\": \"下单成功\",\n  \"data\": {\n    \"total\": 7.5\n  }\n}"
-              },
-              {
-                "id": "b16",
-                "type": "text",
-                "content": "JSON和响应对象的映射关系：\ncode → BaseResp.code = 0\nmsg → BaseResp.msg = \"下单成功\"\ndata → BaseResp.data = CreateOrderResp对象\ndata.total → CreateOrderResp.total = 7.5"
-              },
-              {
-                "id": "b17",
-                "type": "text",
-                "content": "创建前端网页，调用这个接口：\n1、网页显示商品列表（牛奶、面包）\n2、用户选择商品、输入数量\n3、点下单按钮，发送JSON参数到接口\n4、接口计算总价，返回BaseResp\n5、网页从data取出订单结果显示"
-              }
-            ]
-          },
-          {
-            "id": "l3",
-            "title": "IDEA断点调试",
-            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "接口报错了怎么办？用断点调试查看每一步的执行情况。\n断点调试 = 暂停程序，查看变量值。"
-              },
-              {
-                "id": "b2",
-                "type": "text",
-                "content": "调试步骤：\n1、在代码行号左侧点击，添加红色断点\n2、点击Debug按钮（虫子图标）启动程序\n3、发送请求，程序会在断点处暂停\n4、查看变量值，点击Step Over执行下一行"
-              },
-              {
-                "id": "b3",
-                "type": "list",
-                "items": [
-                  "在createOrder方法第一行打断点",
-                  "Debug启动程序",
-                  "发送test.http下单请求",
-                  "程序暂停，查看req参数内容",
-                  "Step Over执行，观察变量变化"
-                ]
-              },
-              {
-                "id": "b4",
-                "type": "text",
-                "content": "常用调试按钮："
-              },
-              {
-                "id": "b5",
-                "type": "table",
-                "headers": ["按钮", "功能", "快捷键"],
-                "rows": [
-                  ["Step Over", "执行当前行，跳到下一行", "F8"],
-                  ["Step Into", "进入方法内部", "F7"],
-                  ["Resume", "继续执行到下一个断点", "F9"],
-                  ["Stop", "停止调试", "Ctrl+F2"]
-                ]
-              },
-              {
-                "id": "b6",
-                "type": "tip",
-                "content": "鼠标悬停在变量上可以查看当前值。\n在Variables窗口可以查看所有变量。"
-              }
-            ]
-          },
-          {
-            "id": "l4",
-            "title": "查看订单接口",
-            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "下单后需要查看订单列表。\n每个接口都要定义请求对象和响应对象。"
-              },
-              {
-                "id": "b2",
-                "type": "text",
-                "content": "第1步：定义请求对象\n查看订单不需要参数，但仍要定义空的请求对象（规范统一）。"
-              },
-              {
-                "id": "b3",
-                "type": "code",
-                "language": "java",
-                "filename": "GetOrdersReq.java",
-                "code": "// 请求对象（无参数）\npublic class GetOrdersReq {\n    // 暂无参数\n}"
-              },
-              {
-                "id": "b4",
-                "type": "text",
-                "content": "第2步：定义响应对象\n返回订单列表，每个订单包含商品名称、数量、总价。"
-              },
-              {
-                "id": "b5",
-                "type": "code",
-                "language": "java",
-                "filename": "OrderInfo.java",
-                "code": "// 订单信息\npublic class OrderInfo {\n    public String name;    // 商品名称\n    public int count;      // 购买数量\n    public double total;   // 订单总价\n}"
-              },
-              {
-                "id": "b6",
-                "type": "code",
-                "language": "java",
-                "filename": "GetOrdersResp.java",
-                "code": "// 响应对象\npublic class GetOrdersResp {\n    public List<OrderInfo> list;  // 订单列表\n}"
+                "code": "// 公共响应对象\npublic class BaseResp<T> {\n    public int code;      // 0成功，非0失败\n    public String msg;\n    public T data;        // 业务数据\n    \n    public static <T> BaseResp<T> ok(T data) {\n        BaseResp<T> resp = new BaseResp<>();\n        resp.code = 0;\n        resp.msg = \"success\";\n        resp.data = data;\n        return resp;\n    }\n}"
               },
               {
                 "id": "b7",
                 "type": "text",
-                "content": "第3步：@PostMapping标注接口"
+                "content": "下单接口实现"
               },
               {
                 "id": "b8",
                 "type": "code",
                 "language": "java",
                 "filename": "DemoApplication.java",
-                "code": "// 订单列表（存储下单数据）\nstatic List<Order> orders = new ArrayList<>();\n\n// 查看订单接口\n@PostMapping(\"/getOrders\")\npublic BaseResp<List<Order>> getOrders(@RequestBody GetOrdersReq req) {\n    return BaseResp.ok(orders);\n}"
+                "code": "@SpringBootApplication\n@RestController\npublic class DemoApplication {\n    \n    static List<Order> orders = new ArrayList<>();\n    static int idCounter = 1;\n\n    public static void main(String[] args) {\n        SpringApplication.run(DemoApplication.class, args);\n    }\n\n    // 下单接口\n    @PostMapping(\"/createOrder\")\n    public BaseResp<CreateOrderResp> createOrder(@RequestBody CreateOrderReq req) {\n        Order order = new Order();\n        order.id = idCounter++;\n        order.userName = req.userName;\n        order.spuName = req.spuName;\n        order.spuPrice = req.spuPrice;\n        order.spuCount = req.spuCount;\n        order.total = req.total;\n        order.status = req.status;\n        orders.add(order);\n        \n        CreateOrderResp data = new CreateOrderResp();\n        data.orderId = order.id;\n        return BaseResp.ok(data);\n    }\n}"
               },
               {
                 "id": "b9",
                 "type": "text",
-                "content": "test.http测试查看订单："
+                "content": "test.http测试下单："
               },
               {
                 "id": "b10",
                 "type": "code",
                 "language": "http",
                 "filename": "test.http",
-                "code": "### 查看所有订单\nPOST http://localhost:8080/getOrders\nContent-Type: application/json\n\n{}"
+                "code": "### 下单\nPOST http://localhost:8080/createOrder\nContent-Type: application/json\n\n{\"userName\": \"张三\", \"spuName\": \"牛奶\", \"spuPrice\": 2.5, \"spuCount\": 3, \"total\": 7.5, \"status\": true}"
               },
               {
                 "id": "b11",
-                "type": "text",
-                "content": "响应结果（JSON数组）：\ndata是订单数组，用方括号[]包裹，里面是多个订单对象。"
-              },
-              {
-                "id": "b12",
                 "type": "code",
                 "language": "json",
                 "filename": "响应结果.json",
-                "code": "{\n  \"code\": 0,\n  \"msg\": \"success\",\n  \"data\": [\n    {\"id\": 1, \"userName\": \"张三\", \"item\": \"牛奶x3,面包x2,\", \"total\": 18.5, \"paid\": 0, \"createdAt\": \"2026-01-28\"},\n    {\"id\": 2, \"userName\": \"李四\", \"item\": \"可乐x5,\", \"total\": 15.0, \"paid\": 1, \"createdAt\": \"2026-01-28\"}\n  ]\n}"
+                "code": "{\"code\": 0, \"msg\": \"success\", \"data\": {\"orderId\": 1}}"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "查询接口",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "定义请求对象和接口实现"
               },
               {
-                "id": "b13",
+                "id": "b2",
+                "type": "code",
+                "language": "java",
+                "filename": "GetOrdersReq.java",
+                "code": "// 请求对象（无参数）\npublic class GetOrdersReq {\n}"
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "java",
+                "filename": "DemoApplication.java",
+                "code": "    // 查询接口\n    @PostMapping(\"/getOrders\")\n    public BaseResp<List<Order>> getOrders(@RequestBody GetOrdersReq req) {\n        return BaseResp.ok(orders);\n    }"
+              },
+              {
+                "id": "b4",
                 "type": "text",
-                "content": "JSON和响应对象的映射关系：\ndata → List<Order>对象\ndata[0] → 第1个Order对象\ndata[0].userName → Order.userName = \"张三\"\ndata[0].item → Order.item = \"牛奶x3,面包x2,\""
+                "content": "test.http测试查询："
+              },
+              {
+                "id": "b5",
+                "type": "code",
+                "language": "http",
+                "filename": "test.http",
+                "code": "### 查询订单\nPOST http://localhost:8080/getOrders\nContent-Type: application/json\n\n{}"
+              },
+              {
+                "id": "b6",
+                "type": "code",
+                "language": "json",
+                "filename": "响应结果.json",
+                "code": "{\n  \"code\": 0,\n  \"msg\": \"success\",\n  \"data\": [\n    {\"userName\": \"张三\", \"spuName\": \"牛奶\", \"spuPrice\": 2.5, \"spuCount\": 3, \"total\": 7.5, \"status\": true}\n  ]\n}"
+              },
+              {
+                "id": "b7",
+                "type": "tip",
+                "content": "data是JSON数组，用[]包裹多个订单对象"
               }
             ]
           }
@@ -1169,7 +1209,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "sql",
                 "filename": "init.sql",
-                "code": "-- 创建订单表\ncreate table if not exists orders (\n    id integer primary key autoincrement,\n    user_name text,\n    item text,\n    total real,\n    paid integer,\n    created_at text\n);"
+                "code": "-- 创建订单表\ncreate table if not exists orders (\n    id integer primary key autoincrement,\n    user_name text,\n    spu_name text,\n    spu_price real,\n    spu_count integer,\n    total real,\n    status integer,\n    created_at text\n);"
               },
               {
                 "id": "b3",
@@ -1183,9 +1223,11 @@ export const courses: Course[] =[
                 "rows": [
                   ["id", "integer(整数)", "主键，自动递增"],
                   ["user_name", "text(字符串)", "用户名称"],
-                  ["item", "text(字符串)", "商品+数量"],
+                  ["spu_name", "text(字符串)", "商品名称"],
+                  ["spu_price", "real(小数)", "商品单价"],
+                  ["spu_count", "integer(整数)", "购买数量"],
                   ["total", "real(小数)", "订单总价"],
-                  ["paid", "integer(整数)", "是否支付(0未支付/1已支付)"],
+                  ["status", "integer(整数)", "支付状态(0未支付/1已支付)"],
                   ["created_at", "text(字符串)", "创建时间"]
                 ]
               },
@@ -1208,32 +1250,27 @@ export const courses: Course[] =[
               },
               {
                 "id": "b2",
-                "type": "text",
-                "content": "完整语法："
-              },
-              {
-                "id": "b3",
                 "type": "code",
                 "language": "sql",
                 "filename": "insert语法",
-                "code": "insert into 表名 (字段1, 字段2, 字段3, ...) values (值1, 值2, 值3, ...);"
+                "code": "insert into 表名 values (值1, 值2, 值3, ...);"
               },
               {
-                "id": "b4",
+                "id": "b3",
                 "type": "text",
                 "content": "在IDEA的Database控制台执行：右键数据库 → 新建查询控制台 → 输入SQL语句 → 点击执行"
               },
               {
-                "id": "b5",
+                "id": "b4",
                 "type": "code",
                 "language": "sql",
                 "filename": "在控制台执行",
-                "code": "-- 插入一条订单\ninsert into orders (user_name, item, total, paid, created_at)\nvalues ('张三', '牛奶x3,面包x2', 18.5, 0, '2026-01-28');\n\n-- 再插入一条\ninsert into orders (user_name, item, total, paid, created_at)\nvalues ('李四', '可乐x5', 15.0, 1, '2026-01-28');"
+                "code": "-- 插入一条订单（id自增，填写null）\ninsert into orders values (null, '张三', '牛奶', 2.5, 3, 7.5, 1, '2026-01-28');\n\n-- 再插入一条\ninsert into orders values (null, '李四', '面包', 5.5, 2, 11.0, 0, '2026-01-28');"
               },
               {
-                "id": "b6",
+                "id": "b5",
                 "type": "tip",
-                "content": "id不需要填，数据库自动生成。执行后双击orders表查看数据。"
+                "content": "id自增，填写null自动生成。执行后双击orders表查看数据。"
               }
             ]
           },
@@ -1264,7 +1301,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "sql",
                 "filename": "在控制台执行",
-                "code": "-- 查询所有订单（所有字段）\nselect * from orders;\n\n-- 只查询用户名和总价\nselect user_name, total from orders;"
+                "code": "-- 查询所有订单（所有字段）\nselect * from orders;\n\n-- 只查询用户名和商品名\nselect user_name, spu_name from orders;"
               }
             ]
           },
@@ -1295,7 +1332,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "sql",
                 "filename": "在控制台执行",
-                "code": "-- 把id=1的订单改为已支付\nupdate orders set paid = 1 where id = 1;\n\n-- 修改多个字段\nupdate orders set total = 25.0, paid = 1 where id = 1;"
+                "code": "-- 把id=1的订单改为已支付\nupdate orders set status = 1 where id = 1;\n\n-- 修改多个字段\nupdate orders set spu_price = 3.0, status = 1 where id = 1;"
               },
               {
                 "id": "b5",
@@ -1331,7 +1368,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "sql",
                 "filename": "在控制台执行",
-                "code": "-- 删除id=1的订单\ndelete from orders where id = 1;\n\n-- 删除所有未支付订单\ndelete from orders where paid = 0;"
+                "code": "-- 删除id=1的订单\ndelete from orders where id = 1;\n\n-- 删除所有未支付订单\ndelete from orders where status = 0;"
               },
               {
                 "id": "b5",
@@ -1385,7 +1422,7 @@ export const courses: Course[] =[
                 "type": "code",
                 "language": "sql",
                 "filename": "在控制台执行",
-                "code": "-- 查询总价大于10的订单\nselect * from orders where total > 10;\n\n-- 查询已支付的订单\nselect * from orders where paid = 1;\n\n-- 查询未支付的订单\nselect * from orders where paid = 0;"
+                "code": "-- 查询单价大于3元的订单\nselect * from orders where spu_price > 3;\n\n-- 查询已支付的订单\nselect * from orders where status = 1;\n\n-- 查询未支付的订单\nselect * from orders where status = 0;"
               }
             ]
           },
