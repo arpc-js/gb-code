@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java开发工程师简历模板</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Microsoft YaHei', sans-serif; 
+      background: #f5f5f5; 
+      padding: 20px;
+    }
+    .resume {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #4A90D9;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }
+    .name { font-size: 28px; font-weight: bold; color: #333; }
+    .title { font-size: 16px; color: #4A90D9; margin-top: 5px; }
+    .contact { text-align: right; font-size: 14px; color: #666; line-height: 1.8; }
+    
+    .section { margin-bottom: 25px; }
+    .section-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #4A90D9;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .section-content { font-size: 14px; color: #333; line-height: 1.8; }
+    
+    .skills { display: flex; flex-wrap: wrap; gap: 10px; }
+    .skill-tag {
+      background: #e8f4fc;
+      color: #4A90D9;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    
+    .project { margin-bottom: 20px; }
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .project-name { font-weight: bold; font-size: 15px; }
+    .project-time { color: #999; font-size: 13px; }
+    .project-tech { color: #4A90D9; font-size: 13px; margin-bottom: 8px; }
+    .project-desc { color: #666; }
+    .project-desc li { margin-left: 20px; margin-bottom: 5px; }
+    
+    .print-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: #4A90D9;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .print-btn:hover { background: #3a7bc8; }
+    
+    @media print {
+      body { background: #fff; padding: 0; }
+      .resume { box-shadow: none; padding: 20px; }
+      .print-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">🖨️ 打印/保存PDF</button>
+  
+  <div class="resume">
+    <div class="header">
+      <div>
+        <div class="name">张三</div>
+        <div class="title">Java开发工程师 | 应届生/1年经验</div>
+      </div>
+      <div class="contact">
+        <div>📞 138-xxxx-xxxx</div>
+        <div>📧 zhangsan@email.com</div>
+        <div>🏠 北京市朝阳区</div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">💼 技术栈</div>
+      <div class="skills">
+        <span class="skill-tag">Java</span>
+        <span class="skill-tag">SpringBoot</span>
+        <span class="skill-tag">MyBatis</span>
+        <span class="skill-tag">MySQL</span>
+        <span class="skill-tag">Redis</span>
+        <span class="skill-tag">Git</span>
+        <span class="skill-tag">Linux</span>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">📁 项目经验</div>
+      
+      <div class="project">
+        <div class="project-header">
+          <span class="project-name">XX商城系统</span>
+          <span class="project-time">2025.06 - 2025.12</span>
+        </div>
+        <div class="project-tech">技术栈：SpringBoot + MyBatis + MySQL + Redis + JWT</div>
+        <div class="project-desc">
+          <ul>
+            <li><strong>项目描述：</strong>一个B2C电商平台，支持商品浏览、购物车、下单、支付等功能</li>
+            <li><strong>主要职责：</strong>负责用户模块和订单模块的开发</li>
+            <li><strong>技术亮点：</strong>
+              <ul>
+                <li>使用JWT实现无状态登录，拦截器统一验证Token，支持多端登录</li>
+                <li>采用乐观锁解决并发减库存问题，防止商品超卖</li>
+                <li>对接微信支付API，实现支付回调通知，保证订单状态一致性</li>
+                <li>使用Redis缓存热点商品数据，QPS提升约50%</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">🎓 教育背景</div>
+      <div class="section-content">
+        <div class="project-header">
+          <span class="project-name">XX大学 - 计算机科学与技术</span>
+          <span class="project-time">2021.09 - 2025.06</span>
+        </div>
+        <div>本科 | GPA: 3.5/4.0 | CET-6: 520</div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">🏆 个人优势</div>
+      <div class="section-content">
+        <ul style="margin-left: 20px;">
+          <li>熟悉Java基础、集合框架、多线程并发编程</li>
+          <li>熟悉Spring、SpringBoot、MyBatis等主流框架</li>
+          <li>熟悉MySQL数据库，了解索引优化、SQL调优</li>
+          <li>了解Redis缓存、消息队列等中间件</li>
+          <li>具有良好的编码习惯和团队协作能力</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

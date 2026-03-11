@@ -1,7 +1,8 @@
 import Base from '../core/Base';
+import {ctx} from "../core/Arpc.ts";
 
 // 课程 Active Record 类
-// arpc云对象，云端arpc对象继承base，自带增删改查
+// arpc云对象，云端 arpc 对象继承 base，自带增删改查
 export class Course extends Base {
     title: string = '';
     description: string = '';
@@ -17,21 +18,9 @@ export class Course extends Base {
         if (data.duration !== undefined) this.duration = data.duration;
         if (data.lessons !== undefined) this.lessons = data.lessons;
     }
-    
-    // 自定义add5 rpc方法
-    async add5(): Promise<this> {
-        console.log('add5:', this);
-        // 假如后端异常，直接抛出
-        // 不需要code，data。msg
-        throw new Error('这是测试5rpc方法');
-        return await super.add();
-    }
-    
-    async add6(): Promise<this> {
-        console.log('add6:', this);
-        // 假如后端异常，直接抛出
-        // 不需要code，data。msg
-        //throw new Error('这是测试6rpc方法');
-        return await super.add();
+    static async get1(): Promise<any> {
+        // 添加或更新课程
+        ctx.info(ctx.get('userId'),'1111')
+        throw new Error('1111');
     }
 }

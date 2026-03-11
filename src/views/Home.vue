@@ -1,242 +1,256 @@
 <template>
   <div class="home">
-    <h1>arpc框架CRUD演示</h1>
-    
-    <!-- 新增课程表单 -->
-    <div class="add-form">
-      <h3>新增课程</h3>
-      <input v-model="newCourse.title" placeholder="课程标题" />
-      <input v-model="newCourse.description" placeholder="课程描述" />
-      <input v-model.number="newCourse.price" type="number" placeholder="价格" />
-      <button @click="newCourse.add6()">添加课程</button>
-    </div>
-    
-    <!-- 课程列表 -->
-    <div class="course-list">
-      <div v-for="course in courses" :key="course.id" class="course-card">
-        <div v-if="editingId === course.id" class="edit-mode">
-          <input v-model="editCourse.title" />
-          <input v-model="editCourse.description" />
-          <input v-model.number="editCourse.price" type="number" />
-          <button @click="updateCourse">保存</button>
-          <button @click="editingId = null">取消</button>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+      <div class="nav-container">
+        <div class="nav-header">
+          <div class="logo">gb-code</div>
+          <span class="login-btn" @click="goLogin">登录</span>
         </div>
-        <div v-else>
-          <h3>{{ course.title }}</h3>
-          <p>{{ course.description }}</p>
-          <div class="card-footer">
-            <span class="price">￥{{ course.price }}</span>
-            <div class="actions">
-              <button @click="startEdit(course)" class="edit-btn">编辑</button>
-              <button @click="deleteCourse(course)" class="del-btn">删除</button>
-              <router-link :to="`/course/${course.id}`" class="detail-btn">详情</router-link>
-            </div>
+        <ul class="nav-list">
+          <li 
+            v-for="item in navItems" 
+            :key="item.id"
+            class="nav-item"
+            @click="goToPath(item.path)"
+          >
+            {{ item.name }}
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- 课程列表 -->
+    <div class="course-grid">
+      <div 
+        v-for="course in list" 
+        :key="course.id" 
+        class="course-card"
+        @click="goToLearn(course.courseId)"
+      >
+        <div class="cover" :class="'theme-' + course.theme">
+          <div class="cover-title">{{ course.title }}</div>
+          <div class="tech-icon">{{ course.icon }}</div>
+          <div class="decor-circle"></div>
+        </div>
+        <div class="info">
+          <h3>{{ course.name }}</h3>
+          <p>{{ course.desc }}</p>
+          <div class="meta">
+            <span class="tag">免费</span>
+            <span class="views">◎ {{ course.views }}</span>
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- 操作日志 -->
-    <div v-if="log" class="log">
-      <strong>最近操作:</strong> {{ log }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref } from 'vue';
-import { Course } from '../arpc/Course';
+import { useRouter } from 'vue-router'
+import { navItems, homeCoursesData } from '@/mock/courseData'
 
-// 编辑状态
-const editingId = ref(null);
-const log = ref('');
+const router = useRouter()
+const list = homeCoursesData
 
-//一行代码完成列表查询
-const courses = await Course.get();
-
-//2行代码完成新增
-//第一行new对象，双向绑定表单
-//对象.add()插入数据库了
-const newCourse = new Course();
-
-// 编辑中的课程
-let editCourse = null;
-
-// 新增
-async function addCourse() {
-  if (!newCourse.title) return;
-  
-  await newCourse.add1()//.catch((err) => {alert(err.message+'111');});
-  courses.push({ ...newCourse.toJSON() });
-  log.value = `新增成功: ${newCourse.title} (ID: ${newCourse.id})`;
-  
-  // 重置
-  newCourse.id = undefined;
-  newCourse.title = '';
-  newCourse.description = '';
-  newCourse.price = 0;
+function goToPath(path: string) {
+  router.push(path)
 }
 
-// 开始编辑
-function startEdit(course) {
-  editingId.value = course.id;
-  editCourse = new Course({ ...course });
+function goToLearn(pathId: string) {
+  router.push(`/learn/${pathId}`)
 }
 
-// 更新
-async function updateCourse() {
-  await editCourse.update();
-  
-  const index = courses.findIndex(c => c.id === editCourse.id);
-  if (index !== -1) courses[index] = { ...editCourse.toJSON() };
-  
-  log.value = `更新成功: ${editCourse.title}`;
-  editingId.value = null;
-}
-
-// 删除
-async function deleteCourse(course) {
-  if (!confirm('确定删除这个课程吗？')) return;
-  
-  const toDelete = new Course(course);
-  await toDelete.del();
-  
-  const index = courses.findIndex(c => c.id === course.id);
-  if (index !== -1) courses.splice(index, 1);
-  
-  log.value = `删除成功: ${course.title}`;
+function goLogin() {
+  router.push('/login')
 }
 </script>
 
 <style scoped>
-.home {
-  max-width: 1200px;
+.home { 
+  min-height: 100vh; 
+  background: #f5f5f5; 
+}
+
+/* 顶部导航 - 白色 */
+.top-nav {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-container {
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 20px;
-}
-
-.home h1 {
-  text-align: center;
-  color: #333;
-  margin-bottom: 30px;
-}
-
-.add-form {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
   display: flex;
-  gap: 10px;
   align-items: center;
+  padding: 12px 16px;
+  gap: 24px;
+}
+.nav-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.logo {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+}
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 4px;
+  flex: 1;
   flex-wrap: wrap;
 }
-
-.add-form h3 {
-  width: 100%;
-  margin: 0 0 10px 0;
-}
-
-.add-form input {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  flex: 1;
-  min-width: 150px;
-}
-
-.add-form button {
-  background: #42b983;
-  color: white;
-  border: none;
-  padding: 8px 20px;
+.nav-item {
+  padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s;
+}
+.nav-item:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+.login-btn {
+  font-size: 14px;
+  color: #4A90D9;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.login-btn:hover { text-decoration: underline; }
+
+/* 移动端 */
+@media (max-width: 768px) {
+  .nav-container { 
+    flex-direction: column; 
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .nav-header {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .nav-list { 
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    width: 100%;
+    gap: 4px;
+  }
+  .nav-item { 
+    padding: 6px 4px; 
+    font-size: 12px;
+    text-align: center;
+  }
 }
 
-.course-list {
+/* 课程网格 */
+.course-grid {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 16px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1200px) { .course-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 768px) { 
+  .course-grid { 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 10px; 
+    padding: 12px;
+  }
 }
 
 .course-card {
   background: #fff;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 20px;
-  transition: box-shadow 0.3s;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: all 0.2s;
 }
-
 .course-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
-.course-card h3 {
-  color: #333;
-  margin-bottom: 10px;
+/* 封面 */
+.cover {
+  aspect-ratio: 16/9;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.course-card p {
-  color: #666;
+/* 主题色 */
+.theme-0 { background: #4A90D9; }
+.theme-1 { background: #E8940C; }
+.theme-2 { background: #2DB5D8; }
+.theme-3 { background: #6A5ACD; }
+.theme-4 { background: #3498DB; }
+.theme-5 { background: #2ECC71; }
+
+.cover-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+}
+.tech-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 24px;
+}
+.decor-circle {
+  position: absolute;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  bottom: -20px; right: -20px;
+}
+
+/* 内容 */
+.info {
+  padding: 12px;
+}
+.info h3 {
+  margin: 0 0 6px;
   font-size: 14px;
-  margin-bottom: 15px;
+  color: #333;
+  font-weight: 600;
 }
-
-.card-footer {
+.info p {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: #888;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.price {
-  color: #e74c3c;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.actions {
-  display: flex;
-  gap: 8px;
-}
-
-.edit-btn, .del-btn, .detail-btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
   font-size: 12px;
-  text-decoration: none;
 }
-
-.edit-btn { background: #3498db; color: white; }
-.del-btn { background: #e74c3c; color: white; }
-.detail-btn { background: #42b983; color: white; }
-
-.edit-mode {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.tag { 
+  color: #2ECC71; 
+  font-size: 11px;
+  padding: 2px 6px;
+  background: #e8f8f0;
+  border-radius: 3px;
 }
-
-.edit-mode input {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.edit-mode button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.log {
-  margin-top: 20px;
-  padding: 15px;
-  background: #d4edda;
-  border-radius: 8px;
-  color: #155724;
-}
+.views { color: #999; }
 </style>

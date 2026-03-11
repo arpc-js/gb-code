@@ -1,4 +1,18 @@
 import { join } from 'path';
+import { AsyncLocalStorage } from 'async_hooks';
+import type { ServerWebSocket } from 'bun';
+
+// 生成 traceId
+function genTraceId(): string {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+// 格式化时间
+function formatTime(): string {
+    const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+}
 
 // 中间件上下文
 export interface Context {
@@ -11,13 +25,63 @@ export interface Context {
     query: Record<string, string>;
     body?: unknown;
     state: Record<string, unknown>;
-    // 响应头
     headers: Record<string, string>;
+    
+    // 追踪 & 日志
+    traceId: string;
+    startTime: number;
+    info: (...args: unknown[]) => void;
+    err: (...args: unknown[]) => void;
+    
+    // 用户信息（JWT 鉴权后填充）
+    userId?: number;
+    user?: Record<string, unknown>;
+    
+    // WebSocket（如果是 WS 请求）
+    ws?: ServerWebSocket<WsData>;
+    
     // 快捷方法
     json(data: unknown, status?: number): void;
     text(data: string, status?: number): void;
     html(data: string, status?: number): void;
 }
+
+// AsyncLocalStorage 存储上下文
+const ctxStorage = new AsyncLocalStorage<Context>();
+
+// 获取当前上下文（在 RPC 方法中使用）
+function useCtx(): Context {
+    const ctx = ctxStorage.getStore();
+    if (!ctx) throw new Error('useCtx must be called within a request context');
+    return ctx;
+}
+
+// 全局 ctx 代理（更简洁的访问方式）
+const ctx = new Proxy({} as Context & { get: (key: string) => unknown }, {
+    get(_target, prop: string) {
+        const store = ctxStorage.getStore();
+        if (!store) throw new Error('ctx must be accessed within a request context');
+        
+        // ctx.get('userId') 等便捷方法
+        if (prop === 'get') {
+            return (key: string) => {
+                if (key === 'userId') return store.userId;
+                if (key === 'user') return store.user;
+                if (key === 'traceId') return store.traceId;
+                if (key === 'wsId') return store.ws?.data?.id;
+                return store.state[key];
+            };
+        }
+        
+        return (store as any)[prop];
+    },
+    set(_target, prop: string, value: unknown) {
+        const store = ctxStorage.getStore();
+        if (!store) throw new Error('ctx must be accessed within a request context');
+        (store as any)[prop] = value;
+        return true;
+    }
+});
 
 // 中间件类型
 export type Middleware = (ctx: Context, next: () => Promise<void>) => Promise<void> | void;
@@ -33,6 +97,27 @@ import Base from './Base';
 
 // 类缓存
 const classCache = new Map<string, typeof Base>();
+
+// WebSocket 数据类型
+interface WsData {
+    id: string;
+    userId?: number;
+    [key: string]: unknown;
+}
+
+// 全局 server 引用（用于 pub/sub）
+let server: ReturnType<typeof Bun.serve> | null = null;
+
+// WebSocket 管理器（使用 Bun 原生 pub/sub）
+const ws = {
+    // 广播给所有订阅者
+    publish(topic: string, data: unknown) {
+        server?.publish(topic, JSON.stringify(data));
+    },
+    
+    // 获取在线数（通过全局计数）
+    count: 0
+};
 
 // Arpc 框架
 class ArpcServer {
@@ -98,14 +183,50 @@ class ArpcServer {
             
             if (result instanceof Promise) result = await result;
             
-            return new Response(JSON.stringify(result), {
-                status: 200,
+            // 根据返回值类型处理响应
+            return this.formatResponse(result, ctx);
+        } catch (e) {
+            ctx.err('RPC Error:', (e as Error).message);
+            return new Response(JSON.stringify({ error: (e as Error).message }), { 
+                status: 500,
                 headers: { 'Content-Type': 'application/json' }
             });
-        } catch (e) {
-            console.error('[RPC Error]', e);
-            return new Response((e as Error).message, { status: 500 });
         }
+    }
+    
+    // 格式化响应（支持多种返回类型）
+    private formatResponse(result: unknown, ctx: Context): Response {
+        // 1. Response 对象：直接返回
+        if (result instanceof Response) {
+            return result;
+        }
+        
+        // 2. null/undefined：返回 204 No Content
+        if (result === null || result === undefined) {
+            return new Response(null, { status: 204 });
+        }
+        
+        // 3. 字符串：返回 text/plain
+        if (typeof result === 'string') {
+            return new Response(result, {
+                status: 200,
+                headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+            });
+        }
+        
+        // 4. Buffer/Uint8Array：返回二进制
+        if (result instanceof Uint8Array || result instanceof ArrayBuffer) {
+            return new Response(result, {
+                status: 200,
+                headers: { 'Content-Type': 'application/octet-stream' }
+            });
+        }
+        
+        // 5. 对象/数组：返回 JSON
+        return new Response(JSON.stringify(result), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
     
     // 执行中间件链
@@ -138,6 +259,8 @@ class ArpcServer {
         url.searchParams.forEach((v, k) => query[k] = v);
         
         const headers: Record<string, string> = {};
+        const traceId = genTraceId();
+        const startTime = Date.now();
         
         const ctx: Context = {
             req,
@@ -148,6 +271,15 @@ class ArpcServer {
             query,
             state: {},
             headers,
+            traceId,
+            startTime,
+            // 带追踪的日志
+            info: (...args: unknown[]) => {
+                console.log(`[${formatTime()}] [${traceId}]`, ...args);
+            },
+            err: (...args: unknown[]) => {
+                console.error(`[${formatTime()}] [${traceId}]`, ...args);
+            },
             json(data: unknown, status = 200) {
                 ctx.headers['Content-Type'] = 'application/json';
                 ctx.res = new Response(JSON.stringify(data), { status, headers: ctx.headers });
@@ -169,34 +301,164 @@ class ArpcServer {
     private async handleRequest(req: Request): Promise<Response> {
         const ctx = this.createContext(req);
         
-        try {
-            // 执行中间件链
-            await this.compose(ctx, this.middlewares);
-            
-            // 如果中间件已设置响应
-            if (ctx.res) return ctx.res;
-            
-            // RPC 处理
-            const rpcRes = await this.handleRpc(ctx);
-            if (rpcRes) {
-                // 合并头
-                Object.entries(ctx.headers).forEach(([k, v]) => rpcRes.headers.set(k, v));
-                return rpcRes;
+        // 使用 AsyncLocalStorage 包裹整个请求处理
+        return ctxStorage.run(ctx, async () => {
+            try {
+                // 执行中间件链
+                await this.compose(ctx, this.middlewares);
+                
+                // 如果中间件已设置响应
+                if (ctx.res) return ctx.res;
+                
+                // RPC 处理
+                const rpcRes = await this.handleRpc(ctx);
+                if (rpcRes) {
+                    // 合并头
+                    Object.entries(ctx.headers).forEach(([k, v]) => rpcRes.headers.set(k, v));
+                    // 日志
+                    ctx.info(`${ctx.method} ${ctx.path} ${rpcRes.status} ${Date.now() - ctx.startTime}ms`);
+                    return rpcRes;
+                }
+                
+                // 404
+                return new Response('Not Found', { status: 404, headers: ctx.headers });
+            } catch (e) {
+                ctx.err('Error:', (e as Error).message);
+                return new Response((e as Error).message, { status: 500, headers: ctx.headers });
             }
-            
-            // 404
-            return new Response('Not Found', { status: 404, headers: ctx.headers });
-        } catch (e) {
-            console.error('[Arpc Error]', e);
-            return new Response((e as Error).message, { status: 500, headers: ctx.headers });
-        }
+        });
+    }
+    
+    // WebSocket 处理器
+    private wsHandlers: {
+        open?: (client: ServerWebSocket<WsData>) => void;
+        close?: (client: ServerWebSocket<WsData>, code: number, reason: string) => void;
+        message?: (client: ServerWebSocket<WsData>, msg: string) => void;
+    } = {};
+    
+    // 配置 WebSocket
+    ws(handlers: typeof this.wsHandlers): this {
+        this.wsHandlers = handlers;
+        return this;
+    }
+    
+    // WebSocket RPC 处理
+    private async handleWsRpc(data: string, client: ServerWebSocket<WsData>): Promise<unknown> {
+        const traceId = client.data.id;
+        
+        // 创建 WS 上下文
+        const wsCtx: Context = {
+            req: new Request('ws://localhost'),
+            url: new URL('ws://localhost'),
+            path: '',
+            method: 'WS',
+            params: {},
+            query: {},
+            state: {},
+            headers: {},
+            traceId,
+            startTime: Date.now(),
+            ws: client,
+            userId: client.data.userId,
+            info: (...args: unknown[]) => console.log(`[${formatTime()}] [${traceId}]`, ...args),
+            err: (...args: unknown[]) => console.error(`[${formatTime()}] [${traceId}]`, ...args),
+            json() {},
+            text() {},
+            html() {}
+        };
+        
+        // 用 ctxStorage 包装执行
+        let reqId: unknown;
+        return ctxStorage.run(wsCtx, async () => {
+            try {
+                const parsed = JSON.parse(data);
+                const { path, properties = {}, params = [], __id } = parsed;
+                reqId = __id;
+                
+                if (!path) return { error: 'Invalid RPC: path required', __id };
+                
+                wsCtx.path = path;
+                
+                // 解析路径: /Course/get -> [Course, get]
+                const parts = path.replace(/^\//, '').split('/');
+                if (parts.length !== 2) return { error: 'Invalid path format', __id };
+                
+                const [className, methodName] = parts;
+                const ARClass = await this.loadClass(className);
+                
+                let result: unknown;
+                
+                if (Object.keys(properties).length > 0) {
+                    const instance = new ARClass(properties) as Base & Record<string, unknown>;
+                    if (typeof instance[methodName] !== 'function') {
+                        return { error: `Method ${methodName} not found`, __id };
+                    }
+                    result = await (instance[methodName] as (...args: unknown[]) => unknown)(...params);
+                } else {
+                    const fn = (ARClass as unknown as Record<string, unknown>)[methodName];
+                    if (typeof fn !== 'function') return { error: `Method ${methodName} not found`, __id };
+                    result = await (fn as (...args: unknown[]) => unknown).call(ARClass, ...params);
+                }
+                
+                return { result, __id };
+            } catch (e) {
+                wsCtx.err('WS RPC Error:', (e as Error).message);
+                return { error: (e as Error).message, __id: reqId };
+            }
+        });
     }
     
     // 启动服务
     listen(port: number, callback?: () => void): this {
-        Bun.serve({
+        const self = this;
+        
+        server = Bun.serve({
             port,
-            fetch: (req) => this.handleRequest(req)
+            fetch: (req, srv) => {
+                // WebSocket 升级
+                if (req.headers.get('upgrade') === 'websocket') {
+                    const id = genTraceId();
+                    const url = new URL(req.url);
+                    const success = srv.upgrade(req, { 
+                        data: { id, path: url.pathname } 
+                    });
+                    return success ? undefined : new Response('WebSocket upgrade failed', { status: 400 });
+                }
+                return this.handleRequest(req);
+            },
+            websocket: {
+                // 类型声明
+                data: {} as WsData,
+                idleTimeout: 120,
+                
+                open(client) {
+                    ws.count++;
+                    // 自动订阅全局频道
+                    client.subscribe('broadcast');
+                    console.log(`[WS] 连接 ${client.data.id}, 在线: ${ws.count}`);
+                    self.wsHandlers.open?.(client);
+                },
+                
+                close(client, code, reason) {
+                    ws.count--;
+                    console.log(`[WS] 断开 ${client.data.id}, 在线: ${ws.count}`);
+                    self.wsHandlers.close?.(client, code, reason);
+                },
+                
+                async message(client, message) {
+                    const msg = message.toString();
+                    
+                    // 自定义处理器
+                    if (self.wsHandlers.message) {
+                        self.wsHandlers.message(client, msg);
+                        return;
+                    }
+                    
+                    // 默认 RPC 处理
+                    const result = await self.handleWsRpc(msg, client);
+                    client.send(JSON.stringify(result));
+                }
+            }
         });
         
         callback?.() || console.log(`Arpc server running at http://localhost:${port}`);
@@ -212,4 +474,4 @@ function Arpc(dir: string='arpc'): ArpcServer {
 }
 
 export default Arpc;
-export { Base, ArpcServer };
+export { Base, ArpcServer, useCtx, ctx, ws, WsData };
