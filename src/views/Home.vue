@@ -4,7 +4,7 @@
     <nav class="top-nav">
       <div class="nav-container">
         <div class="nav-header">
-          <div class="logo">gb-code</div>
+          <div class="logo">归一学院</div>
           <span class="login-btn" @click="goLogin">登录</span>
         </div>
         <ul class="nav-list">
@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { navItems, homeCoursesData } from '@/mock/courseData'
+import { navItems, homeCoursesData } from '@/mock/navItems'
 
 const router = useRouter()
 const list = homeCoursesData
@@ -57,8 +57,8 @@ function goToPath(path: string) {
   router.push(path)
 }
 
-function goToLearn(pathId: string) {
-  router.push(`/learn/${pathId}`)
+function goToLearn(courseId: string) {
+  router.push(`/learn/${courseId}`)
 }
 
 function goLogin() {

@@ -159,15 +159,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { courses as mockCourses } from '@/mock/courseData'
 import type { Course, Block, BlockType, Lesson } from '@/types/course'
 
 const router = useRouter()
 
-// 课程数据 - 直接使用mock数据
-const courseData = reactive<Course[]>(JSON.parse(JSON.stringify(mockCourses)))
+// 课程数据
+const courseData = reactive<Course[]>([])
+const loading = ref(false)
 
 // 选中状态
 const selected = ref<{ type: 'course' | 'chapter' | 'lesson', index?: number, ci?: number, chi?: number, li?: number } | null>(null)
@@ -181,6 +181,41 @@ const listText = reactive<Record<number, string>>({})
 const tableHeaders = reactive<Record<number, string>>({})
 const tableRows = reactive<Record<number, string>>({})
 const saveMsg = ref('')
+
+// 加载课程数据
+async function loadCourses() {
+  loading.value = true
+  try {
+    // 加载Java和前端课程
+    let javaCourses: Course[] = []
+    let frontendCourses: Course[] = []
+    
+    // 加载Java课程
+    try {
+      const { javaCourses: javaData } = await import('@/mock/java.ts')
+      javaCourses = javaData
+    } catch (e) {
+      console.error('Error loading Java courses:', e)
+    }
+    
+    // 加载前端课程
+    try {
+      const { frontendCourses: frontendData } = await import('@/mock/front.ts')
+      frontendCourses = frontendData
+    } catch (e) {
+      console.error('Error loading Frontend courses:', e)
+    }
+    
+    // 清空并合并课程数据
+    courseData.splice(0, courseData.length, ...javaCourses, ...frontendCourses)
+  } catch (error) {
+    console.error('Error loading courses:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(loadCourses)
 
 // 选择操作
 function selectCourse(ci: number) {
@@ -285,13 +320,13 @@ function copyJson() {
   setTimeout(() => saveMsg.value = '', 2000)
 }
 
-// 重置为mock数据
+// 重新加载数据
 function resetData() {
-  if (confirm('确定重置？')) {
-    courseData.splice(0, courseData.length, ...JSON.parse(JSON.stringify(mockCourses)))
+  if (confirm('确定重新加载数据？')) {
+    loadCourses()
     selected.value = null
     editingLesson.value = null
-    saveMsg.value = '🔄 已重置'
+    saveMsg.value = '🔄 已重新加载'
     setTimeout(() => saveMsg.value = '', 2000)
   }
 }

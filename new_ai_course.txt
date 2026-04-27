@@ -1,0 +1,222 @@
+    "id": "ai-practice",
+    "pathId": "frontend",
+    "title": "AI英语项目实战",
+    "desc": "AI、大模型、英语学习应用",
+    "icon": "🤖",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "项目架构",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "页面结构",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "table",
+                "headers": ["页面", "功能"],
+                "rows": [
+                  ["首页", "展示多个AI智能体，用户选择后进入对话"],
+                  ["消息", "查看历史对话记录，继续对话"],
+                  ["我的", "用户设置、API配置、使用统计"]
+                ]
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "路由配置",
+                "code": "const pages = [\n  { path: '/pages/index', name: '首页' },    // 智能体列表页 (TabBar)\n  { path: '/pages/chat', name: '消息' },     // 对话历史页 (TabBar)\n  { path: '/pages/profile', name: '我的' },  // 个人中心 (TabBar)\n  { path: '/pages/chat/detail', name: '对话' } // 具体对话页 (非TabBar)\n]"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "智能体列表",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "table",
+                "headers": ["智能体", "系统提示词", "用途"],
+                "rows": [
+                  ["📚 单词助手", "你是一个英语词典助手，解释单词含义、用法和例句"],
+                  ["✍️ 语法纠错", "你是一个英语语法老师，检查并纠正语法错误"],
+                  ["💬 口语练习", "你是一个口语对话伙伴，用简单英语和日常话题交流"],
+                  ["📖 阅读理解", "你是一个阅读助手，帮助理解英文文章并提取要点"],
+                  ["🎯 RAG知识库", "基于用户上传的英语文档进行问答的智能助手"]
+                ]
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "智能体配置",
+                "code": "// agents.js - 定义各个智能体的配置 (系统提示词 + 功能)\nconst agents = [\n  { id: 'word', name: '单词助手', icon: '📚', systemPrompt: '你是一个英语词典助手...' },\n  { id: 'grammar', name: '语法纠错', icon: '✍️', systemPrompt: '你是一个英语语法老师...' },\n  { id: 'speaking', name: '口语练习', icon: '💬', systemPrompt: '你是一个口语对话伙伴...' },\n  { id: 'reading', name: '阅读理解', icon: '📖', systemPrompt: '你是一个阅读助手...' },\n  { id: 'rag', name: 'RAG知识库', icon: '🎯', systemPrompt: '基于文档回答问题...', useRAG: true }\n]\n\nexport default agents"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "首页开发",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "智能体展示",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "pages/index.vue",
+                "code": "<template>\n  <view class=\"home\">\n    <scroll-view scroll-y>\n      <view class=\"agent-grid\">\n        <view v-for=\"agent in agents\" :key=\"agent.id\" class=\"agent-card\" @click=\"openChat(agent)\">\n          <text class=\"agent-icon\">{{ agent.icon }}</text>\n          <text class=\"agent-name\">{{ agent.name }}</text>\n        </view>\n      </view>\n    </scroll-view>\n  </view>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nimport agents from '@/data/agents.js'\n\nfunction openChat(agent) {\n  uni.navigateTo({ url: '/pages/chat/detail?id=' + agent.id })\n}\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "TabBar配置",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "json",
+                "filename": "pages.json",
+                "code": "{\n  \"pages\": [\n    { \"path\": \"pages/index\" },\n    { \"path\": \"pages/chat\" },\n    { \"path\": \"pages/profile\" },\n    { \"path\": \"pages/chat/detail\" }\n  ],\n  \"tabBar\": {\n    \"list\": [\n      { \"pagePath\": \"pages/index\", \"text\": \"首页\", \"iconPath\": \"/static/home.png\" },\n      { \"pagePath\": \"pages/chat\", \"text\": \"消息\", \"iconPath\": \"/static/chat.png\" },\n      { \"pagePath\": \"pages/profile\", \"text\": \"我的\", \"iconPath\": \"/static/user.png\" }\n    ]\n  }\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "对话页面",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "消息列表",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "对话页面显示用户消息和AI回复，支持流式输出。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "vue",
+                "filename": "pages/chat/detail.vue",
+                "code": "<template>\n  <view class=\"chat-page\">\n    <scroll-view scroll-y class=\"messages\" :scroll-into-view=\"scrollTo\">\n      <view v-for=\"msg in messages\" :key=\"msg.id\" :class=\"['msg', msg.role]\">\n        <text>{{ msg.content }}</text>\n      </view>\n    </scroll-view>\n    \n    <view class=\"input-bar\">\n      <input v-model=\"inputText\" placeholder=\"输入问题...\" @confirm=\"send\" />\n      <button @click=\"send\">发送</button>\n    </view>\n  </view>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nimport { onLoad } from '@dcloudio/uni-app'\n\nconst messages = ref([])\nconst inputText = ref('')\nconst agentId = ref('')\n\nonLoad((options) => { agentId.value = options.id })\n\nasync function send() {\n  const userMsg = { id: Date.now(), role: 'user', content: inputText.value }\n  messages.value.push(userMsg)\n  \n  const aiMsg = { id: Date.now() + 1, role: 'assistant', content: '' }\n  messages.value.push(aiMsg)\n  \n  await streamChat(userMsg.content, aiMsg)\n  inputText.value = ''\n}\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "流式输出",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "使用 stream: true 实现AI回复逐字显示效果。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "流式对话实现",
+                "code": "// streamChat - 流式调用AI，逐字更新消息内容 (打字效果)\nimport OpenAI from 'openai'\n\nconst openai = new OpenAI({\n  apiKey: uni.getStorageSync('apiKey'),\n  baseURL: uni.getStorageSync('baseURL') || 'https://api.deepseek.com/v1'\n})\n\nasync function streamChat(question, aiMsgRef) {\n  const agents = { word: '英语词典助手', grammar: '语法老师' }\n  \n  const res = await openai.chat.completions.create({\n    model: 'deepseek-chat',\n    messages: [\n      { role: 'system', content: '你是' + (agents[agentId.value] || '助手') },\n      { role: 'user', content: question }\n    ],\n    stream: true\n  })\n\n  for await (const chunk of res) {\n    const content = chunk.choices[0]?.delta?.content || ''\n    aiMsgRef.content += content // 逐字追加到消息对象 (Vue自动更新视图)\n  }\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "消息页",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "历史列表",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "消息页展示历史对话列表，支持搜索和删除。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "vue",
+                "filename": "pages/chat.vue",
+                "code": "<template>\n  <view class=\"chat-list\">\n    <input v-model=\"keyword\" placeholder=\"搜索历史对话...\" />\n    <view v-for=\"item in filteredChats\" :key=\"item.id\" class=\"chat-item\" @click=\"openChat(item)\">\n      <text class=\"title\">{{ item.title }}</text>\n      <text class=\"preview\">{{ item.preview }}</text>\n      <text class=\"time\">{{ item.time }}</text>\n    </view>\n  </view>\n</template>\n\n<script setup>\nimport { ref, computed } from 'vue'\nconst keyword = ref('')\nconst chats = ref([])\n\nconst filteredChats = computed(() =>\n  chats.value.filter(c => c.title.includes(keyword.value))\n)\n\nfunction openChat(item) {\n  uni.navigateTo({ url: '/pages/chat/detail?id=' + item.agentId + '&history=' + item.id })\n}\n</script>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch5",
+        "title": "个人中心",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "API配置",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "pages/profile.vue",
+                "code": "<template>\n  <view class=\"profile\">\n    <view class=\"card\">\n      <text class=\"label\">API Key</text>\n      <input v-model=\"apiKey\" type=\"password\" placeholder=\"输入你的API Key\" />\n    </view>\n    <view class=\"card\">\n      <text class=\"label\">API地址</text>\n      <input v-model=\"baseURL\" placeholder=\"默认: https://api.deepseek.com/v1\" />\n    </view>\n    <view class=\"card\">\n      <text class=\"label\">模型</text>\n      <picker :value=\"modelIndex\" :range=\"models\" @change=\"onModelChange\">\n        <view>{{ models[modelIndex] }}</view>\n      </picker>\n    </view>\n    <button @click=\"saveConfig\">保存配置</button>\n  </view>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst apiKey = ref(uni.getStorageSync('apiKey') || '')\nconst baseURL = ref(uni.getStorageSync('baseURL') || '')\nconst models = ['deepseek-chat', 'gpt-4o', 'glm-4']\nconst modelIndex = ref(0)\n\nfunction saveConfig() {\n  uni.setStorageSync('apiKey', apiKey.value)\n  uni.setStorageSync('baseURL', baseURL.value)\n  uni.showToast({ title: '保存成功' })\n}\n</script>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch6",
+        "title": "RAG实现",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "文档导入",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "用户上传英语文档，自动分割并向量化存储。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "vue",
+                "filename": "文档上传",
+                "code": "<template>\n  <view class=\"rag-page\">\n    <button @click=\"chooseFile\">选择文档</button>\n    <view v-if=\"uploading\" class=\"progress\">处理中...</view>\n    <scroll-view scroll-y>\n      <view v-for=\"doc in documents\" :key=\"doc.id\" class=\"doc-item\">\n        <text>{{ doc.name }}</text>\n        <text>{{ doc.chunkCount }} 个片段</text>\n      </view>\n    </scroll-view>\n  </view>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst documents = ref([])\n\nasync function chooseFile() {\n  const res = await uni.chooseFile({ count: 1, type: 'all' })\n  const text = await readFile(res.tempFiles[0].path)\n  await processDocument(text, res.tempFiles[0].name)\n}\n\nasync function readFile(path) {\n  return new Promise((resolve) => {\n    const fs = uni.getFileSystemManager()\n    fs.readFile({ filePath: path, encoding: 'utf8', success: (r) => resolve(r.data) })\n  })\n}\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "向量化存储",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "使用 sqlite-vec 实现轻量级向量数据库。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "RAG实现",
+                "code": "import Database from 'better-sqlite3'\nimport { vec } from 'sqlite-vec'\nimport OpenAI from 'openai'\n\nconst openai = new OpenAI({ apiKey: process.env.API_KEY })\nconst db = new Database('english.db')\nvec.load(db)\n\n// 1. 获取向量 (调用Embedding API)\nasync function getEmbedding(text) {\n  const res = await openai.embeddings.create({\n    model: 'text-embedding-3-small',\n    input: text\n  })\n  return res.data[0].embedding\n}\n\n// 2. 文档分割 (按段落) -> 向量化 -> 存入sqlite-vec\nasync function processDocument(text) {\n  const chunks = text.split('\\n\\n').filter(p => p.length > 50)\n  for (const chunk of chunks) {\n    const vec = await getEmbedding(chunk)\n    db.prepare('INSERT INTO vec_texts (content, embedding) VALUES (?, ?)')\n      .run(chunk, new Float32Array(vec))\n  }\n}\n\n// 3. 相似度检索 (余弦相似度查询)\nasync function search(question) {\n  const vec = await getEmbedding(question)\n  return db.prepare('SELECT content, distance FROM vec_texts WHERE embedding MATCH ? ORDER BY distance LIMIT 3')\n    .all(new Float32Array(vec))\n}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

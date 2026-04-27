@@ -1,0 +1,261 @@
+{
+    "id": "ai-practice",
+    "pathId": "frontend",
+    "title": "AI智能体项目实战",
+    "desc": "AI智能体平台、RAG、函数调用",
+    "icon": "🤖",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "项目架构",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "页面结构",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "table",
+                "headers": ["页面", "功能"],
+                "rows": [
+                  ["首页", "官方智能体(英语/面试/通用) + 用户自定义智能体"],
+                  ["消息", "历史对话记录，支持继续对话"],
+                  ["我的", "API配置、创建的智能体/知识库管理"],
+                  ["对话页", "与智能体对话，支持流式输出"],
+                  ["创建智能体", "自定义智能体(人设+RAG+函数调用)"],
+                  ["知识库管理", "上传/管理文档，自动向量化"]
+                ]
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "智能体数据结构",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "filename": "Agent Schema",
+                "code": "// 智能体对象包含以下字段 (Agent Schema)\nconst agent = {\n  id: 'agent_001',              // 唯一ID\n  name: '英语单词助手',         // 名称\n  icon: '📚',                  // 图标/Emoji\n  description: '解释单词、例句', // 描述\n  systemPrompt: '你是英语助手',// 系统提示词(人设)\n  userId: 0,                    // 创建者ID (0=官方)\n  isPublic: true,               // 是否公开分享\n  ragEnabled: false,            // 是否启用RAG知识库\n  knowledgeBaseId: null,        // 关联知识库ID (可选)\n  tools: []                     // 启用的函数调用列表 (如web_search/mindmap)\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "首页开发",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "智能体列表展示",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "pages/index.vue",
+                "code": "<template>\n  <view class=\"home\">\n    <scroll-view scroll-y>\n      <view class=\"section\">\n        <text class=\"title\">官方智能体</text>\n        <view class=\"grid\">\n          <view v-for=\"a in official\" :key=\"a.id\" class=\"card\" @click=\"openAgent(a)\">\n            <text class=\"icon\">{{ a.icon }}</text>\n            <text class=\"name\">{{ a.name }}</text>\n          </view>\n        </view>\n      </view>\n      <view class=\"section\" v-if=\"custom.length\">\n        <text class=\"title\">我的智能体</text>\n        <view class=\"grid\">\n          <view v-for=\"a in custom\" :key=\"a.id\" class=\"card\" @click=\"openAgent(a)\">\n            <text class=\"icon\">{{ a.icon }}</text>\n            <text class=\"name\">{{ a.name }}</text>\n          </view>\n        </view>\n      </view>\n      <button class=\"create-btn\" @click=\"createAgent\">+ 创建智能体</button>\n    </scroll-view>\n  </view>\n</template>\n\n<script setup>\nimport { ref, onMounted } from 'vue'\nconst official = ref([])\nconst custom = ref([])\n\nonMounted(async () => {\n  const res = await uni.request({ url: '/api/agents' })\n  official.value = res.data.filter(a => a.userId === 0)\n  custom.value = res.data.filter(a => a.userId !== 0)\n})\n\nfunction openAgent(agent) {\n  uni.navigateTo({ url: '/pages/chat/detail?id=' + agent.id })\n}\nfunction createAgent() {\n  uni.navigateTo({ url: '/pages/agent/create' })\n}\n</script>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "对话页面",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "消息列表与流式输出",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "pages/chat/detail.vue",
+                "code": "<template>\n  <view class=\"chat\">\n    <scroll-view scroll-y class=\"messages\" :scroll-into-view=\"scrollTo\">\n      <view v-for=\"msg in messages\" :key=\"msg.id\" :class=\"['msg', msg.role]\">\n        <text>{{ msg.content }}</text>\n      </view>\n      <view :id=\"scrollTo\"></view>\n    </scroll-view>\n    <view class=\"input-bar\">\n      <input v-model=\"input\" placeholder=\"输入消息...\" @confirm=\"send\" />\n      <button size=\"mini\" @click=\"send\">发送</button>\n    </view>\n  </view>\n</template>\n\n<script setup>\nimport { ref, onLoad } from '@dcloudio/uni-app'\n\nconst messages = ref([])\nconst input = ref('')\nconst agentId = ref('')\nconst agent = ref(null)\n\nonLoad(async (options) => {\n  agentId.value = options.id\n  const res = await uni.request({ url: '/api/agents/' + agentId.value })\n  agent.value = res.data\n  messages.value = res.data.history || []\n})\n\nasync function send() {\n  messages.value.push({ id: Date.now(), role: 'user', content: input.value })\n  const aiMsg = { id: Date.now()+1, role: 'assistant', content: '' }\n  messages.value.push(aiMsg)\n  await streamChat(input.value, aiMsg)\n  input.value = ''\n}\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "RAG+函数调用对话",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "filename": "对话核心逻辑",
+                "code": "import OpenAI from 'openai'\n\nconst openai = new OpenAI({ apiKey: uni.getStorageSync('apiKey') })\n\nasync function streamChat(question, aiMsg) {\n  // 1. 如果启用RAG，先检索知识库 (向量相似度搜索)\n  let context = ''\n  if (agent.value.ragEnabled && agent.value.knowledgeBaseId) {\n    const vec = await getEmbedding(question)\n    const results = await searchKB(agent.value.knowledgeBaseId, vec)\n    context = results.map(r => r.content).join('\\n')\n  }\n\n  // 2. 构建messages (系统提示词 + RAG上下文 + 对话历史)\n  const sysPrompt = context\n    ? agent.value.systemPrompt + '\\n参考信息:\\n' + context\n    : agent.value.systemPrompt\n\n  const msgHistory = [\n    { role: 'system', content: sysPrompt },\n    ...messages.value.map(m => ({ role: m.role, content: m.content }))\n  ]\n\n  // 3. 添加函数调用工具 (Function Call)\n  const tools = agent.value.tools?.map(t => getToolSchema(t)).filter(Boolean) || []\n\n  const res = await openai.chat.completions.create({\n    model: 'gpt-4o',\n    messages: msgHistory,\n    tools: tools.length ? tools : undefined,\n    stream: true\n  })\n\n  // 4. 流式输出 (逐字追加，Vue自动更新视图)\n  for await (const chunk of res) {\n    const content = chunk.choices[0]?.delta?.content || ''\n    aiMsg.content += content\n  }\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "创建智能体",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "人设+RAG+函数调用配置",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "pages/agent/create.vue",
+                "code": "<template>\n  <view class=\"create-page\">\n    <view class=\"form\">\n      <view class=\"field\">\n        <text class=\"label\">名称</text>\n        <input v-model=\"form.name\" placeholder=\"智能体名称\" />\n      </view>\n      <view class=\"field\">\n        <text class=\"label\">图标</text>\n        <input v-model=\"form.icon\" placeholder=\"Emoji图标\" />\n      </view>\n      <view class=\"field\">\n        <text class=\"label\">系统提示词(人设)</text>\n        <textarea v-model=\"form.systemPrompt\" placeholder=\"你是一个英语老师...\" />\n      </view>\n      <view class=\"toggle\">\n        <text>启用RAG知识库</text>\n        <switch :checked=\"form.ragEnabled\" />\n      </view>\n      <view class=\"field\" v-if=\"form.ragEnabled\">\n        <text class=\"label\">关联知识库</text>\n        <picker :range=\"kbList\" @change=\"form.knowledgeBaseId = $event.detail.value\">\n          <text>{{ selectedKB }}</text>\n        </picker>\n      </view>\n      <view class=\"field\">\n        <text class=\"label\">函数调用</text>\n        <checkbox-group @change=\"form.tools = $event.detail.value\">\n          <label v-for=\"t in tools\" :key=\"t.id\">\n            <checkbox :value=\"t.id\" />{{ t.name }}\n          </label>\n        </checkbox-group>\n      </view>\n      <button @click=\"save\">保存智能体</button>\n    </view>\n  </view>\n</template>\n\n<script setup>\nimport { ref, computed } from 'vue'\nconst form = ref({ name: '', icon: '🤖', systemPrompt: '', ragEnabled: false, knowledgeBaseId: null, tools: [] })\nconst kbList = ref([])\nconst selectedKB = computed(() => {\n  const kb = kbList.value.find(k => k.id === form.value.knowledgeBaseId)\n  return kb ? kb.name : '请选择'\n})\nasync function save() {\n  await uni.request({ url: '/api/agents', method: 'POST', data: form.value })\n  uni.showToast({ title: '创建成功' })\n  uni.navigateBack()\n}\n</script>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch5",
+        "title": "函数调用",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "工具定义与执行",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "函数调用让AI可以执行外部操作(搜索网页、生成思维导图等)。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "工具定义",
+                "code": "// 定义可用的函数工具 (Function Call Schema)\nconst toolSchemas = {\n  web_search: {\n    type: 'function',\n    function: {\n      name: 'webSearch',\n      description: '搜索互联网获取最新信息',\n      parameters: {\n        type: 'object',\n        properties: { query: { type: 'string' } },\n        required: ['query']\n      }\n    }\n  },\n  mindmap: {\n    type: 'function',\n    function: {\n      name: 'generateMindmap',\n      description: '根据主题生成思维导图结构',\n      parameters: {\n        type: 'object',\n        properties: { topic: { type: 'string' } },\n        required: ['topic']\n      }\n    }\n  }\n}"
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "函数调用处理",
+                "code": "// 处理AI的函数调用请求 (Function Call)\nasync function handleToolCalls(toolCalls) {\n  const results = []\n  for (const tc of toolCalls) {\n    const fn = tc.function.name\n    const args = JSON.parse(tc.function.arguments)\n    let result\n    if (fn === 'webSearch') {\n      const res = await fetch('https://api.search.com?q=' + args.query)\n      result = await res.json()\n    } else if (fn === 'generateMindmap') {\n      result = await generateMindmapData(args.topic)\n    }\n    results.push({ tool_call_id: tc.id, role: 'tool', content: JSON.stringify(result) })\n  }\n  return results\n}\n\n// 在对话中使用函数调用 (当AI返回tool_calls时执行函数并返回结果)\nasync function chatWithTools(messages, toolSchemas) {\n  const res = await openai.chat.completions.create({\n    model: 'gpt-4o', messages,\n    tools: toolSchemas\n  })\n\n  if (res.choices[0].message.tool_calls) {\n    // AI要求调用函数，执行并返回结果 (Function Call循环)\n    const toolResults = await handleToolCalls(res.choices[0].message.tool_calls)\n    messages.push(res.choices[0].message)\n    messages.push(...toolResults)\n    return await openai.chat.completions.create({ model: 'gpt-4o', messages })\n  }\n  return res\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch6",
+        "title": "知识库管理",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "文档上传与向量化",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "vue",
+                "filename": "pages/knowledge/index.vue",
+                "code": "<template>\n  <view class=\"kb-page\">\n    <button @click=\"uploadDoc\">上传文档</button>\n    <view v-for=\"doc in documents\" :key=\"doc.id\" class=\"doc-item\">\n      <text>{{ doc.name }}</text>\n      <text>{{ doc.chunkCount }} 片段</text>\n      <text>{{ doc.status }}</text>\n    </view>\n  </view>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst documents = ref([])\n\nasync function uploadDoc() {\n  const res = await uni.chooseFile({ count: 1, type: 'all' })\n  const file = res.tempFiles[0]\n  uni.showLoading({ title: '处理中...' })\n  const text = await readFile(file.path)\n  const chunks = text.split(/\\n\\n+/).filter(p => p.length > 50)\n  for (const chunk of chunks) {\n    await addChunk(chunk)\n  }\n  uni.hideLoading()\n  uni.showToast({ title: '处理完成' })\n  loadDocuments()\n}\n\nasync function readFile(path) {\n  return new Promise((resolve) => {\n    const fs = uni.getFileSystemManager()\n    fs.readFile({ filePath: path, encoding: 'utf8', success: (r) => resolve(r.data) })\n  })\n}\n</script>"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "sqlite-vec实现",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "javascript",
+                "filename": "后端RAG服务",
+                "code": "import Database from 'better-sqlite3'\nimport { vec } from 'sqlite-vec'\nimport OpenAI from 'openai'\n\nconst openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })\nconst db = new Database('knowledge.db')\nvec.load(db)\n\n// 初始化表结构\ndb.exec('\n  CREATE TABLE IF NOT EXISTS knowledge_bases (id INTEGER PRIMARY KEY, name TEXT, userId INTEGER);\n  CREATE TABLE IF NOT EXISTS documents (id INTEGER PRIMARY KEY, kbId INTEGER, name TEXT, status TEXT);\n  CREATE TABLE IF NOT EXISTS text_chunks (id INTEGER PRIMARY KEY, docId INTEGER, content TEXT);\n  CREATE VIRTUAL TABLE IF NOT EXISTS vec_chunks USING vec0(chunk_embedding float[1536]);\n')\n\n// 1. 获取向量 (调用Embedding API)\nasync function getEmbedding(text) {\n  const res = await openai.embeddings.create({\n    model: 'text-embedding-3-small',\n    input: text.substring(0, 8000)\n  })\n  return res.data[0].embedding\n}\n\n// 2. 处理文档 (分割 -> 向量化 -> 存入sqlite-vec)\nasync function processDocument(docId, text) {\n  const chunks = text.split(/\\n\\n+/).filter(p => p.length > 50)\n  const insertChunk = db.prepare('INSERT INTO text_chunks (docId, content) VALUES (?, ?)')\n  const insertVec = db.prepare('INSERT INTO vec_chunks (rowid, chunk_embedding) VALUES (?, ?)')\n  for (const chunk of chunks) {\n    const { lastInsertRowid } = insertChunk.run(docId, chunk)\n    const vec = await getEmbedding(chunk)\n    insertVec.run(lastInsertRowid, new Float32Array(vec))\n  }\n  db.prepare('UPDATE documents SET status = ? WHERE id = ?').run('done', docId)\n}\n\n// 3. 相似度检索 (余弦相似度，返回最相关的K个片段)\nasync function searchKB(kbId, query, limit = 3) {\n  const vec = await getEmbedding(query)\n  return db.prepare('SELECT tc.content, v.distance FROM vec_chunks v JOIN text_chunks tc ON tc.id = v.rowid JOIN documents d ON d.id = tc.docId WHERE d.kbId = ? AND v.chunk_embedding MATCH ? ORDER BY v.distance LIMIT ?').all(kbId, new Float32Array(vec), limit)\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch7",
+        "title": "微信支付",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "支付接入",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "流程：前端发起 → 后端统一下单 → 前端调起支付 → 支付回调"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "后端支付接口",
+                "code": "// 1. 统一下单接口 /api/payment/create\napp.post('/api/payment/create', async (req, res) => {\n  const { openid, amount, description } = req.body\n  const orderNo = 'ORD' + Date.now()\n\n  const payRes = await fetch('https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },\n    body: JSON.stringify({\n      appid: '小程序AppID', mchid: '商户号', description,\n      out_trade_no: orderNo, amount: { total: amount * 100, currency: 'CNY' },\n      payer: { openid }\n    })\n  })\n\n  const { prepay_id } = await payRes.json()\n  const payParams = generatePayParams(prepay_id)\n  res.json({ orderNo, payParams })\n})\n\n// 2. 支付回调 (微信通知)\napp.post('/api/payment/notify', async (req, res) => {\n  const { out_trade_no, trade_state } = req.body\n  if (trade_state === 'SUCCESS') {\n    await db.prepare('UPDATE orders SET status = ? WHERE order_no = ?').run('paid', out_trade_no)\n  }\n  res.json({ code: 'SUCCESS' })\n})"
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "vue",
+                "filename": "前端支付",
+                "code": "<template>\n  <view class=\"pay-page\">\n    <text>订单金额: ￥{{ amount }}</text>\n    <button @click=\"pay\">立即支付</button>\n  </view>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst amount = ref(99)\nasync function pay() {\n  const { payParams } = await uni.request({\n    url: '/api/payment/create',\n    method: 'POST',\n    data: { amount: amount.value, description: 'VIP会员' }\n  })\n  uni.requestPayment({\n    ...payParams,\n    success: () => uni.showToast({ title: '支付成功' }),\n    fail: () => uni.showToast({ title: '支付取消', icon: 'none' })\n  })\n}\n</script>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch8",
+        "title": "部署上线",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "小程序部署",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "table",
+                "headers": ["步骤", "操作"],
+                "rows": [
+                  ["1. HBuilderX打包", "发行 → 小程序-微信"],
+                  ["2. 微信开发者工具", "导入dist目录"],
+                  ["3. 上传代码", "工具中点击上传"],
+                  ["4. 提交审核", "微信公众平台 → 版本管理 → 提交审核"],
+                  ["5. 发布上线", "审核通过后点击发布"]
+                ]
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "后端Linux部署",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "bash",
+                "filename": "服务器部署",
+                "code": "# 1. 安装Node.js\ncurl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -\nsudo apt install -y nodejs\n\n# 2. 上传代码\nscp -r ./server root@服务器IP:/opt/ai-agent\n\n# 3. 启动\ncd /opt/ai-agent\nnpm install --production\nnpm install -g pm2\npm2 start server.js --name ai-agent\npm2 save && pm2 startup\n\n# 4. Nginx + SSL\ncertbot --nginx -d api.yourdomain.com"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "管理系统部署",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "code",
+                "language": "nginx",
+                "filename": "Nginx配置",
+                "code": "# API接口 (小程序后端)\nserver {\n  listen 443 ssl;\n  server_name api.yourdomain.com;\n  ssl_certificate /etc/letsencrypt/live/api.yourdomain.com/fullchain.pem;\n  ssl_certificate_key /etc/letsencrypt/live/api.yourdomain.com/privkey.pem;\n  location / { proxy_pass http://localhost:3000; }\n}\n\n# 后台管理系统\nserver {\n  listen 443 ssl;\n  server_name admin.yourdomain.com;\n  ssl_certificate /etc/letsencrypt/live/admin.yourdomain.com/fullchain.pem;\n  ssl_certificate_key /etc/letsencrypt/live/admin.yourdomain.com/privkey.pem;\n  location / { root /opt/ai-agent/admin/dist; try_files $uri $uri/ /index.html; }\n  location /api/ { proxy_pass http://localhost:3000/api/; }\n}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }

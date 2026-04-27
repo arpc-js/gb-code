@@ -306,7 +306,7 @@ async function loadData() {
       const { javaCourses } = await import('@/mock/java.ts')
       courses = javaCourses
       course = javaCourses.find(c => c.id === id)
-    } else if (id.startsWith('frontend')) {
+    } else if (id.startsWith('frontend') || id.startsWith('ai-')) {
       const { frontendCourses } = await import('@/mock/front.ts')
       courses = frontendCourses
       course = frontendCourses.find(c => c.id === id)
@@ -338,7 +338,7 @@ async function loadCoursesCount() {
       const { javaCourses } = await import('@/mock/java.ts')
       javaCoursesCount.value = javaCourses.length
       frontendCoursesCount.value = 0
-    } else if (id.startsWith('frontend')) {
+    } else if (id.startsWith('frontend') || id.startsWith('ai-')) {
       const { frontendCourses } = await import('@/mock/front.ts')
       frontendCoursesCount.value = frontendCourses.length
       javaCoursesCount.value = 0
