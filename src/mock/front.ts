@@ -21,20 +21,20 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "winget是Windows官方的软件包管理器，可以快速安装开发工具。"
+                "content": "开发网页只需要一个编辑器和一个浏览器。推荐使用Trae IDE（内置AI助手，就是你现在用的这个）。"
               },
               {
                 "id": "b2",
                 "type": "code",
                 "language": "bash",
                 "filename": "PowerShell",
-                "code": "# 安装Trae IDE\nwinget install Trae.Trae"
+                "code": "# Windows自带winget包管理器，一行命令安装Trae\nwinget install Trae.Trae"
               },
               {
                 "id": "b3",
                 "type": "tip",
-                "content": "也可以访问 https://www.trae.cn 官网下载Trae IDE"
-              },
+                "content": "也可以去官网 https://www.trae.cn 下载安装包。"
+              }
             ]
           },
           {
@@ -45,19 +45,42 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "HTML文件是网页的基础，使用Trae创建一个.html文件。"
+                "content": "网页由HTML标签组成，每个标签有不同作用。新建一个 index.html 文件，将用到以下标签："
               },
               {
                 "id": "b2",
-                "type": "code",
-                "language": "html",
-                "filename": "index.html",
-                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>第一个网页</title>\n</head>\n<body>\n    <h1>第一个网页</h1>\n</body>\n</html>",
+                "type": "table",
+                "headers": ["标签", "作用"],
+                "rows": [
+                  ["<html>", "包裹整个网页"],
+                  ["<head>", "放网页信息（不显示在页面上）"],
+                  ["<meta charset=\"UTF-8\">", "支持中文显示"],
+                  ["<title>", "浏览器标签页上的标题"],
+                  ["<body>", "显示在页面上的内容"],
+                  ["<h1>", "一级标题"]
+                ]
               },
               {
                 "id": "b3",
                 "type": "text",
-                "content": "文件保存后，双击index.html即可在浏览器中打开查看效果。"
+                "content": "在Trae左侧文件资源管理器右键 → 新建文件 → 命名为 index.html。输入以下代码："
+              },
+              {
+                "id": "b4",
+                "type": "code",
+                "language": "html",
+                "filename": "index.html",
+                "code": "<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>我的第一个网页</title>\n</head>\n<body>\n    <h1>这是我的第一个网页。</h1>\n</body>\n</html>"
+              },
+              {
+                "id": "b5",
+                "type": "text",
+                "content": "保存文件（Ctrl+S），在文件资源管理器中双击 index.html 即可用浏览器打开查看效果。每次修改保存后，刷新浏览器即可看到最新效果。"
+              },
+              {
+                "id": "b6",
+                "type": "tip",
+                "content": "在Trae中新建 .html 文件后，输入英文感叹号 ! 然后按 Tab 键，HTML骨架会自动生成。这是Emmet快捷输入，能省去手写DOCTYPE和基础结构的时间。"
               }
             ]
           }
@@ -65,174 +88,131 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch2",
-        "title": "Vue基础",
+        "title": "HTML标签",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
           {
             "id": "l1",
-            "title": "为什么需要Vue3",
+            "title": "标题与段落",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "传统HTML需要手动操作DOM来更新视图，代码复杂且容易出错。Vue通过声明式语法实现数据驱动视图，让开发更简洁高效。"
+                "content": "标题标签 h1~h6 定义页面标题，数字越小标题越大。段落标签 p 定义文本段落。"
               },
               {
                 "id": "b2",
-                "type": "code",
-                "language": "html",
-                "filename": "传统HTML实现",
-                "code": "<!DOCTYPE html>\n<html>\n<head>\n  <title>传统HTML示例</title>\n</head>\n<body>\n  <div id='\1'>\n    <h1 id='\1'>Hello World!</h1>\n    <button id='\1'>点击次数: <span id='\1'>0</span></button>\n  </div>\n\n  <script>\n    // 手动获取DOM元素\n    const messageEl = document.getElementById('message');\n    const btnEl = document.getElementById('btn');\n    const countEl = document.getElementById('count');\n    \n    // 手动管理状态\n    let count = 0;\n    \n    // 手动更新视图\n    function updateView() {\n      countEl.textContent = count;\n    }\n    \n    // 手动绑定事件\n    btnEl.addEventListener('click', function() {\n      count++;\n      updateView();\n    });\n  </script>\n</body>\n</html>"
+                "type": "table",
+                "headers": ["标签", "用途", "说明"],
+                "rows": [
+                  ["<h1>", "一级标题", "页面主标题，一个页面建议只用一个"],
+                  ["<h2>", "二级标题", "大章节标题"],
+                  ["<h3>", "三级标题", "子章节标题"],
+                  ["<h4>~<h6>", "更小标题", "较少使用，了解即可"],
+                  ["<p>", "段落", "正文内容，浏览器会自动换行"],
+                  ["<br>", "换行", "在段落内强制换行（单标签，不需要闭合）"]
+                ]
               },
               {
                 "id": "b3",
                 "type": "code",
-                "language": "vue",
-                "filename": "Vue3实现 (App.vue)",
-                "code": "<template>\n  <div>\n    <h1>{{ message }}</h1>\n    <button @click='\1'>点击次数: {{ count }}</button>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst message = ref('Hello Vue3!')\nconst count = ref(0)\n</script>"
-              },
-              {
-                "id": "b4",
-                "type": "text",
-                "content": "通过对比可以看出：传统HTML需要手动获取DOM、绑定事件、更新视图，而Vue只需声明数据和模板，自动处理DOM更新。"
+                "language": "html",
+                "filename": "标题与段落示例",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>标题与段落</title>\n</head>\n<body>\n    <h1>商品介绍</h1>\n    \n    <h2>产品特点</h2>\n    <p>这款产品采用最新技术，具有出色的性能表现。</p>\n    \n    <h2>用户评价</h2>\n    <h3>好评</h3>\n    <p>质量很好，<br>物流也很快。</p>\n</body>\n</html>"
               }
             ]
           },
           {
             "id": "l2",
-            "title": "响应式数据",
+            "title": "链接与图片",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "Vue使用 ref() 创建响应式数据，数据变化时视图自动更新。"
+                "content": "a标签创建超链接，img标签显示图片。这是网页中使用频率最高的两个标签。"
               },
               {
                 "id": "b2",
                 "type": "table",
-                "headers": ["API", "适用类型", "访问方式", "说明"],
+                "headers": ["标签/属性", "作用", "示例"],
                 "rows": [
-                  ["ref()", "任意类型", ".value", "万能用法，推荐使用"],
-                  ["reactive()", "对象/数组", "直接访问", "较少使用"]
+                  ["<a href=\"\">", "链接地址", "<a href=\"https://baidu.com\">百度</a>"],
+                  ["target=\"_blank\"", "新标签页打开", "<a href=\"url\" target=\"_blank\">"],
+                  ["<img src=\"\">", "图片路径", "<img src=\"photo.jpg\">"],
+                  ["alt=\"\"", "图片文字说明", "加载失败或无障碍阅读时显示"],
+                  ["width / height", "图片宽高", "单位是像素，只写数字即可"]
                 ]
               },
               {
                 "id": "b3",
                 "type": "code",
-                "language": "vue",
-                "filename": "ref示例",
-                "code": "<script setup>\nimport { ref } from 'vue'\n\n// 基本类型\nconst count = ref(0)\nconst name = ref('Vue3')\nconst isActive = ref(true)\n\n// 对象和数组（万能用法）\nconst user = ref({ name: '张三', age: 25 })\nconst list = ref(['苹果', '香蕉'])\n\n// 访问值需要用 .value\nconsole.log(count.value)\n</script>"
+                "language": "html",
+                "filename": "链接与图片示例",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>链接与图片</title>\n</head>\n<body>\n    <!-- 文字链接 -->\n    <a href=\"https://www.baidu.com\">跳转到百度</a>\n    <br>\n    <a href=\"https://www.baidu.com\" target=\"_blank\">新窗口打开百度</a>\n    \n    <!-- 图片 -->\n    <h3>示例图片</h3>\n    <img src=\"https://picsum.photos/300/200.jpg\" alt=\"灰色占位图\" width=\"300\">\n    \n    <!-- 图片链接：点击图片跳转 -->\n    <h3>点击图片跳转</h3>\n    <a href=\"https://www.baidu.com\">\n        <img src=\"https://picsum.photos/200/60.jpg\" alt=\"点击跳转百度\">\n    </a>\n</body>\n</html>"
+              },
+              {
+                "id": "b4",
+                "type": "tip",
+                "content": "把图片放到和index.html同一个文件夹，用 src=\"图片名.jpg\" 引用。这样比用网址更快更可靠。"
               }
             ]
           },
           {
             "id": "l3",
-            "title": "模板语法",
+            "title": "列表",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "模板语法使用双大括号进行数据绑定，支持JavaScript表达式。"
+                "content": "列表用于展示一组内容项，常见于导航菜单、商品列表、文章目录等。"
               },
               {
                 "id": "b2",
+                "type": "table",
+                "headers": ["标签", "名称", "显示效果"],
+                "rows": [
+                  ["<ul>", "无序列表", "● 圆点标记，适合功能列表、导航"],
+                  ["<ol>", "有序列表", "1. 2. 3. 数字序号，适合步骤、排名"],
+                  ["<li>", "列表项", "必须放在 ul 或 ol 里面"]
+                ]
+              },
+              {
+                "id": "b3",
                 "type": "code",
-                "language": "vue",
-                "filename": "模板语法示例",
-                "code": "<template>\n  <div>\n    <!-- 文本插值 -->\n    <h1>{{ message }}</h1>\n    \n    <!-- JavaScript表达式 -->\n    <p>当前时间：{{ new Date().toLocaleString() }}</p>\n    <p>计算结果：{{ 1 + 2 * 3 }}</p>\n    <p>是否显示：{{ isActive ? '是' : '否' }}</p>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst message = ref('Hello Vue3!')\nconst isActive = ref(true)\n</script>"
+                "language": "html",
+                "filename": "列表示例",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>列表</title>\n</head>\n<body>\n    <!-- 无序列表：功能列表 -->\n    <h3>产品功能</h3>\n    <ul>\n        <li>智能语音识别</li>\n        <li>实时翻译</li>\n        <li>多语言支持</li>\n    </ul>\n    \n    <!-- 有序列表：使用步骤 -->\n    <h3>使用步骤</h3>\n    <ol>\n        <li>下载并安装软件</li>\n        <li>注册账号</li>\n        <li>开始使用</li>\n    </ol>\n</body>\n</html>"
               }
             ]
           },
           {
             "id": "l4",
-            "title": "条件渲染",
+            "title": "容器标签 div 与 span",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "条件渲染根据条件来显示或隐藏元素。"
+                "content": "div和span是最常用的容器标签，用来把内容分组。div是块级元素（独占一行），span是行内元素（不换行）。"
               },
               {
                 "id": "b2",
                 "type": "table",
-                "headers": ["指令", "说明", "区别"],
+                "headers": ["标签", "类型", "显示特点", "使用场景"],
                 "rows": [
-                  ["v-if", "条件为真时渲染", "不渲染时不创建DOM"],
-                  ["v-else-if", "多条件判断", "必须紧跟v-if"],
-                  ["v-else", "默认分支", "必须紧跟v-if或v-else-if"],
-                  ["v-show", "切换display样式", "始终创建DOM"]
+                  ["<div>", "块级", "独占一行，可设宽高", "页面分区、卡片、布局容器"],
+                  ["<span>", "行内", "不换行，宽度由内容决定", "行内文字标记、高亮"]
                 ]
               },
               {
                 "id": "b3",
                 "type": "code",
-                "language": "vue",
-                "filename": "条件渲染示例",
-                "code": "<template>\n  <div>\n    <!-- v-if 条件判断 -->\n    <div v-if='\1'>\n      <p>优秀</p>\n    </div>\n    <div v-else-if='\1'>\n      <p>及格</p>\n    </div>\n    <div v-else>\n      <p>不及格</p>\n    </div>\n    \n    <!-- v-show 显示/隐藏 -->\n    <div v-show=\"isVisible\">\n      <p>这段内容根据isVisible显示或隐藏</p>\n    </div>\n    \n    <button @click='\1'>切换显示</button>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst score = ref(85)\nconst isVisible = ref(true)\nfunction toggleVisibility() {\n  isVisible.value = !isVisible.value\n}\n</script>"
-              }
-            ]
-          },
-          {
-            "id": "l5",
-            "title": "循环渲染",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "使用 v-for 指令遍历数据并为每个项目渲染元素。"
-              },
-              {
-                "id": "b2",
-                "type": "table",
-                "headers": ["语法", "说明"],
-                "rows": [
-                  ["v-for='\1'", "遍历数组"],
-                  ["v-for='\1'", "遍历数组并获取索引"],
-                  ["v-for='\1'", "遍历对象"]
-                ]
-              },
-              {
-                "id": "b3",
-                "type": "tip",
-                "content": "建议配合 :key 使用，提高渲染性能。"
-              },
-              {
-                "id": "b4",
-                "type": "code",
-                "language": "vue",
-                "filename": "循环渲染示例",
-                "code": "<template>\n  <div>\n    <!-- 遍历数组 -->\n    <ul>\n      <li v-for='\1' :key='\1'>\n        {{ index + 1 }}. {{ item }}\n      </li>\n    </ul>\n    \n    <!-- 遍历对象 -->\n    <div>\n      <h3>用户信息</h3>\n      <p v-for='\1' :key='\1'>\n        {{ key }}: {{ value }}\n      </p>\n    </div>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst fruits = ref(['苹果', '香蕉', '橙子', '葡萄'])\nconst user = ref({\n  name: '张三',\n  age: 25,\n  email: 'zhangsan@example.com'\n})\n</script>"
-              }
-            ]
-          },
-          {
-            "id": "l6",
-            "title": "常用指令",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "Vue指令是带有 v- 前缀的特殊属性。"
-              },
-              {
-                "id": "b2",
-                "type": "table",
-                "headers": ["指令", "简写", "用途"],
-                "rows": [
-                  ["v-model", "-", "双向数据绑定"],
-                  ["v-bind", ":", "绑定属性"],
-                  ["v-on", "@", "绑定事件"],
-                  ["v-if / v-else", "-", "条件渲染"],
-                  ["v-show", "-", "条件显示"],
-                  ["v-for", "-", "循环渲染"],
-                  ["v-text", "-", "渲染文本"]
-                ]
-              },
-              {
-                "id": "b3",
-                "type": "code",
-                "language": "vue",
-                "filename": "指令示例",
-                "code": "<template>\n  <div>\n    <!-- v-model 双向绑定 -->\n    <input v-model='\1' placeholder='\1'>\n    <p>你输入的内容：{{ message }}</p>\n    \n    <!-- v-bind 绑定属性 -->\n    <img :src='\1' alt='\1' :class='\1'>\n    \n    <!-- v-on 绑定事件 -->\n    <button @click='\1'>点击次数: {{ count }}</button>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst message = ref('')\nconst imageUrl = ref('https://via.placeholder.com/150')\nconst isLarge = ref(true)\nconst count = ref(0)\nfunction increment() {\n  count.value++\n}\n</script>\n\n<style scoped>\n.large {\n  width: 200px;\n  height: 200px;\n}\n</style>"
+                "language": "html",
+                "filename": "div与span示例",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>容器标签</title>\n</head>\n<body>\n    <!-- div：块级容器，每个div独占一行 -->\n    <div style=\"background:#f0f0f0; padding:15px; margin-bottom:10px;\">\n        <h3>商品卡片 1</h3>\n        <p>这是第一个商品</p>\n    </div>\n    \n    <div style=\"background:#e8f4e8; padding:15px;\">\n        <h3>商品卡片 2</h3>\n        <p>这是第二个商品</p>\n    </div>\n    \n    <!-- span：行内容器，不换行 -->\n    <p>价格：<span style=\"color:red; font-size:20px;\">¥99</span></p>\n    <p>标签：<span style=\"background:yellow;\">热卖</span></p>\n</body>\n</html>"
               }
             ]
           }
@@ -240,131 +220,71 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch3",
-        "title": "Vue3组件",
+        "title": "表单",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
           {
             "id": "l1",
-            "title": "组件基础",
+            "title": "输入类",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "组件是Vue3的核心概念，用于构建可复用的UI元素。一个组件包含模板、逻辑和样式。"
+                "content": "输入类表单用于让用户输入文字，包括单行输入、密码、邮箱和多行文本。"
               },
               {
                 "id": "b2",
                 "type": "table",
-                "headers": ["组成部分", "说明"],
+                "headers": ["标签", "作用", "关键属性"],
                 "rows": [
-                  ["<template>", "HTML模板，定义组件的视图结构"],
-                  ["<script setup>", "组件逻辑，使用组合式API"],
-                  ["<style scoped>", "组件样式，scoped表示仅当前组件生效"]
+                  ["<input type=\"text\">", "单行文本", "placeholder=\"提示文字\""],
+                  ["<input type=\"password\">", "密码", "输入内容显示为圆点"],
+                  ["<input type=\"email\">", "邮箱", "浏览器自动校验格式"],
+                  ["<textarea>", "多行文本", "rows=\"行数\" cols=\"列数\""],
+                  ["<label for=\"id\">", "标签", "点击标签文字可聚焦输入框"]
                 ]
               },
               {
                 "id": "b3",
                 "type": "code",
-                "language": "vue",
-                "filename": "HelloWorld.vue",
-                "code": "<template>\n  <div class='\1'>\n    <h1>{{ message }}</h1>\n    <button @click='\1'>点击</button>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst message = ref('Hello World!')\nfunction onClick() {\n  message.value = 'Clicked!'\n}\n</script>\n\n<style scoped>\n.hello { color: #333; }\n</style>"
+                "language": "html",
+                "filename": "登录框示例",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>登录</title>\n</head>\n<body>\n    <h2>用户登录</h2>\n    \n    <form>\n        <div>\n            <label for=\"username\">用户名：</label>\n            <input id=\"username\" placeholder=\"请输入用户名\">\n        </div>\n        \n        <div>\n            <label for=\"pwd\">密　码：</label>\n            <input type=\"password\" id=\"pwd\" placeholder=\"请输入密码\">\n        </div>\n        \n        <div>\n            <label for=\"intro\">个人简介：</label>\n            <textarea id=\"intro\" rows=\"4\" cols=\"40\" placeholder=\"介绍一下你自己...\"></textarea>\n        </div>\n        \n        <br>\n        <button>登录</button>\n    </form>\n</body>\n</html>"
+              },
+              {
+                "id": "b4",
+                "type": "tip",
+                "content": "label的for属性对应input的id。点击label文字会自动聚焦到对应的输入框，这是提升用户体验的细节。"
               }
             ]
           },
           {
             "id": "l2",
-            "title": "使用组件",
+            "title": "选择类",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "在父组件中引入并使用子组件。"
+                "content": "选择类表单让用户从给定的选项中选取，包括单选、多选和下拉选择。"
               },
               {
                 "id": "b2",
                 "type": "table",
-                "headers": ["步骤", "操作"],
+                "headers": ["标签", "作用", "要点"],
                 "rows": [
-                  ["1. 引入", "import HelloWorld from './HelloWorld.vue'"],
-                  ["2. 注册", "在script setup中无需注册，直接使用"],
-                  ["3. 使用", "在template中当作HTML标签使用"]
+                  ["<input type=\"radio\">", "单选", "同一组name必须相同，只能选一个"],
+                  ["<input type=\"checkbox\">", "多选", "可同时选多个"],
+                  ["<select>+<option>", "下拉选择", "节省空间，适合选项多时"]
                 ]
               },
               {
                 "id": "b3",
                 "type": "code",
-                "language": "vue",
-                "filename": "App.vue",
-                "code": "<template>\n  <div>\n    <HelloWorld />\n  </div>\n</template>\n\n<script setup>\nimport HelloWorld from './HelloWorld.vue'\n</script>"
-              }
-            ]
-          },
-          {
-            "id": "l3",
-            "title": "组件通信",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "组件之间通过Props和Emit进行数据传递。"
-              },
-              {
-                "id": "b2",
-                "type": "table",
-                "headers": ["通信方式", "说明", "使用场景"],
-                "rows": [
-                  ["Props", "父传子", "父组件向子组件传递数据"],
-                  ["Emit", "子传父", "子组件向父组件发送事件"],
-                  ["v-model", "双向绑定", "适合表单等双向数据场景"]
-                ]
-              },
-              {
-                "id": "b3",
-                "type": "code",
-                "language": "vue",
-                "filename": "Parent.vue",
-                "code": "<template>\n  <div>\n    <!-- 父传子：通过props -->\n    <ChildComponent :title=\"title\" :count=\"count\" />\n    \n    <!-- 子传父：通过emit -->\n    <ChildComponent @update=\"onUpdate\" />\n    \n    <!-- v-model双向绑定 -->\n    <ChildComponent v-model='\1' />\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nimport ChildComponent from './ChildComponent.vue'\nconst title = ref('标题')\nconst count = ref(0)\nconst modelValue = ref('')\nfunction onUpdate(value) {\n  console.log('收到子组件更新:', value)\n}\n</script>"
-              },
-              {
-                "id": "b4",
-                "type": "code",
-                "language": "vue",
-                "filename": "ChildComponent.vue",
-                "code": "<template>\n  <div>\n    <h2>{{ title }} - {{ count }}</h2>\n    <input v-model='\1' @input='\1'>\n    <button @click='\1'>发送</button>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\n// Props：接收父组件传递的数据\nconst props = defineProps({\n  title: String,\n  count: Number\n})\n\n// Emit：向父组件发送事件\nconst emit = defineEmits(['update'])\n\nconst localValue = ref('')\nfunction onInput() {\n  emit('update', localValue.value)\n}\n</script>"
-              }
-            ]
-          },
-          {
-            "id": "l4",
-            "title": "插槽",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "插槽用于父组件向子组件传递HTML内容。"
-              },
-              {
-                "id": "b2",
-                "type": "table",
-                "headers": ["插槽类型", "说明"],
-                "rows": [
-                  ["默认插槽", "最简单的插槽，子组件用<slot />接收"],
-                  ["具名插槽", "子组件有多个插槽时，用name区分"],
-                  ["作用域插槽", "子组件向插槽传递数据"]
-                ]
-              },
-              {
-                "id": "b3",
-                "type": "code",
-                "language": "vue",
-                "filename": "Layout.vue (子组件)",
-                "code": "<template>\n  <div class='\1'>\n    <header>\n      <slot name='\1' />\n    </header>\n    <main>\n      <slot />\n    </main>\n    <footer>\n      <slot name='\1' />\n    </footer>\n  </div>\n</template>"
-              },
-              {
-                "id": "b4",
-                "type": "code",
-                "language": "vue",
-                "filename": "App.vue (父组件)",
-                "code": "<template>\n  <Layout>\n    <template #header>\n      <h1>网站标题</h1>\n    </template>\n    \n    <p>这是主要内容区域</p>\n    \n    <template #footer>\n      <p>版权所有 2024</p>\n    </template>\n  </Layout>\n</template>\n\n<script setup>\nimport Layout from './Layout.vue'\n</script>"
+                "language": "html",
+                "filename": "选择类示例",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>问卷调查</title>\n</head>\n<body>\n    <h2>问卷调查</h2>\n    \n    <form>\n        <!-- 单选：同一组name相同 -->\n        <p>性别：</p>\n        <input type=\"radio\" name=\"gender\" id=\"male\" value=\"男\">\n        <label for=\"male\">男</label>\n        <input type=\"radio\" name=\"gender\" id=\"female\" value=\"女\">\n        <label for=\"female\">女</label>\n        \n        <!-- 多选 -->\n        <p>兴趣（可多选）：</p>\n        <input type=\"checkbox\" id=\"h1\" value=\"运动\">\n        <label for=\"h1\">运动</label>\n        <input type=\"checkbox\" id=\"h2\" value=\"阅读\">\n        <label for=\"h2\">阅读</label>\n        <input type=\"checkbox\" id=\"h3\" value=\"音乐\">\n        <label for=\"h3\">音乐</label>\n        \n        <!-- 下拉选择 -->\n        <p>城市：</p>\n        <select>\n            <option value=\"\">请选择城市</option>\n            <option value=\"beijing\">北京</option>\n            <option value=\"shanghai\">上海</option>\n            <option value=\"guangzhou\">广州</option>\n        </select>\n    </form>\n</body>\n</html>"
               }
             ]
           }
@@ -403,7 +323,7 @@ export const frontendCourses: Course[] = [
                 "type": "code",
                 "language": "html",
                 "filename": "文字样式示例",
-                "code": "<p style='\1'>深灰色文字，18像素大小</p>\n<p style='\1'>蓝色加粗文字</p>\n<p style='\1'>居中显示的微软雅黑文字</p>\n<p style='\1'>这是一段拥有较大行高的文字，\n换行后可以看到效果</p>"
+                "code": "<p style=\"color:#333; font-size:18px;\">深灰色文字，18像素大小</p>\n<p style=\"color:blue; font-weight:bold;\">蓝色加粗文字</p>\n<p style=\"text-align:center; font-family:'Microsoft YaHei',sans-serif;\">居中显示的微软雅黑文字</p>\n<p style=\"line-height:2;\">这是一段拥有较大行高的文字，换行后可以看到效果</p>"
               }
             ]
           },
@@ -429,7 +349,7 @@ export const frontendCourses: Course[] = [
                 "type": "code",
                 "language": "html",
                 "filename": "背景边框示例",
-                "code": "<div style='\1'>\n    <p style='\1'>蓝色背景的容器</p>\n</div>\n\n<div style='\1'>\n    带边框的容器\n</div>\n\n<div style='\1'>\n    圆角容器\n</div>\n\n<div style='\1'>\n    带阴影的卡片效果\n</div>"
+                "code": "<div style=\"background:#4a90d9; padding:20px; margin-bottom:10px;\">\n  <p style=\"color:white; margin:0;\">蓝色背景的容器</p>\n</div>\n\n<div style=\"border:2px solid #333; padding:15px; margin-bottom:10px;\">\n  带边框的容器\n</div>\n\n<div style=\"background:#4a90d9; color:white; padding:15px; border-radius:8px; margin-bottom:10px;\">\n  圆角容器\n</div>\n\n<div style=\"background:white; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.15); border-radius:4px;\">\n  带阴影的卡片效果\n</div>"
               }
             ]
           },
@@ -448,7 +368,7 @@ export const frontendCourses: Course[] = [
                 "type": "code",
                 "language": "html",
                 "filename": "间距示例",
-                "code": "<!-- 内边距示例 -->\n<div style='\1'>\n    <div style='\1'>有20px内边距的容器</div>\n</div>\n\n<!-- 外边距示例 -->\n<div style='\1'>\n    <div style='\1'>第1个元素</div>\n    <div style='\1'>第2个元素</div>\n</div>\n\n<!-- 简写形式 -->\n<div style='\1'>上下10px，左右20px</div>\n<div style='\1'>上5右10下15左20</div>"
+                "code": "<!-- 内边距 padding：元素内部空间 -->\n<div style=\"background:#f0f0f0;\">\n  <div style=\"background:#4a90d9; color:white; padding:20px;\">有20px内边距</div>\n</div>\n\n<!-- 外边距 margin：元素外部空间 -->\n<div style=\"background:#f0f0f0; padding:10px;\">\n  <div style=\"background:#4a90d9; color:white; padding:10px; margin-bottom:10px;\">第1个元素</div>\n  <div style=\"background:#4a90d9; color:white; padding:10px;\">第2个元素</div>\n</div>\n\n<!-- 简写：上下10px，左右20px -->\n<div style=\"background:#4a90d9; color:white; padding:10px 20px; margin-bottom:8px;\">上下10 左右20</div>\n\n<!-- 简写：上5 右10 下15 左20 -->\n<div style=\"background:#4a90d9; color:white; padding:5px 10px 15px 20px;\">上5 右10 下15 左20</div>"
               }
             ]
           },
@@ -460,34 +380,29 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b0",
                 "type": "text",
-                "content": "选择器用于选择HTML元素，然后为这些元素添加样式。在实际开发中，类选择器（.class）是最常用的，因为它可以重复使用，便于维护。其他选择器在特定场景下也会用到。"
+                "content": "选择器用于选择HTML元素并添加样式。三种基础选择器："
               },
               {
                 "id": "b1",
                 "type": "table",
-                "headers": ["选择器", "作用", "示例", "使用场景"],
+                "headers": ["选择器", "写法", "适用场景"],
                 "rows": [
-                  ["类选择器", "选择指定类", ".class { color: red; }", "最常用，用于复用样式"],
-                  ["ID选择器", "选择指定ID", "#id { color: red; }", "唯一元素，如页面布局"],
-                  ["标签选择器", "选择指定标签", "p { color: red; }", "重置样式或全局样式"],
-                  ["后代选择器", "选择后代元素", "div p { color: red; }", "嵌套样式"],
-                  ["伪类选择器", "选择特殊状态", "a:hover { color: blue; }", "交互状态"],
-                  ["属性选择器", "选择有指定属性", "[href] { color: red; }", "表单元素"],
-                  ["通配选择器", "选择所有元素", "* { margin: 0; }", "全局重置"],
-                  ["直接后代选择器", "选择直接子元素", "div > p { color: red; }", "精确选择"]
+                  ["类选择器", ".class { }", "最常用，可重复使用"],
+                  ["ID选择器", "#id { }", "页面唯一元素"],
+                  ["标签选择器", "p { }", "全局样式或重置"]
                 ]
               },
               {
                 "id": "b1-1",
                 "type": "text",
-                "content": "<strong>推荐做法：</strong>优先使用类选择器，保持样式的可复用性和代码的清晰性。ID选择器用于唯一元素，标签选择器用于全局样式重置。"
+                "content": "优先使用类选择器。ID唯一，标签太宽泛。掌握这三种就够了。"
               },
               {
                 "id": "b2",
                 "type": "code",
                 "language": "html",
                 "filename": "选择器示例",
-                "code": "<!DOCTYPE html>\n<html>\n<head>\n<style>\n/* 类选择器（最常用） */\n.text-red {\n    color: red;\n}\n\n.container p {\n    margin: 10px 0;\n}\n\n/* ID选择器 */\n#title {\n    font-size: 24px;\n}\n\n/* 标签选择器 */\np {\n    color: #333;\n}\n</style>\n</head>\n<body>\n\n<h1 id='\1'>标题</h1>\n<p>普通段落</p>\n<p class='\1'>红色文字</p>\n<div class='\1'>\n    <p>容器内的段落</p>\n</div>\n\n</body>\n</html>"
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n<style>\n/* 类选择器（最常用） */\n.text-red {\n    color: red;\n}\n\n.container p {\n    margin: 10px 0;\n}\n\n/* ID选择器 */\n#title {\n    font-size: 24px;\n}\n\n/* 标签选择器 */\np {\n    color: #333;\n}\n</style>\n</head>\n<body>\n\n<h1 id=\"title\">标题</h1>\n<p>普通段落</p>\n<p class=\"text-red\">红色文字</p>\n<div class=\"container\">\n    <p>容器内的段落</p>\n</div>\n\n</body>\n</html>"
               }
             ]
           }
@@ -522,7 +437,7 @@ export const frontendCourses: Course[] = [
                 "type": "code",
                 "language": "html",
                 "filename": "文档流示例",
-                "code": "<!-- 块级元素：每个都独占一行 -->\n<div>第一个div</div>\n<div>第二个div</div>\n<div>第三个div</div>"
+                "code": "<!-- 块级元素：每个独占一行 -->\n<div style=\"background:#e3f2fd; padding:8px; margin:4px;\">div块1</div>\n<div style=\"background:#e3f2fd; padding:8px; margin:4px;\">div块2</div>\n<p style=\"background:#fff3e0; padding:8px; margin:4px;\">p段落（也是块级）</p>\n\n<!-- 行内元素：不换行，宽度由内容决定 -->\n<span style=\"background:#e8f5e9; padding:4px;\">span1</span>\n<span style=\"background:#e8f5e9; padding:4px;\">span2</span>\n<a href=\"#\" style=\"background:#e8f5e9; padding:4px;\">链接a</a>"
               }
             ]
           },
@@ -553,7 +468,7 @@ export const frontendCourses: Course[] = [
                 "type": "code",
                 "language": "html",
                 "filename": "Flex基础示例",
-                "code": "<div style='\1'>\n    <div style='\1'>盒子1</div>\n    <div style='\1'>盒子2</div>\n    <div style='\1'>盒子3</div>\n</div>"
+                "code": "<!-- 水平排列（默认row） -->\n<div style=\"display:flex; gap:10px;\">\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">1</div>\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">2</div>\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">3</div>\n</div>\n\n<!-- 竖直排列（column） -->\n<div style=\"display:flex; flex-direction:column; gap:10px; margin-top:15px;\">\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">A</div>\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">B</div>\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">C</div>\n</div>\n\n<!-- 所有item整体定位 -->\n<div style=\"display:flex; gap:10px; justify-content:center; margin-top:15px;\">\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">居中排列</div>\n</div>\n\n<div style=\"display:flex; gap:10px; justify-content:flex-end; margin-top:15px;\">\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">靠右排列</div>\n</div>\n\n<div style=\"display:flex; gap:10px; justify-content:space-between; margin-top:15px;\">\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">左</div>\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">右</div>\n</div>\n\n<!-- 单个item独立定位：margin推位置 -->\n<div style=\"display:flex; gap:10px; height:120px; background:#f0f0f0; padding:8px; margin-top:15px;\">\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">普通</div>\n  <div style=\"padding:10px 20px; background:#e74c3c; color:white; margin-top:-20px;\">上20px</div>\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white; margin-top:20px;\">下20px</div>\n  <div style=\"padding:10px 20px; background:#2ecc71; color:white; margin-right:15px;\">右间距</div>\n  <div style=\"padding:10px 20px; background:#e67e22; color:white; margin-left:auto;\">推最右</div>\n</div>"
               }
             ]
           },
@@ -579,7 +494,7 @@ export const frontendCourses: Course[] = [
                 "type": "code",
                 "language": "html",
                 "filename": "Flex对齐示例",
-                "code": "<!-- 左对齐 -->\n<div style='\1'>\n    <div style='\1'>左侧</div>\n    <div style='\1'>对齐</div>\n</div>\n\n<!-- 居中对齐 -->\n<div style='\1'>\n    <div style='\1'>居中</div>\n    <div style='\1'>内容</div>\n</div>\n\n<!-- 两端对齐 -->\n<div style='\1'>\n    <div style='\1'>左</div>\n    <div style='\1'>右</div>\n</div>\n\n<!-- 垂直居中 -->\n<div style='\1'>\n    <div style='\1'>圆形</div>\n</div>"
+                "code": "<!-- 水平居中 -->\n<div style=\"display:flex; justify-content:center;\">\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">水平居中</div>\n</div>\n\n<!-- 竖直居中（需要给容器设高度） -->\n<div style=\"display:flex; align-items:center; height:80px; background:#f0f0f0; margin-top:10px;\">\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">竖直居中</div>\n</div>\n\n<!-- 完全居中（水平+竖直） -->\n<div style=\"display:flex; justify-content:center; align-items:center; height:120px; background:#f0f0f0; margin-top:10px;\">\n  <div style=\"padding:10px 20px; background:#4a90d9; color:white;\">完全居中</div>\n</div>"
               }
             ]
           }
@@ -1309,7 +1224,7 @@ export const frontendCourses: Course[] = [
                 "type": "code",
                 "language": "vue",
                 "filename": "指令示例",
-                "code": "<template>\n  <div>\n    <input v-model='\1' placeholder='\1'>\n    <p>你输入的：{{ message }}</p>\n    <img :src='\1' :class='\1'>\n    <button @click='\1'>点击: {{ count }}</button>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst message = ref('')\nconst imageUrl = ref('https://via.placeholder.com/150')\nconst isLarge = ref(true)\nconst count = ref(0)\n</script>\n\n<style scoped>\n.large { width: 200px; height: 200px; }\n</style>"
+                "code": "<template>\n  <div>\n    <input v-model='\1' placeholder='\1'>\n    <p>你输入的：{{ message }}</p>\n    <img :src='\1' :class='\1'>\n    <button @click='\1'>点击: {{ count }}</button>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nconst message = ref('')\nconst imageUrl = ref('https://picsum.photos/150.jpg')\nconst isLarge = ref(true)\nconst count = ref(0)\n</script>\n\n<style scoped>\n.large { width: 200px; height: 200px; }\n</style>"
               }
             ]
           }
@@ -2067,6 +1982,482 @@ export const frontendCourses: Course[] = [
       }
     ]
   },
+  {
+    "id": "frontend-llm",
+    "pathId": "frontend",
+    "title": "大模型开发",
+    "desc": "LLM API、函数调用、RAG、智能体",
+    "icon": "🧠",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "API调用",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "大模型API调用",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "调用大模型API只需要发送HTTP请求。核心概念：messages数组（system设定角色、user用户问题、assistant模型回复）、temperature（0严谨/1创意）、max_tokens（最大输出长度）。"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["参数", "作用", "示例"],
+                "rows": [
+                  ["model", "模型名称", "deepseek-chat / gpt-4o"],
+                  ["messages", "对话消息数组", "[{role:'user', content:'你好'}]"],
+                  ["temperature", "随机性 0~2", "0=严谨，1=创意"],
+                  ["max_tokens", "最大输出长度", "4096"],
+                  ["stream", "是否流式", "false / true"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "调用DeepSeek API",
+                "code": "// 原生fetch调用，不需要任何SDK\nconst response = await fetch('https://api.deepseek.com/v1/chat/completions', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer sk-你的API密钥'\n  },\n  body: JSON.stringify({\n    model: 'deepseek-chat',\n    messages: [\n      { role: 'system', content: '你是一个乐于助人的助手。' },\n      { role: 'user', content: '用一句话介绍前端开发' }\n    ],\n    temperature: 0.7\n  })\n})\n\nconst data = await response.json()\nconsole.log(data.choices[0].message.content)"
+              },
+              {
+                "id": "b4",
+                "type": "tip",
+                "content": "各大模型API格式高度统一（OpenAI兼容），换模型只需改URL和model名称。DeepSeek、千问、豆包均兼容OpenAI格式。"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "流式响应",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "流式响应（SSE）让大模型逐字输出，就像ChatGPT打字效果。设置 stream:true，服务器会持续推送数据块。"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["流式字段", "含义"],
+                "rows": [
+                  ["delta.content", "本次推送的新增文字"],
+                  ["delta.role", "消息角色（仅首次）"],
+                  ["finish_reason", "\"stop\"表示结束，null表示继续"],
+                  ["choices[0].delta", "增量内容（非流式用message）"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "流式调用",
+                "code": "const response = await fetch('https://api.deepseek.com/v1/chat/completions', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer sk-你的API密钥'\n  },\n  body: JSON.stringify({\n    model: 'deepseek-chat',\n    messages: [{ role: 'user', content: '写一首五言诗' }],\n    stream: true  // 关键：开启流式\n  })\n})\n\n// 逐行读取SSE数据流\nconst reader = response.body.getReader()\nconst decoder = new TextDecoder()\nlet buffer = ''\n\nwhile (true) {\n  const { done, value } = await reader.read()\n  if (done) break\n  \n  buffer += decoder.decode(value, { stream: true })\n  const lines = buffer.split('\\n')\n  buffer = lines.pop() || ''\n  \n  for (const line of lines) {\n    if (line.startsWith('data: ')) {\n      const data = line.slice(6)\n      if (data === '[DONE]') continue\n      const json = JSON.parse(data)\n      const content = json.choices[0]?.delta?.content\n      if (content) process.stdout.write(content) // 逐字打印\n    }\n  }\n}"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "多模态输入",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "多模态模型可以理解图片、音频等多种输入。GPT-4o、千问-VL、豆包等均支持图片输入。"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["能力", "API方式", "模型"],
+                "rows": [
+                  ["图片理解", "image_url 字段传base64或URL", "gpt-4o / qwen-vl-max"],
+                  ["音频转文字", "Whisper API / 语音识别", "whisper-1"],
+                  ["文字转语音", "TTS API", "tts-1 / 豆包语音合成"],
+                  ["视频理解", "视频帧抽帧后按图片处理", "gpt-4o / qwen-vl-max"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "图片理解",
+                "code": "// 图片理解：图片转base64后作为消息内容\nconst imageBase64 = fs.readFileSync('./photo.jpg', 'base64')\n\nconst response = await fetch('https://api.deepseek.com/v1/chat/completions', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer sk-你的API密钥'\n  },\n  body: JSON.stringify({\n    model: 'deepseek-chat',\n    messages: [{\n      role: 'user',\n      content: [\n        { type: 'text', text: '这张图片里有什么？' },\n        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}` } }\n      ]\n    }]\n  })\n})\n\n// 音频转文字：Whisper API\nconst formData = new FormData()\nformData.append('file', fs.createReadStream('./audio.mp3'))\nformData.append('model', 'whisper-1')\n\nconst transcription = await fetch('https://api.openai.com/v1/audio/transcriptions', {\n  method: 'POST',\n  headers: { 'Authorization': 'Bearer sk-你的API密钥' },\n  body: formData\n})"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "AIGC生成",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "AIGC不仅限于文字，还包括图片、视频生成。国内阿里百炼和火山引擎都提供了完整的AIGC API。"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["生成类型", "API产品", "调用方式"],
+                "rows": [
+                  ["文生图", "通义万相 / 即梦", "POST提交prompt → 返回图片URL"],
+                  ["文生视频", "HappyHorse / Seedance", "异步提交 → 轮询结果 → 获取视频"],
+                  ["声音克隆", "豆包声音复刻", "上传样本 → 训练 → TTS合成"],
+                  ["数字人", "即梦OmniHuman", "图片+音频 → 生成口型视频"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "文生图示例（通义万相）",
+                "code": "// 阿里百炼 通义万相 文生图\nconst response = await fetch('https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer sk-你的百炼API密钥',\n    'X-DashScope-Async': 'enable'  // 异步模式\n  },\n  body: JSON.stringify({\n    model: 'wan2.1-t2i-turbo',\n    input: {\n      prompt: '一只可爱的橘猫坐在窗台上，阳光洒落，温馨治愈风格'\n    },\n    parameters: {\n      size: '1024*1024',\n      n: 1\n    }\n  })\n})\n\nconst { output } = await response.json()\nconsole.log('生成的图片:', output.results[0].url)"
+              },
+              {
+                "id": "b4",
+                "type": "tip",
+                "content": "AIGC生成类API多为异步模式：提交任务获取task_id → 轮询查询状态 → 完成后获取结果URL。注意处理超时和失败重试。"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "函数调用",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "工具定义",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "函数调用（Function Calling）让大模型能够自主决定调用哪些外部工具。例如：用户问\"北京今天天气\"，模型会自动调用 getWeather 函数。"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["字段", "说明", "示例"],
+                "rows": [
+                  ["name", "函数名", "getWeather"],
+                  ["description", "函数描述（决定何时调用）", "获取指定城市的天气"],
+                  ["parameters", "参数JSON Schema", "{type:'object', properties:{...}}"],
+                  ["required", "必填参数列表", "[\"city\"]"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "定义工具（tools）",
+                "code": "// 定义两个工具：查天气 + 发邮件\nconst tools = [\n  {\n    type: 'function',\n    function: {\n      name: 'getWeather',\n      description: '获取指定城市今天的天气信息',\n      parameters: {\n        type: 'object',\n        properties: {\n          city: { type: 'string', description: '城市名称，如北京、上海' }\n        },\n        required: ['city']\n      }\n    }\n  },\n  {\n    type: 'function',\n    function: {\n      name: 'sendEmail',\n      description: '发送邮件给指定收件人',\n      parameters: {\n        type: 'object',\n        properties: {\n          to: { type: 'string', description: '收件人邮箱' },\n          subject: { type: 'string', description: '邮件主题' },\n          body: { type: 'string', description: '邮件正文' }\n        },\n        required: ['to', 'subject', 'body']\n      }\n    }\n  }\n]\n\n// 调用时传入tools\nconst response = await fetch('https://api.deepseek.com/v1/chat/completions', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer sk-你的API密钥'\n  },\n  body: JSON.stringify({\n    model: 'deepseek-chat',\n    messages: [{ role: 'user', content: '北京今天天气怎么样？' }],\n    tools: tools\n  })\n})"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "函数调用流程",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "函数调用的完整流程：模型判断是否需要调用工具 → 返回tool_calls（含函数名和参数）→ 执行函数并将结果回传 → 模型基于结果生成最终回复。"
+              },
+              {
+                "id": "b2",
+                "type": "list",
+                "items": [
+                  "1. 发送用户问题 + tools定义给模型",
+                  "2. 模型返回 finish_reason: \"tool_calls\"（表示要调用工具）",
+                  "3. 解析 tool_calls，执行对应的函数",
+                  "4. 将函数结果以 role: \"tool\" 回传给模型",
+                  "5. 模型基于结果生成最终的文本回复"
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "函数调用完整流程",
+                "code": "async function chatWithTools(userMessage) {\n  const messages = [{ role: 'user', content: userMessage }]\n  \n  // 第一步：发送请求，模型决定是否调工具\n  let response = await callLLM(messages, tools)\n  let choice = response.choices[0]\n  \n  // 第二步：如果模型要调工具，执行并回传结果\n  while (choice.finish_reason === 'tool_calls') {\n    messages.push(choice.message) // 模型的工具调用消息\n    \n    for (const toolCall of choice.message.tool_calls) {\n      const args = JSON.parse(toolCall.function.arguments)\n      let result\n      \n      // 执行对应函数\n      switch (toolCall.function.name) {\n        case 'getWeather':\n          result = await getWeather(args.city)\n          break\n        case 'sendEmail':\n          result = await sendEmail(args.to, args.subject, args.body)\n          break\n      }\n      \n      // 将结果回传\n      messages.push({\n        role: 'tool',\n        tool_call_id: toolCall.id,\n        content: JSON.stringify(result)\n      })\n    }\n    \n    response = await callLLM(messages, tools)\n    choice = response.choices[0]\n  }\n  \n  // 第三步：返回最终文本回复\n  return choice.message.content\n}"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "实战：智能查询工具",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "结合Express做一个智能查询接口：用户自然语言提问 → 模型调用对应工具 → 返回结果。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "Express智能查询接口",
+                "code": "// 工具函数\nasync function queryDatabase(sql) {\n  const db = new Database('mydb.sqlite')\n  return db.prepare(sql).all()\n}\n\nasync function searchWeb(keyword) {\n  const res = await fetch(`https://api.search.com?q=${keyword}`)\n  return res.json()\n}\n\n// 工具定义\nconst tools = [\n  { type: 'function', function: { name: 'queryDatabase',\n    description: '执行SQL查询数据库',\n    parameters: { type: 'object', properties: { sql: { type: 'string' } }, required: ['sql'] }\n  }},\n  { type: 'function', function: { name: 'searchWeb',\n    description: '搜索互联网获取实时信息',\n    parameters: { type: 'object', properties: { keyword: { type: 'string' } }, required: ['keyword'] }\n  }}\n]\n\n// Express接口\napp.post('/api/chat', async (req, res) => {\n  const { query } = req.body\n  const answer = await chatWithTools(query, tools) // 复用上面的函数\n  res.json({ answer })\n})"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "RAG知识库",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "Embedding向量化",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "Embedding是将文本转换为数字向量的技术。语义相近的文本，向量之间的距离也近。这是RAG的核心基础。"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["Embedding模型", "维度", "特点"],
+                "rows": [
+                  ["text-embedding-3-small", "1536维", "OpenAI出品，性价比最高"],
+                  ["text-embedding-3-large", "3072维", "精度更高，速度稍慢"],
+                  ["bge-large-zh-v1.5", "1024维", "中文优化，开源可自部署"],
+                  ["gte-large-zh", "1024维", "阿里出品，中文效果好"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "文本转向量",
+                "code": "// 调用OpenAI Embedding API\nasync function getEmbedding(text) {\n  const response = await fetch('https://api.openai.com/v1/embeddings', {\n    method: 'POST',\n    headers: {\n      'Content-Type': 'application/json',\n      'Authorization': 'Bearer sk-你的API密钥'\n    },\n    body: JSON.stringify({\n      model: 'text-embedding-3-small',\n      input: text.substring(0, 8000) // 注意token限制\n    })\n  })\n  const data = await response.json()\n  return data.data[0].embedding // 返回1536维向量数组\n}\n\n// 计算两个向量的余弦相似度\nfunction cosineSimilarity(vecA, vecB) {\n  let dotProduct = 0, normA = 0, normB = 0\n  for (let i = 0; i < vecA.length; i++) {\n    dotProduct += vecA[i] * vecB[i]\n    normA += vecA[i] * vecA[i]\n    normB += vecB[i] * vecB[i]\n  }\n  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))\n}"
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "sqlite-vec向量存储",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "sqlite-vec是SQLite的向量扩展，在SQLite中直接存储和检索向量，零额外服务。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "bash",
+                "filename": "安装",
+                "code": "npm install sqlite-vec better-sqlite3"
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "sqlite-vec使用",
+                "code": "import Database from 'better-sqlite3'\nimport * as vec from 'sqlite-vec'\n\nconst db = new Database('knowledge.db')\nvec.load(db) // 加载向量扩展\n\n// 创建向量表（维度需与embedding模型匹配）\ndb.exec(`\n  CREATE VIRTUAL TABLE IF NOT EXISTS chunks USING vec0(\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    content TEXT,\n    embedding FLOAT[1536]  -- 1536维向量\n  )\n`)\n\n// 插入向量数据\nasync function insertChunk(text) {\n  const embedding = await getEmbedding(text)\n  db.run(\n    'INSERT INTO chunks (content, embedding) VALUES (?, ?)',\n    text, JSON.stringify(embedding)\n  )\n}\n\n// 向量相似度检索（最核心的一行SQL）\nasync function searchSimilar(query, limit = 3) {\n  const queryVec = await getEmbedding(query)\n  return db.prepare(`\n    SELECT content, vec_distance_cosine(embedding, ?) as distance\n    FROM chunks\n    ORDER BY distance\n    LIMIT ?\n  `).all(JSON.stringify(queryVec), limit)\n}"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "文档切分与存储",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "长文档不能直接向量化，需要先切成小块（chunk）。切分策略直接影响检索效果。"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["切分策略", "chunk大小", "适用场景"],
+                "rows": [
+                  ["固定长度", "512 tokens", "通用文档"],
+                  ["按段落", "不固定，以\\n\\n为界", "文章、论文"],
+                  ["按句子", "以句号/换行为界", "FAQ、对话记录"],
+                  ["重叠切分", "相邻chunk重叠100字", "避免关键信息被切断"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "文档切分与入库",
+                "code": "// 简单固定长度切分（含重叠）\nfunction splitText(text, chunkSize = 500, overlap = 100) {\n  const chunks = []\n  let start = 0\n  \n  while (start < text.length) {\n    const end = Math.min(start + chunkSize, text.length)\n    chunks.push(text.slice(start, end))\n    start += chunkSize - overlap // 下一个chunk与上一个重叠\n  }\n  \n  return chunks\n}\n\n// 批量入库\nasync function indexDocument(title, content) {\n  const chunks = splitText(content)\n  \n  const insertStmt = db.prepare(\n    'INSERT INTO chunks (content, embedding) VALUES (?, ?)'\n  )\n  \n  for (const chunk of chunks) {\n    const embedding = await getEmbedding(chunk)\n    insertStmt.run(chunk, JSON.stringify(embedding))\n  }\n  \n  console.log(`已索引 ${chunks.length} 个文本块`)\n}"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "检索增强生成",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "RAG完整流程：用户提问 → 向量检索相关文档 → 将检索结果注入prompt → 大模型基于上下文生成回答。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "完整RAG流程",
+                "code": "async function ragQuery(userQuestion) {\n  // 1. 向量检索\n  const relevantDocs = await searchSimilar(userQuestion, 3)\n  \n  // 2. 构建上下文\n  const context = relevantDocs\n    .map(doc => doc.content)\n    .join('\\n\\n---\\n\\n')\n  \n  // 3. 构建增强prompt\n  const systemPrompt = `你是一个知识库助手。请根据以下参考资料回答用户问题。\n如果参考资料中没有相关信息，请如实告知。\n\n参考资料：\n${context}`\n  \n  // 4. 调用大模型生成回答\n  const response = await fetch('https://api.deepseek.com/v1/chat/completions', {\n    method: 'POST',\n    headers: {\n      'Content-Type': 'application/json',\n      'Authorization': 'Bearer sk-你的API密钥'\n    },\n    body: JSON.stringify({\n      model: 'deepseek-chat',\n      messages: [\n        { role: 'system', content: systemPrompt },\n        { role: 'user', content: userQuestion }\n      ]\n    })\n  })\n  \n  const data = await response.json()\n  return {\n    answer: data.choices[0].message.content,\n    sources: relevantDocs // 附上引用来源\n  }\n}\n\n// 使用\nconst result = await ragQuery('如何使用sqlite-vec存储向量？')\nconsole.log(result.answer)\nconsole.log('参考来源:', result.sources)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "LangGraph智能体",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "StateGraph基础",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "LangGraph用图（Graph）来编排大模型工作流。核心三要素：State（共享状态）、Node（处理节点）、Edge（连接线）。比手写if/else的好处：每个节点独立、流程可视化、出错可回溯。"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["概念", "类比", "说明"],
+                "rows": [
+                  ["State", "全局变量", "Annotation.Root()定义字段和类型，所有节点共享"],
+                  ["Node", "函数", "接收state，返回部分更新的state（自动合并）"],
+                  ["Edge", "固定箭头", "A→B，A完成后必定去B"],
+                  ["__start__", "入口", "图的起点，Edge指向第一个节点"],
+                  ["__end__", "出口", "图的终点，最后一个节点指向它"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "最简Graph：顺序执行",
+                "code": "import { StateGraph, Annotation } from '@langchain/langgraph'\n\n// 定义State：整个流程共享的数据\nconst State = Annotation.Root({\n  input: Annotation<string>,\n  result: Annotation<string>,\n})\n\n// 节点函数：接收当前state，返回要更新的字段\nasync function stepA(state) {\n  return { result: `A处理了: ${state.input}` }\n}\n\nasync function stepB(state) {\n  return { result: state.result + ' → B完成' }\n}\n\n// 构建图\nconst graph = new StateGraph(State)\n  .addNode('stepA', stepA)\n  .addNode('stepB', stepB)\n  .addEdge('__start__', 'stepA')  // 入口→A\n  .addEdge('stepA', 'stepB')      // A→B\n  .addEdge('stepB', '__end__')    // B→出口\n  .compile()\n\nconst res = await graph.invoke({ input: 'hello' })\n// res.result = \"A处理了: hello → B完成\""
+              }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "条件路由",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "真实流程不是一条直线。addConditionalEdges根据state动态选择下一个节点。路由函数返回节点名字符串，LangGraph根据返回值和routes映射决定走哪条路。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "条件路由示例",
+                "code": "// State\nconst State = Annotation.Root({\n  query: Annotation<string>,\n  needSearch: Annotation<boolean>,\n  answer: Annotation<string>,\n})\n\n// 节点：LLM判断是否需要搜索\nasync function judgeNode(state) {\n  const reply = await callLLM(`需要搜索吗？yes/no。${state.query}`)\n  return { needSearch: reply.includes('yes') }\n}\n\nasync function searchNode(state) {\n  const result = await searchWeb(state.query)\n  return { answer: JSON.stringify(result) }\n}\n\nasync function chatNode(state) {\n  return { answer: await callLLM(state.query) }\n}\n\n// 路由函数：根据state.needSearch返回下个节点名\nfunction routeAfterJudge(state) {\n  return state.needSearch ? 'search' : 'chat'\n}\n\nconst graph = new StateGraph(State)\n  .addNode('judge', judgeNode)\n  .addNode('search', searchNode)\n  .addNode('chat', chatNode)\n  .addEdge('__start__', 'judge')\n  // 条件路由：根据routeAfterJudge返回值决定走search还是chat\n  .addConditionalEdges('judge', routeAfterJudge)\n  .addEdge('search', '__end__')\n  .addEdge('chat', '__end__')\n  .compile()"
+              }
+            ]
+          },
+          {
+            "id": "l3",
+            "title": "循环",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "条件路由指向当前节点自身时，就形成了循环。常用于：多步执行知道完成、重试直到成功、等待外部结果。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "循环示例：多步骤执行",
+                "code": "const State = Annotation.Root({\n  steps: Annotation<string[]>,  // 待执行步骤列表\n  done: Annotation<number>,     // 已完成计数\n})\n\n// 每执行一次，计数+1\nasync function workerNode(state) {\n  const current = state.steps[state.done]\n  console.log(`执行：${current}`)\n  return { done: state.done + 1 }\n}\n\n// 还有步骤→继续，否则→结束\nfunction shouldContinue(state) {\n  return state.done < state.steps.length ? 'worker' : '__end__'\n}\n\nconst graph = new StateGraph(State)\n  .addNode('worker', workerNode)\n  .addEdge('__start__', 'worker')\n  .addConditionalEdges('worker', shouldContinue)  // 自己指回自己 = 循环\n  .compile()\n\nawait graph.invoke({ steps: ['A', 'B', 'C'], done: 0 })\n// 输出：执行：A → 执行：B → 执行：C → 结束"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "循环是智能体的核心能力。条件路由 + 循环 = LLM可以在图里\"走自己的路\"，不再是你预设一条直线。下一章自主编排智能体会把这个能力用到极致。"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch5",
+        "title": "自主编排智能体",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "Planner-Executor模式",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "前面学的函数调用每次只让LLM决定下一步。自主编排更进一步：用户说一句话，LLM一次性制定完整计划，然后逐步执行全部。\n\n例如用户说\"查深圳天气，算25*17+89，搜AI发展趋势\"——LLM直接输出3步计划，四个工具各司其职，全部自动完成。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "1. 工具定义 + State",
+                "code": "import { ChatDeepSeek } from \"@langchain/deepseek\"\nimport { StateGraph, Annotation } from \"@langchain/langgraph\"\nimport { chromium } from 'playwright'\n\n// 工具：天气/时间/计算/浏览器\nconst weatherInfo = {\n  \"北京\": { temp: 25, weather: \"晴天\" },\n  \"上海\": { temp: 22, weather: \"多云\" },\n  \"深圳\": { temp: 29, weather: \"晴天\" }\n}\nfunction getWeather(args) { return weatherInfo[args.city] || { error: \"未找到\" } }\nfunction getTime() { return { time: new Date().toLocaleString(\"zh-CN\") } }\nfunction calculate(args) { return { result: eval(args.expr) } }\n\nlet browser = null\nasync function browserTool(args) {\n  if (!browser) browser = await chromium.launch({ channel: 'msedge', headless: false })\n  const page = await browser.newPage()\n  if (args.action === 'search') {\n    await page.goto(`https://www.baidu.com/s?wd=${args.query}`)\n    return { success: true, message: `已搜索: ${args.query}` }\n  }\n  if (args.action === 'screenshot') {\n    await page.screenshot({ path: args.path + '.png', fullPage: true })\n    return { success: true, path: args.path + '.png' }\n  }\n}\n\nconst tools = { getWeather, getTime, calculate, browser: browserTool }\n\n// State定义\nconst State = Annotation.Root({\n  task: Annotation({ value: (x, y) => y, default: () => \"\" }),\n  plan: Annotation({ value: (x, y) => y, default: () => [] }),\n  currentStep: Annotation({ value: (x, y) => y, default: () => 0 }),\n  results: Annotation({ value: (x, y) => y, default: () => [] }),\n})"
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "2. parsePlan + Planner节点",
+                "code": "// 正则解析 LLM 输出的计划\nfunction parsePlan(text) {\n  const steps = []\n  for (const line of text.split(\"\\n\")) {\n    const match = line.match(/\\d+\\.\\s*TOOL_CALL:\\s*(\\w+)\\s*\\(([^)]*)\\)/)\n    if (match) {\n      const args = {}\n      const regex = /(\\w+)=[\"']([^\"']+)[\"']/g\n      let m\n      while ((m = regex.exec(match[2] || \"\")) !== null) args[m[1]] = m[2]\n      steps.push({ tool: match[1], args })\n    }\n  }\n  return steps\n}\n\nconst model = new ChatDeepSeek({ model: \"deepseek-chat\", temperature: 0 })\n\nasync function plannerNode(state) {\n  const prompt = `可用工具：\n1. getWeather(city=\"城市名\")\n2. getTime()\n3. calculate(expr=\"表达式\")\n4. browser(action=\"search\", query=\"关键词\")\n5. browser(action=\"screenshot\", path=\"文件名\")\n\n用户任务：${state.task}\n\n输出执行计划，每行格式：\n1. TOOL_CALL:工具名(参数)\n2. TOOL_CALL:工具名(参数)`\n\n  const response = await model.invoke(prompt)\n  const plan = parsePlan(response.content?.trim() || \"\")\n  return { plan, currentStep: 0, results: [] }\n}"
+              },
+              {
+                "id": "b4",
+                "type": "code",
+                "language": "javascript",
+                "filename": "3. Executor + 循环 + 运行",
+                "code": "async function executorNode(state) {\n  const idx = state.currentStep\n  const step = state.plan[idx]\n  if (!step) return state\n  \n  const result = tools[step.tool]\n    ? await tools[step.tool](step.args)\n    : { error: `未知工具: ${step.tool}` }\n  \n  return {\n    currentStep: idx + 1,\n    results: [...state.results, { step: idx + 1, tool: step.tool, result }]\n  }\n}\n\nfunction shouldContinue(state) {\n  return state.currentStep >= state.plan.length ? '__end__' : 'executor'\n}\n\nconst graph = new StateGraph(State)\n  .addNode('planner', plannerNode)\n  .addNode('executor', executorNode)\n  .addEdge('__start__', 'planner')\n  .addEdge('planner', 'executor')\n  .addConditionalEdges('executor', shouldContinue)\n  .compile()\n\n// 运行\nconst res = await graph.invoke({\n  task: '查深圳天气，算25*17+89，打开浏览器搜索AI发展趋势并截图'\n})\n\n// LLM自主规划的输出：\n// 1. TOOL_CALL:getWeather(city=\"深圳\")\n// 2. TOOL_CALL:calculate(expr=\"25*17+89\")\n// 3. TOOL_CALL:browser(action=\"search\" query=\"AI发展趋势\")\n// 4. TOOL_CALL:browser(action=\"screenshot\" path=\"ai_trends\")\n\n// 自动执行结果：\n// [步骤1] getWeather → {\"temp\":29,\"weather\":\"晴天\"}\n// [步骤2] calculate  → {\"result\":514}\n// [步骤3] browser(search) → 浏览器打开百度搜索\n// [步骤4] browser(screenshot) → 截图保存 ai_trends.png"
+              },
+              {
+                "id": "b5",
+                "type": "text",
+                "content": "核心价值：不是你预设流程，而是LLM根据用户输入自主决定要做什么、按什么顺序。你只管提供工具，LLM负责看任务、拆步骤、定顺序——真正的自主编排。"
+              },
+              {
+                "id": "b6",
+                "type": "tip",
+                "content": "parsePlan函数用两个正则：第一个提取 TOOL_CALL:工具名(参数)，第二个从参数串中提取 key=\"value\" 对。LLM输出格式不固定，用正则比JSON.parse更容错。"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
 {
     "id": "ai-practice",
     "pathId": "frontend",
@@ -2168,14 +2559,14 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "RLS(Row Level Security)行级安全策略，确保用户只能访问自己的数据。"
+                "content": "用户所有的数据库操作必须附带用户ID，防止越权操作。在查询、修改、删除数据时都要加上userId条件，确保用户只能操作自己的数据。"
               },
               {
                 "id": "b2",
                 "type": "code",
                 "language": "javascript",
-                "filename": "RLS中间件",
-                "code": "// 用户数据隔离中间件\nfunction dataIsolation(req, res, next) {\n  if (!req.user) return res.status(401).json({ error: '未登录' })\n  req.userId = req.user.id\n  next()\n}\n\n// 应用到所有数据接口\napp.use('/api/agents', dataIsolation)\napp.use('/api/words', dataIsolation)\napp.use('/api/records', dataIsolation)\n\n// 示例：查询用户自己的数据\napp.get('/api/agents', async (req, res) => {\n  const agents = await db.prepare(\n    'SELECT * FROM agents WHERE userId = ? OR isPublic = 1'\n  ).all(req.userId)\n  res.json(agents)\n})\n\napp.get('/api/words', async (req, res) => {\n  const words = await db.prepare(\n    'SELECT * FROM words WHERE userId = ?'\n  ).all(req.userId)\n  res.json(words)\n})\n\napp.get('/api/records', async (req, res) => {\n  const records = await db.prepare(\n    'SELECT * FROM learning_records WHERE userId = ?'\n  ).all(req.userId)\n  res.json(records)\n})"
+                "filename": "RLS数据操作示例",
+                "code": "// 查询：只查自己的数据（带userId）\napp.get('/api/orders', async (req, res) => {\n  const orders = await db.prepare(\n    'SELECT * FROM orders WHERE userId = ?'\n  ).all(req.userId)\n  res.json(orders)\n})\n\n// 修改：直接附带userId，无需先查询\napp.put('/api/orders/:id', async (req, res) => {\n  const result = await db.prepare(\n    'UPDATE orders SET status = ? WHERE id = ? AND userId = ?'\n  ).run(req.body.status, req.params.id, req.userId)\n  if (result.changes === 0) return res.status(403).json({ error: '无权操作' })\n  res.json({ success: true })\n})\n\n// 删除：直接附带userId，无需先查询\napp.delete('/api/orders/:id', async (req, res) => {\n  const result = await db.prepare(\n    'DELETE FROM orders WHERE id = ? AND userId = ?'\n  ).run(req.params.id, req.userId)\n  if (result.changes === 0) return res.status(403).json({ error: '无权删除' })\n  res.json({ success: true })\n})"
               }
             ]
           }
