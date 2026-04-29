@@ -521,6 +521,11 @@ export const frontendCourses: Course[] = [
             "blocks": [
               {
                 "id": "b1",
+                "type": "text",
+                "content": "JavaScript代码写在HTML的<script>标签里。打开页面后按F12 → Console查看结果。"
+              },
+              {
+                "id": "b2",
                 "type": "table",
                 "headers": ["运算符", "描述", "示例"],
                 "rows": [
@@ -533,11 +538,11 @@ export const frontendCourses: Course[] = [
                 ]
               },
               {
-                "id": "b2",
+                "id": "b3",
                 "type": "code",
-                "language": "javascript",
-                "filename": "算术示例",
-                "code": "let a = 10, b = 3;\nconsole.log(a + b);  // 13\nconsole.log(a - b);  // 7\nconsole.log(a * b);  // 30\nconsole.log(a / b);  // 3.33\nconsole.log(a % b);  // 1"
+                "language": "html",
+                "filename": "calc.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>算术运算</title>\n</head>\n<body>\n    <h2>算术运算（按F12控制台查看结果）</h2>\n\n    <script>\n        let a = 10, b = 3;\n        console.log(a + b);  // 13\n        console.log(a - b);  // 7\n        console.log(a * b);  // 30\n        console.log(a / b);  // 3.33\n        console.log(a % b);  // 1\n    </script>\n</body>\n</html>"
               }
             ]
           },
@@ -562,9 +567,9 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b2",
                 "type": "code",
-                "language": "javascript",
-                "filename": "比较示例",
-                "code": "console.log(5 > 3);     // true\nconsole.log(5 === '5'); // false\nconsole.log(5 == '5');   // true"
+                "language": "html",
+                "filename": "compare.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>比较运算</title>\n</head>\n<body>\n    <h2>比较运算（按F12控制台查看结果）</h2>\n\n    <script>\n        console.log(5 > 3);     // true\n        console.log(5 === '5'); // false\n        console.log(5 == '5');   // true\n    </script>\n</body>\n</html>"
               }
             ]
           },
@@ -586,9 +591,9 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b2",
                 "type": "code",
-                "language": "javascript",
-                "filename": "逻辑示例",
-                "code": "console.log(true && false);  // false\nconsole.log(true || false);  // true\nconsole.log(!true);           // false"
+                "language": "html",
+                "filename": "logic.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>逻辑运算</title>\n</head>\n<body>\n    <h2>逻辑运算（按F12控制台查看结果）</h2>\n\n    <script>\n        console.log(true && false);  // false\n        console.log(true || false);  // true\n        console.log(!true);           // false\n    </script>\n</body>\n</html>"
               }
             ]
           }
@@ -616,9 +621,9 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b2",
                 "type": "code",
-                "language": "javascript",
-                "filename": "变量示例",
-                "code": "let name = '张三';\nname = '李四';  // 可以修改\nconsole.log(name);\n\nconst PI = 3.14159;\n// PI = 3;  // 错误，常量不能修改\nconsole.log(PI);"
+                "language": "html",
+                "filename": "var.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>变量</title>\n</head>\n<body>\n    <h2>变量（按F12控制台查看结果）</h2>\n\n    <script>\n        let name = '张三';\n        name = '李四';  // 可以修改\n        console.log(name);\n\n        const PI = 3.14159;\n        // PI = 3;  // 错误，常量不能修改\n        console.log(PI);\n    </script>\n</body>\n</html>"
               }
             ]
           },
@@ -642,9 +647,9 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b2",
                 "type": "code",
-                "language": "javascript",
-                "filename": "类型示例",
-                "code": "let num = 123;      // 数字\nlet str = 'hello';  // 字符串\nlet bool = true;     // 布尔值\nlet arr = [1,2,3];   // 数组\nlet obj = {name:'张三'}; // 对象\n\nconsole.log(num);\nconsole.log(str);\nconsole.log(bool);\nconsole.log(arr);\nconsole.log(obj);"
+                "language": "html",
+                "filename": "type.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>数据类型</title>\n</head>\n<body>\n    <h2>数据类型（按F12控制台查看结果）</h2>\n\n    <script>\n        let num = 123;\n        let str = 'hello';\n        let bool = true;\n        let arr = [1, 2, 3];\n        let obj = { name: '张三' };\n\n        console.log(num);\n        console.log(str);\n        console.log(bool);\n        console.log(arr);\n        console.log(obj);\n    </script>\n</body>\n</html>"
               }
             ]
           }
@@ -673,9 +678,9 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b2",
                 "type": "code",
-                "language": "javascript",
-                "filename": "if语句示例",
-                "code": "// if语句\nlet age = 18;\n\nif (age >= 18) {\n  console.log('成年人');\n} else if (age >= 13) {\n  console.log('青少年');\n} else {\n  console.log('儿童');\n}"
+                "language": "html",
+                "filename": "if.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>if条件分支</title>\n</head>\n<body>\n    <h2>if条件分支（按F12控制台查看结果）</h2>\n\n    <script>\n        let score = 85;\n\n        // 单分支：if\n        if (score >= 90) {\n            console.log('优秀');\n        }\n\n        // 双分支：if else\n        if (score >= 60) {\n            console.log('及格');\n        } else {\n            console.log('不及格');\n        }\n\n        // 多分支：if else if else\n        if (score >= 90) {\n            console.log('A');\n        } else if (score >= 80) {\n            console.log('B');\n        } else if (score >= 60) {\n            console.log('C');\n        } else {\n            console.log('D');\n        }\n    </script>\n</body>\n</html>"
               }
             ]
           },
@@ -697,9 +702,9 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b2",
                 "type": "code",
-                "language": "javascript",
-                "filename": "for循环示例",
-                "code": "// 基本for循环\nfor (let i = 0; i < 3; i++) {\n  console.log('循环次数:', i);\n}\n\n// for...of遍历数组\nlet fruits = ['苹果', '香蕉', '橙子'];\nfor (let fruit of fruits) {\n  console.log('水果:', fruit);\n}\n\n// for...in遍历对象\nlet person = { name: '张三', age: 25 };\nfor (let key in person) {\n  console.log(key + ': ' + person[key]);\n}"
+                "language": "html",
+                "filename": "for.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>for循环</title>\n</head>\n<body>\n    <h2>for循环（按F12控制台查看结果）</h2>\n\n    <script>\n        // 基本for循环\n        for (let i = 0; i < 3; i++) {\n            console.log('次数:', i);\n        }\n\n        // for...of遍历数组\n        let fruits = ['苹果', '香蕉', '橙子'];\n        for (let fruit of fruits) {\n            console.log('水果:', fruit);\n        }\n\n        // for...in遍历对象\n        let person = { name: '张三', age: 25 };\n        for (let key in person) {\n            console.log(key + ': ' + person[key]);\n        }\n    </script>\n</body>\n</html>"
               }
             ]
           }
@@ -733,9 +738,9 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b2",
                 "type": "code",
-                "language": "javascript",
-                "filename": "函数示例",
-                "code": "// 函数：无参无返回\nfunction compare() {\n  let a = 10;\n  let b = 5;\n  if (a > b) {\n    console.log('a大于b');\n  } else {\n    console.log('a小于等于b');\n  }\n}\n\n// 有参函数：有参无返回\nfunction compare(a, b) {\n  if (a > b) {\n    console.log('a大于b');\n  } else {\n    console.log('a小于等于b');\n  }\n}\n\n// 有返回值：有参有返回（用变量接收）\nfunction compare(a, b) {\n  if (a > b) {\n    return 'a大于b';\n  } else {\n    return 'a小于等于b';\n  }\n}\n\ncompare();\ncompare(3, 8);\nlet result = compare(3, 8);\nconsole.log(result);"
+                "language": "html",
+                "filename": "func.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>函数</title>\n</head>\n<body>\n    <h2>函数：一次定义，反复调用（按F12控制台查看结果）</h2>\n\n    <script>\n        // 函数1：无参，执行一个操作\n        function showTime() {\n            console.log('当前时间：' + new Date().toLocaleString())\n        }\n\n        // 函数2：有参，格式化输出\n        function greet(name) {\n            console.log('欢迎你，' + name + '！')\n        }\n\n        // 函数3：有参有返回，处理数据\n        function getGrade(score) {\n            if (score >= 90) return 'A'\n            if (score >= 80) return 'B'\n            if (score >= 60) return 'C'\n            return 'D'\n        }\n\n        showTime()\n\n        greet('张三')\n        greet('李四')\n        greet('王五')\n\n        console.log('95分 →', getGrade(95))\n        console.log('82分 →', getGrade(82))\n        console.log('67分 →', getGrade(67))\n        console.log('45分 →', getGrade(45))\n    </script>\n</body>\n</html>"
               }
             ]
           }
@@ -753,15 +758,21 @@ export const frontendCourses: Course[] = [
             "blocks": [
               {
                 "id": "b0",
-                "type": "text",
-                "content": "异步编程是JavaScript的核心特性，用于处理需要等待的操作，如网络请求、定时器等。\n\n同步 vs 异步：\n- 同步：代码按顺序执行，会阻塞后续代码\n- 异步：代码不阻塞，继续执行后续操作，操作完成后通过回调或Promise处理结果\n\n常见异步场景：\n- 网络请求（fetch、AJAX）\n- 定时器（setTimeout、setInterval）\n- 文件操作\n- DOM事件"
+                "type": "table",
+                "headers": ["对比", "同步", "异步"],
+                "rows": [
+                  ["执行方式", "一行一行按顺序，前面卡住后面等", "不等待，完成后自动回调"],
+                  ["是否会阻塞", "会，后面的代码要排队", "不会，后面的代码立即执行"],
+                  ["典型场景", "计算、循环", "网络请求、定时器、文件读取"],
+                  ["体验", "卡顿", "流畅"]
+                ]
               },
               {
                 "id": "b1",
                 "type": "code",
-                "language": "javascript",
-                "filename": "同步vs异步示例",
-                "code": "// 同步编程示例\nconsole.log('同步开始');\n\n// 真实的同步操作：计算密集型任务\nfunction syncOperation() {\n  // 计算斐波那契数列的第10项（快速完成）\n  function fibonacci(n) {\n    if (n <= 1) return n;\n    return fibonacci(n - 1) + fibonacci(n - 2);\n  }\n  \n  const result = fibonacci(10); // 这会阻塞主线程但很快完成\n  return '同步计算完成，斐波那契(10) = ' + result;\n}\n\n// 执行同步操作\nconst syncResult = syncOperation();\nconsole.log(syncResult);\nconsole.log('同步结束'); // 这行代码会等待计算完成后才执行\n\n// 异步编程示例\nconsole.log('\n异步开始');\n\n// 异步操作：定时器\nfunction asyncOperation() {\n  return new Promise(resolve => {\n    setTimeout(() => {\n      resolve('异步操作完成');\n    }, 1000); // 缩短为1秒\n  });\n}\n\n// 执行异步操作\nasyncOperation().then(result => {\n  console.log(result);\n});\n\nconsole.log('异步结束'); // 这行代码会立即执行，不等待1秒"
+                "language": "html",
+                "filename": "sync-async.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>同步vs异步</title>\n</head>\n<body>\n    <h2>同步 vs 异步（按F12控制台查看结果）</h2>\n\n    <script>\n        // 同步：按顺序执行\n        console.log('1. 开始计算1加到10亿...');\n        let sum = 0;\n            for (let i = 1; i <= 1000000000; i++) {\n                sum += i;\n            }\n            console.log('计算结果：' + sum);\n        console.log('2. 计算完成才开始打印，等了很久');\n\n        // 异步：不等待\n        console.log('3. 异步开始');\n        setTimeout(() => {\n            console.log('5. 1秒后才执行');\n        }, 1000);\n        console.log('4. 异步结束（立即执行）');\n    </script>\n</body>\n</html>"
               }
             ]
           },
@@ -791,9 +802,9 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b2",
                 "type": "code",
-                "language": "javascript",
-                "filename": "Promise示例",
-                "code": "// 创建Promise\nfunction delay(ms) {\n  return new Promise((resolve, reject) => {\n    if (ms > 0) {\n      setTimeout(() => {\n        resolve('延迟' + ms + '毫秒');\n      }, ms);\n    } else {\n      reject('延迟时间必须大于0');\n    }\n  });\n}\n\n// 使用Promise\ndelay(1000)\n  .then(result => {\n    console.log(result);\n    return delay(500);\n  })\n  .then(result => {\n    console.log(result);\n    return delay(-100); // 故意失败\n  })\n  .catch(error => {\n    console.error('错误:', error);\n  })\n  .finally(() => {\n    console.log('操作完成');\n  });\n\n// Promise.all示例\nPromise.all([\n  delay(1000),\n  delay(2000),\n  delay(1500)\n]).then(results => {\n  console.log('所有操作完成:', results);\n});"
+                "language": "html",
+                "filename": "promise.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Promise</title>\n</head>\n<body>\n    <h2>Promise（按F12控制台查看结果）</h2>\n\n    <script>\n        function delay(ms) {\n            return new Promise((resolve, reject) => {\n                if (ms > 0) {\n                    setTimeout(() => resolve('延迟' + ms + '毫秒'), ms);\n                } else {\n                    reject('延迟时间必须大于0');\n                }\n            });\n        }\n\n        // 链式调用\n        delay(1000)\n            .then(result => {\n                console.log(result);\n                return delay(500);\n            })\n            .then(result => {\n                console.log(result);\n                return delay(-100);\n            })\n            .catch(error => {\n                console.error('错误:', error);\n            })\n            .finally(() => {\n                console.log('操作完成');\n            });\n\n        // Promise.all：并行等待全部完成\n        Promise.all([\n            delay(1000),\n            delay(2000),\n            delay(1500)\n        ]).then(results => {\n            console.log('全部完成:', results);\n        });\n    </script>\n</body>\n</html>"
               }
             ]
           },
@@ -810,9 +821,9 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b1",
                 "type": "code",
-                "language": "javascript",
-                "filename": "async/await示例",
-                "code": "// 定义异步函数\nasync function asyncDemo() {\n  try {\n    console.log('开始');\n    \n    // 等待Promise完成\n    const result1 = await delay(1000);\n    console.log(result1);\n    \n    const result2 = await delay(500);\n    console.log(result2);\n    \n    // 故意失败\n    const result3 = await delay(-100);\n    console.log(result3);\n  } catch (error) {\n    console.error('错误:', error);\n  } finally {\n    console.log('操作完成');\n  }\n}\n\n// 调用异步函数\nasyncDemo();\n\n// 异步函数返回值\nasync function getResult() {\n  const result = await delay(1000);\n  return result;\n}\n\ngetResult().then(result => {\n  console.log('异步函数返回:', result);\n});"
+                "language": "html",
+                "filename": "async-await.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>async/await</title>\n</head>\n<body>\n    <h2>async/await（按F12控制台查看结果）</h2>\n\n    <script>\n        function delay(ms) {\n            return new Promise((resolve, reject) => {\n                if (ms > 0) {\n                    setTimeout(() => resolve('延迟' + ms + '毫秒'), ms);\n                } else {\n                    reject('时间必须大于0');\n                }\n            });\n        }\n\n        async function demo() {\n            try {\n                console.log('开始');\n                const r1 = await delay(800);\n                console.log(r1);\n                const r2 = await delay(400);\n                console.log(r2);\n                await delay(-100);\n            } catch (error) {\n                console.error('捕获错误:', error);\n            } finally {\n                console.log('结束');\n            }\n        }\n\n        demo();\n    </script>\n</body>\n</html>"
               }
             ]
           },
@@ -829,9 +840,9 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b1",
                 "type": "code",
-                "language": "javascript",
-                "filename": "异步实战示例",
-                "code": "// 使用async/await和fetch\nasync function fetchData() {\n  try {\n    console.log('开始请求数据...');\n    \n    // 发起网络请求\n    const response = await fetch('https://jsonplaceholder.typicode.com/users/1');\n    \n    // 检查响应状态\n    if (!response.ok) {\n      throw new Error('网络请求失败');\n    }\n    \n    // 解析JSON数据\n    const data = await response.json();\n    console.log('获取到数据:', data);\n    \n    return data;\n  } catch (error) {\n    console.error('请求错误:', error);\n    return null;\n  }\n}\n\n// 调用函数\nfetchData();"
+                "language": "html",
+                "filename": "fetch-demo.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>fetch请求</title>\n</head>\n<body>\n    <h2>fetch + async/await（按F12控制台查看结果）</h2>\n\n    <script>\n        async function getUser(id) {\n            try {\n                console.log('请求中...');\n                const res = await fetch('https://jsonplaceholder.typicode.com/users/' + id);\n                if (!res.ok) throw new Error('请求失败');\n                const data = await res.json();\n                console.log('获取到用户:', data.name, data.email);\n                return data;\n            } catch (error) {\n                console.error('错误:', error.message);\n                return null;\n            }\n        }\n\n        getUser(1);\n    </script>\n</body>\n</html>"
               }
             ]
           }
@@ -915,39 +926,68 @@ export const frontendCourses: Course[] = [
         "lessons": [
           {
             "id": "l1",
+            "title": "HTTP请求概述",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "前端通过HTTP请求与后端交互。fetch是最常用的方式，支持GET（查数据）和POST（提交数据）。"
+              },
+              {
+                "id": "b2",
+                "type": "table",
+                "headers": ["概念", "说明", "示例"],
+                "rows": [
+                  ["GET", "从服务器获取数据，参数拼在URL上", "fetch('/users?id=1')"],
+                  ["POST", "向服务器提交数据，数据放在body里", "fetch('/users', {method:'POST', body:...})"],
+                  ["Headers", "请求头，告诉服务器数据格式", "Content-Type: application/json"],
+                  ["Body", "请求体，POST时携带的数据", "JSON.stringify({name:'张三'})"],
+                  ["Query String", "URL ? 后面的参数", "/users?page=1&size=10"]
+                ]
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "测试接口用 jsonplaceholder.typicode.com，免费模拟REST API，无需搭建后端。"
+              }
+            ]
+          },
+          {
+            "id": "l2",
             "title": "GET请求",
             "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "使用fetch API发起GET请求，获取用户数据并显示到页面上。\n\n使用的模拟接口：\n- https://jsonplaceholder.typicode.com/users - 获取所有用户\n- https://jsonplaceholder.typicode.com/users/1 - 获取单个用户"
+                "content": "GET请求从服务器获取数据，参数拼在URL后面（Query String）。"
               },
               {
                 "id": "b2",
                 "type": "code",
                 "language": "html",
-                "filename": "GET请求示例",
-                "code": "<!DOCTYPE html>\n<html>\n<body>\n\n<h1>用户数据</h1>\n<button onclick=\"fetchAllUsers()\">获取所有用户</button>\n<button onclick=\"fetchSingleUser()\">获取单个用户</button>\n<div id='\1'></div>\n\n<script>\n\nasync function fetchAllUsers() {\n  try {\n    const resultDiv = document.getElementById('result');\n    resultDiv.innerHTML = '<p>加载中...</p>';\n    \n    const response = await fetch('https://jsonplaceholder.typicode.com/users');\n    if (!response.ok) {\n      throw new Error('网络请求失败');\n    }\n    \n    const users = await response.json();\n    \n    // 显示到页面\n    let html = '<h2>所有用户</h2>';\n    users.forEach(user => {\n      html += '<div style='\1'>';\n      html += '<strong>' + user.name + '</strong> (' + user.username + ')';\n      html += '<p>邮箱: ' + user.email + '</p>';\n      html += '<p>电话: ' + user.phone + '</p>';\n      html += '</div>';\n    });\n    resultDiv.innerHTML = html;\n  } catch (error) {\n    document.getElementById('result').innerHTML = '<p style='\1'>错误: ' + error.message + '</p>';\n  }\n}\n\nasync function fetchSingleUser() {\n  try {\n    const resultDiv = document.getElementById('result');\n    resultDiv.innerHTML = '<p>加载中...</p>';\n    \n    const response = await fetch('https://jsonplaceholder.typicode.com/users/1');\n    if (!response.ok) {\n      throw new Error('网络请求失败');\n    }\n    \n    const user = await response.json();\n    \n    // 显示到页面\n    let html = '<h2>用户详情</h2>';\n    html += '<div style='\1'>';\n    html += '<h3>' + user.name + '</h3>';\n    html += '<p><strong>用户名:</strong> ' + user.username + '</p>';\n    html += '<p><strong>邮箱:</strong> ' + user.email + '</p>';\n    html += '<p><strong>电话:</strong> ' + user.phone + '</p>';\n    html += '<p><strong>网站:</strong> ' + user.website + '</p>';\n    html += '<p><strong>公司:</strong> ' + user.company.name + '</p>';\n    html += '<p><strong>地址:</strong> ' + user.address.street + ', ' + user.address.city + '</p>';\n    html += '</div>';\n    resultDiv.innerHTML = html;\n  } catch (error) {\n    document.getElementById('result').innerHTML = '<p style='\1'>错误: ' + error.message + '</p>';\n  }\n}\n\n</script>\n\n</body>\n</html>"
+                "filename": "get.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>GET请求</title>\n</head>\n<body>\n    <h2>GET请求（按F12控制台查看结果）</h2>\n    <button onclick=\"getAllUsers()\">查看所有用户</button>\n    <button onclick=\"getUserById(3)\">按ID查用户</button>\n    <div id=\"result\"></div>\n\n    <script>\n        async function getAllUsers() {\n            const res = await fetch('https://jsonplaceholder.typicode.com/users');\n            const users = await res.json();\n            console.log(users.map(u => u.name));\n        }\n\n        async function getUserById(id) {\n            // 用 Query String ?id=3 查单个用户\n            const res = await fetch('https://jsonplaceholder.typicode.com/users?id=' + id);\n            const users = await res.json();\n            const user = users[0];\n            console.log(user.name, user.email);\n            document.getElementById('result').innerHTML =\n                '<p>' + user.name + ' | ' + user.email + '</p>';\n        }\n    </script>\n</body>\n</html>"
               }
             ]
           },
           {
-            "id": "l2",
+            "id": "l3",
             "title": "POST请求",
             "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "使用fetch API发起POST请求，创建新用户并显示结果。\n\n使用的模拟接口：\n- https://jsonplaceholder.typicode.com/users - 创建用户（模拟）"
+                "content": "POST请求提交数据到服务器。标准做法：创建成功后立即查询验证数据是否生效。"
               },
               {
                 "id": "b2",
                 "type": "code",
                 "language": "html",
-                "filename": "POST请求示例",
-                "code": "<!DOCTYPE html>\n<html>\n<body>\n\n<h1>创建用户</h1>\n<form onsubmit=\"createUser(event)\">\n  <div style='\1'>\n    <label>姓名:</label>\n    <input type='\1' id='\1' required>\n  </div>\n  <div style='\1'>\n    <label>邮箱:</label>\n    <input type='\1' id='\1' required>\n  </div>\n  <div style='\1'>\n    <label>电话:</label>\n    <input type='\1' id='\1'>\n  </div>\n  <button type='\1'>创建用户</button>\n</form>\n<div id='\1'></div>\n\n<script>\n\nasync function createUser(event) {\n  event.preventDefault();\n  \n  try {\n    const resultDiv = document.getElementById('result');\n    resultDiv.innerHTML = '<p>提交中...</p>';\n    \n    const userData = {\n      name: document.getElementById('name').value,\n      email: document.getElementById('email').value,\n      phone: document.getElementById('phone').value\n    };\n    \n    const response = await fetch('https://jsonplaceholder.typicode.com/users', {\n      method: 'POST',\n      headers: {\n        'Content-Type': 'application/json'\n      },\n      body: JSON.stringify(userData)\n    });\n    \n    if (!response.ok) {\n      throw new Error('网络请求失败');\n    }\n    \n    const data = await response.json();\n    \n    const html = '<h2>创建成功</h2>' +\n      '<div style='\1'>' +\n      '<p><strong>用户ID:</strong> ' + data.id + '</p>' +\n      '<p><strong>姓名:</strong> ' + data.name + '</p>' +\n      '<p><strong>邮箱:</strong> ' + data.email + '</p>' +\n      '<p><strong>电话:</strong> ' + data.phone + '</p>' +\n      '<p><em>注: 这是模拟数据，实际不会保存到服务器</em></p>' +\n      '</div>';\n    resultDiv.innerHTML = html;\n    \n    event.target.reset();\n  } catch (error) {\n    document.getElementById('result').innerHTML = '<p style='\1'>错误: ' + error.message + '</p>';\n  }\n}\n\n</script>\n\n</body>\n</html>"
+                "filename": "post.html",
+                "code": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>POST请求</title>\n</head>\n<body>\n    <h2>POST创建 + GET查询验证（按F12控制台查看结果）</h2>\n    <button onclick=\"createAndVerify()\">创建并验证</button>\n\n    <script>\n        async function createAndVerify() {\n            // 1. POST创建用户\n            const createRes = await fetch('https://jsonplaceholder.typicode.com/users', {\n                method: 'POST',\n                headers: { 'Content-Type': 'application/json' },\n                body: JSON.stringify({ name: '张三', email: 'zhangsan@test.com' })\n            });\n            const newUser = await createRes.json();\n            console.log('创建成功，ID:', newUser.id, newUser.name);\n\n            // 2. GET查询验证\n            const queryRes = await fetch('https://jsonplaceholder.typicode.com/users?id=' + newUser.id);\n            const list = await queryRes.json();\n            console.log('查询验证:', list[0].name, list[0].email);\n        }\n    </script>\n</body>\n</html>"
               }
             ]
           }
@@ -1076,6 +1116,11 @@ export const frontendCourses: Course[] = [
               },
               {
                 "id": "b4",
+                "type": "tip",
+                "content": "import 用于导入现成的函数或变量，{ ref } 表示从 vue 包中取 ref 这个函数来用。"
+              },
+              {
+                "id": "b5",
                 "type": "table",
                 "headers": ["方式", "DOM操作", "数据更新"],
                 "rows": [
@@ -1398,54 +1443,36 @@ export const frontendCourses: Course[] = [
           },
           {
             "id": "l3",
-            "title": "路由跳转",
+            "title": "跳转和传参",
             "blocks": [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "使用router-link或编程式导航跳转。"
+                "content": "使用router.push跳转并传递参数，目标页面用useRoute获取。参数通过query（?id=1）传递，和HTTP Query String一致。"
               },
               {
                 "id": "b2",
                 "type": "table",
-                "headers": ["方式", "语法"],
+                "headers": ["方式", "发送", "接收"],
                 "rows": [
-                  ["router-link", "<router-link to='/'>首页</router-link>"],
-                  ["useRouter", "router.push('/about')"],
-                  ["useRoute", "route.params.id 获取参数"]
+                  ["router-link", "<router-link to=\"/user?id=1\">用户</router-link>", "route.query.id"],
+                  ["push跳转", "router.push('/user?id=1')", "route.query.id"],
+                  ["多个参数", "router.push('/user?id=1&name=张三')", "route.query.id, route.query.name"]
                 ]
               },
               {
                 "id": "b3",
                 "type": "code",
                 "language": "vue",
-                "filename": "导航示例",
-                "code": "<template>\n  <nav>\n    <router-link to='/'>首页</router-link>\n    <router-link to='/about'>关于</router-link>\n  </nav>\n  <router-view />\n  <button @click='\1'>编程式跳转</button>\n</template>\n\n<script setup>\nimport { useRouter } from 'vue-router'\nconst router = useRouter()\nfunction goAbout() {\n  router.push('/about')\n}\n</script>"
-              }
-            ]
-          },
-          {
-            "id": "l4",
-            "title": "动态路由",
-            "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "使用动态参数传递数据。"
+                "filename": "发送端 Home.vue",
+                "code": "<template>\n  <div>\n    <router-link to=\"/user?id=1&name=张三\">用户1</router-link>\n    <button @click=\"goUser\">跳转用户2</button>\n  </div>\n</template>\n\n<script setup>\nimport { useRouter } from 'vue-router'\nconst router = useRouter()\nfunction goUser() {\n  router.push('/user?id=2&name=李四')\n}\n</script>"
               },
               {
-                "id": "b2",
-                "type": "code",
-                "language": "javascript",
-                "filename": "路由配置",
-                "code": "const routes = [\n  { path: '/user/:id', component: User }\n]"
-              },
-              {
-                "id": "b3",
+                "id": "b4",
                 "type": "code",
                 "language": "vue",
-                "filename": "User.vue",
-                "code": "<template>\n  <h2>用户ID: {{ route.params.id }}</h2>\n</template>\n\n<script setup>\nimport { useRoute } from 'vue-router'\nconst route = useRoute()\n</script>"
+                "filename": "接收端 User.vue",
+                "code": "<template>\n  <h2>用户ID: {{ route.query.id }}</h2>\n  <p>姓名: {{ route.query.name }}</p>\n</template>\n\n<script setup>\nimport { useRoute } from 'vue-router'\nconst route = useRoute()\n</script>"
               }
             ]
           }
@@ -1809,14 +1836,14 @@ export const frontendCourses: Course[] = [
                 "type": "code",
                 "language": "javascript",
                 "filename": "math.js (ESM)",
-                "code": "// math.js - ES Module导出方式 (现代标准)\nexport function add(a, b) {\n  return a + b\n}\n\nexport function subtract(a, b) {\n  return a - b\n}\n\n// 默认导出 (一个模块只能有一个)\nexport default { add, subtract }"
+                "code": "// math.js - ES Module导出 (现代标准，推荐)\nexport function add(a, b) {\n  return a + b\n}\n\nexport function subtract(a, b) {\n  return a - b\n}"
               },
               {
                 "id": "b5",
                 "type": "code",
                 "language": "javascript",
                 "filename": "main.js (ESM)",
-                "code": "// main.js - ES Module导入 (现代标准)\n// 导入命名导出 (需用 .mjs 后缀或 package.json中设type:module)\nimport { add, subtract } from './math.js'\n\n// 导入默认导出 (可自定义名称)\nimport mathUtils from './math.js'\n\nconsole.log(add(5, 3))           // 8\nconsole.log(mathUtils.add(5, 3)) // 8\n\n// package.json设置:\n// { \"type\": \"module\" }"
+                "code": "// main.js - ES Module导入 (需要 package.json 中设 \"type\": \"module\")\nimport { add, subtract } from './math.js'\n\nconsole.log(add(5, 3))       // 8\nconsole.log(subtract(5, 3))  // 2"
               }
             ]
           }
@@ -1872,7 +1899,7 @@ export const frontendCourses: Course[] = [
                 "headers": ["方法", "路径", "用途"],
                 "rows": [
                   ["GET", "/api/users", "获取用户列表"],
-                  ["GET", "/api/users/:id", "获取单个用户"],
+                  ["GET", "/api/users/:id", "查看单个用户"],
                   ["POST", "/api/users", "创建用户"],
                   ["PUT", "/api/users/:id", "更新用户"],
                   ["DELETE", "/api/users/:id", "删除用户"]
