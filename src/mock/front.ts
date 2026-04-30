@@ -2522,7 +2522,7 @@ export const frontendCourses: Course[] = [
             "id": "l1", "title": "Claude智能体 vs LangGraph自建",
             "blocks": [
               { "id": "b1", "type": "text", "content": "三种方案对比：原生 API 完全可控但开发量大，LangGraph 框架辅助但需自己搭建，Agent SDK 开箱即用。" },
-              { "id": "b2", "type": "table", "headers": ["对比", "原生 API", "LangGraph", "Agent SDK"], "rows": [["定位", "手写一切", "框架辅助", "开箱即用商业级"], ["开发量", "几千行", "几百行", "几十行"], ["工具", "JSON Schema 手写", "代码注册", "Bash/Write/Read 全内置"], ["流式", "fetch SSE 手写", "框架支持", "for await 原生"], ["会话管理", "messages 数组手写", "State 管理", "resume: sessionId"], ["函数调用", "while 循环手写", "框架帮你循环", "全自动"], ["Skill", "无", "无", ".md文件即插即用"]] },
+              { "id": "b2", "type": "table", "headers": ["对比", "原生 API", "LangGraph", "Agent SDK"], "rows": [["定位", "手写一切", "框架辅助", "开箱即用商业级"], ["开发量", "几千行", "几百行", "几十行"], ["工具", "JSON Schema 手写", "代码注册", "Bash/Write/Read 全内置"], ["流式", "fetch SSE 手写", "框架支持", "for await 原生"], ["会话管理", "messages 数组手写", "State 管理", "resume: sessionId"], ["函数调用", "while 循环手写", "框架帮你循环", "全自动"], ["自主编排", "手写 Planner-Executor", "StateGraph 定义路由", "LLM 内置自主决策"], ["Skill", "无", "无", ".md文件即插即用"]] },
               { "id": "b3", "type": "tip", "content": "结论：原生 API 学原理，LangGraph 学编排，Agent SDK 做商业落地。课程三层递进。" }
             ]
           },
@@ -2639,40 +2639,6 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch2",
-        "title": "AIGC",
-        "lessons": [
-          {
-            "id": "l1", "title": "图片生成（文生图、图生图、AI修图）",
-            "blocks": [
-              { "id": "b1", "type": "text", "content": "调用通义万相 / 即梦 API，输入文字描述即可生成图片。支持文生图、图生图、图片编辑三种模式。" },
-              { "id": "b2", "type": "table", "headers": ["能力", "API", "关键参数"], "rows": [["文生图", "通义万相 wan2.1-t2i", "prompt + size"], ["图生图", "通义万相 image2image", "ref_img + prompt"], ["AI修图", "即梦 CV API", "图片 + 修改指令"]] }
-            ]
-          },
-          {
-            "id": "l2", "title": "视频生成（文生视频、数字人）",
-            "blocks": [
-              { "id": "b1", "type": "text", "content": "视频生成调用 HappyHorse / Seedance，数字人调用即梦 OmniHuman 或阿里 VideoRetalk 唇形同步。" },
-              { "id": "b2", "type": "table", "headers": ["能力", "API", "说明"], "rows": [["文生视频", "HappyHorse / Seedance", "prompt → 视频，异步轮询"], ["数字人口播", "OmniHuman", "照片 + 音频 → 唇形同步视频"], ["视频换口型", "VideoRetalk / HeyGem", "已有视频 + 新音频 → 口型替换，HeyGem 开源免部署"]] }
-            ]
-          },
-          {
-            "id": "l3", "title": "音频生成（音乐、TTS、声音克隆）",
-            "blocks": [
-              { "id": "b1", "type": "text", "content": "音频三件套：豆包 TTS 文字转语音、声音复刻克隆音色、Suno/Mureka 生成音乐。" },
-              { "id": "b2", "type": "table", "headers": ["能力", "API", "说明"], "rows": [["TTS 语音", "豆包语音合成", "文字 → 自然语音，支持流式"], ["声音克隆", "豆包声音复刻2.0", "5秒样本 → 克隆音色"], ["音乐生成", "Suno / Mureka", "风格+歌词 → 完整歌曲"]] }
-            ]
-          },
-          {
-            "id": "l4", "title": "漫剧与漫画生成",
-            "blocks": [
-              { "id": "b1", "type": "text", "content": "漫剧 = 漫画 + AI配音 + 简单动画。流程：AI生成漫画分镜 → 拆分角色和场景 → TTS配音 → 合成视频。" },
-              { "id": "b2", "type": "table", "headers": ["步骤", "工具", "产出"], "rows": [["1. 剧本/分镜", "DeepSeek/Claude", "漫画脚本 + 分镜描述"], ["2. 漫画生成", "通义万相/即梦", "漫画风格图片"], ["3. 配音", "豆包TTS + 声音克隆", "角色配音"], ["4. 合成", "node-canvas + FFmpeg", "漫剧视频"]] }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "ch3",
         "title": "多模态",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
@@ -2703,6 +2669,40 @@ export const frontendCourses: Course[] = [
               { "id": "b1", "type": "text", "content": "多模态的真正威力在于串联：语音说需求 → 识别为文字 → LLM理解 → 调用AIGC生成图片/视频 → 返回结果。一个请求穿越4种模态。" },
               { "id": "b2", "type": "code", "language": "javascript", "filename": "跨模态串联", "code": "// 语音 → 文字 → 生成图片 → 返回图片\nasync function voiceToImage(audioBuffer) {\n  // 1. 音频 → 文字（STT）\n  const text = await speechToText(audioBuffer)\n  \n  // 2. 文字 → 提示词（LLM）\n  const prompt = await callLLM(`优化为图片描述：${text}`)\n  \n  // 3. 文字 → 图片（文生图）\n  const image = await generateImage(prompt)\n  \n  return { text, prompt, image }\n}" },
               { "id": "b3", "type": "tip", "content": "超级智能体的目标：用户用任何方式输入，智能体用最合适的模态输出。说话→出图、拍照→出视频、文字→出PPT。" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "AIGC",
+        "lessons": [
+          {
+            "id": "l1", "title": "图片生成（文生图、图生图、AI修图）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "调用通义万相 / 即梦 API，输入文字描述即可生成图片。支持文生图、图生图、图片编辑三种模式。" },
+              { "id": "b2", "type": "table", "headers": ["能力", "API", "关键参数"], "rows": [["文生图", "通义万相 wan2.1-t2i", "prompt + size"], ["图生图", "通义万相 image2image", "ref_img + prompt"], ["AI修图", "即梦 CV API", "图片 + 修改指令"]] }
+            ]
+          },
+          {
+            "id": "l2", "title": "视频生成（文生视频、数字人）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "视频生成调用 HappyHorse / Seedance，数字人调用即梦 OmniHuman 或阿里 VideoRetalk 唇形同步。" },
+              { "id": "b2", "type": "table", "headers": ["能力", "API", "说明"], "rows": [["文生视频", "HappyHorse / Seedance", "prompt → 视频，异步轮询"], ["数字人口播", "OmniHuman", "照片 + 音频 → 唇形同步视频"], ["视频换口型", "VideoRetalk / HeyGem", "已有视频 + 新音频 → 口型替换，HeyGem 开源免部署"]] }
+            ]
+          },
+          {
+            "id": "l3", "title": "音频生成（音乐、TTS、声音克隆）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "音频三件套：豆包 TTS 文字转语音、声音复刻克隆音色、Suno/Mureka 生成音乐。" },
+              { "id": "b2", "type": "table", "headers": ["能力", "API", "说明"], "rows": [["TTS 语音", "豆包语音合成", "文字 → 自然语音，支持流式"], ["声音克隆", "豆包声音复刻2.0", "5秒样本 → 克隆音色"], ["音乐生成", "Suno / Mureka", "风格+歌词 → 完整歌曲"]] }
+            ]
+          },
+          {
+            "id": "l4", "title": "漫剧与漫画生成",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "漫剧 = 漫画 + AI配音 + 简单动画。流程：AI生成漫画分镜 → 拆分角色和场景 → TTS配音 → 合成视频。" },
+              { "id": "b2", "type": "table", "headers": ["步骤", "工具", "产出"], "rows": [["1. 剧本/分镜", "DeepSeek/Claude", "漫画脚本 + 分镜描述"], ["2. 漫画生成", "通义万相/即梦", "漫画风格图片"], ["3. 配音", "豆包TTS + 声音克隆", "角色配音"], ["4. 合成", "node-canvas + FFmpeg", "漫剧视频"]] }
             ]
           }
         ]
