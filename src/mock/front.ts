@@ -2618,20 +2618,20 @@ export const frontendCourses: Course[] = [
     "chapters": [
       {
         "id": "ch1",
-        "title": "超级智能体概述",
+        "title": "智能体概述",
         "lessons": [
           {
-            "id": "l1", "title": "什么是超级智能体",
+            "id": "l1", "title": "什么是智能体",
             "blocks": [
-              { "id": "b1", "type": "text", "content": "超级智能体 = 通用智能体 + 多个专业智能体。通用智能体负责统筹调度，专业智能体各司其职（代码、PPT、音乐、漫剧等），背后靠 RAG 知识库驱动。" },
-              { "id": "b2", "type": "table", "headers": ["类型", "能力", "驱动方式"], "rows": [["通用智能体", "函数调用、自主编排、调度所有能力", "Function Calling"], ["专业智能体", "代码/PPT/漫剧/音乐/简历", "RAG + 工具调用"]] },
-              { "id": "b3", "type": "tip", "content": "一句话：通用智能体是大脑，专业智能体是手脚，RAG 是记忆。" }
+              { "id": "b1", "type": "text", "content": "智能体 = 人设 + RAG + 函数调用 + 自主编排。人设决定你是谁，RAG 决定你知道什么，函数调用决定你能做什么，自主编排决定你怎么做。四要素缺一不可。" },
+              { "id": "b2", "type": "table", "headers": ["要素", "作用", "实现方式"], "rows": [["人设", "定义角色和行为", "systemPrompt"], ["RAG", "领域知识", "知识库检索 + prompt注入"], ["函数调用", "执行工具", "Skill / MCP / 内置工具"], ["自主编排", "决策下一步做什么", "LLM 自主路由 + agent loop"]] },
+              { "id": "b3", "type": "tip", "content": "四要素配齐 = 完整智能体。缺任何一项都是半成品。" }
             ]
           },
           {
             "id": "l2", "title": "技术架构总览",
             "blocks": [
-              { "id": "b1", "type": "table", "headers": ["层", "技术", "作用"], "rows": [["前端", "Vue3 + Vite", "智能体控制台"], ["后端", "Node.js + Express", "API + 工具执行"], ["AI", "DeepSeek / 千问 / 豆包", "LLM 引擎"], ["向量库", "sqlite-vec", "RAG 知识检索"], ["编排", "LangGraph", "工作流 + 智能体编排"], ["部署", "Linux + Nginx + PM2", "生产环境上线"]] },
+              { "id": "b1", "type": "table", "headers": ["层", "技术", "作用"], "rows": [["前端", "Vue3 + Vite", "智能体控制台"], ["后端", "Node.js + Express", "API + 工具执行"], ["AI", "DeepSeek / 千问 / 豆包", "LLM 引擎"], ["向量库", "sqlite-vec", "RAG 知识检索"], ["编排", "Claude Agent SDK", "工作流 + 智能体编排"], ["部署", "K3s + Knative", "生产环境上线"]] },
               { "id": "b2", "type": "text", "content": "关键设计：前端不直接调 LLM，全部通过后端中转。后端统一管理 API Key、工具注册、知识库，前端只负责展示和交互。" }
             ]
           }
@@ -2639,7 +2639,7 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch2",
-        "title": "AIGC全能力引擎",
+        "title": "AIGC",
         "lessons": [
           {
             "id": "l1", "title": "图片生成（文生图、图生图、AI修图）",
@@ -2737,17 +2737,26 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch5",
-        "title": "专业智能体",
+        "title": "智能体开发",
         "lessons": [
           {
-            "id": "l1", "title": "RAG知识库搭建",
+            "id": "l1",
+            "title": "什么是专业智能体",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "智能体 = 人设 + RAG + 函数调用 + 自主编排。专业智能体就是在特定领域配专属 RAG 知识库的智能体——代码智能体背后是技术文档库，PPT智能体背后是模板库，漫剧智能体背后是素材风格库。不同的库，不同的专业能力。" },
+              { "id": "b2", "type": "table", "headers": ["专业智能体", "RAG 知识库", "人设"], "rows": [["代码智能体", "技术文档/API文档", "全栈工程师"], ["PPT智能体", "模板库/行业报告", "PPT专家"], ["漫剧智能体", "漫画素材/风格库", "漫画家"], ["音乐智能体", "和弦库/歌词模板", "音乐制作人"], ["简历智能体", "简历模板/JD库", "HR顾问"], ["英语智能体", "口语题库/语法规则", "英语私教"]] }
+            ]
+          },
+          {
+            "id": "l2", "title": "RAG知识库搭建",
             "blocks": [
               { "id": "b1", "type": "text", "content": "专业智能体的核心是 RAG 知识库。每个智能体有自己的知识库：代码智能体有技术文档，PPT智能体有模板库，漫剧智能体有素材风格库。" },
               { "id": "b2", "type": "table", "headers": ["步骤", "技术", "说明"], "rows": [["1. 文档上传", "multer 接收文件", "支持 PDF/Word/Markdown/TXT"], ["2. 文档切分", "按段落切 chunk", "每块 500 字，重叠 100"], ["3. 向量化", "text-embedding-3-small", "1536维向量"], ["4. 存储", "sqlite-vec", "SQLite 向量扩展"], ["5. 检索", "余弦相似度", "TOP-K 返回"]] }
             ]
           },
           {
-            "id": "l2", "title": "自定义RAG智能体",
+            "id": "l3", "title": "自定义RAG智能体",
             "blocks": [
               { "id": "b1", "type": "text", "content": "用户上传自己的文档，自动创建专属智能体。上传 → 自动切分 → 自动向量化 → 立即可问答。每个用户的数据隔离存储。" },
               { "id": "b2", "type": "table", "headers": ["流程", "接口", "说明"], "rows": [["上传文档", "POST /api/kb/upload", "接受文件，返回 kbId"], ["自动建库", "后台自动切分+向量化", "大文件异步处理"], ["查询", "POST /api/kb/{kbId}/query", "问题 → 检索 → LLM生成回答"]] },
@@ -2755,35 +2764,35 @@ export const frontendCourses: Course[] = [
             ]
           },
           {
-            "id": "l3", "title": "PPT智能体",
+            "id": "l4", "title": "PPT智能体",
             "blocks": [
               { "id": "b1", "type": "text", "content": "PPT智能体 = RAG（模板库）+ AI 内容生成。选择模板 → AI 根据主题生成每页内容 → 填充到模板 → 导出 pptx。" },
               { "id": "b2", "type": "table", "headers": ["步骤", "技术"], "rows": [["模板库", "预置5-10套不同风格模板（科技/商务/简约）"], ["内容生成", "LLM 根据主题生成标题+要点+配图描述"], ["图片生成", "AIGC 生成配图"], ["导出", "pptx 库生成可下载的 PPT 文件"]] }
             ]
           },
           {
-            "id": "l4", "title": "漫剧智能体",
+            "id": "l5", "title": "漫剧智能体",
             "blocks": [
               { "id": "b1", "type": "text", "content": "漫剧智能体 = RAG（漫画风格/角色素材库）+ 分镜生成 + TTS配音 + 合成。输入故事梗概，自动生成完整漫剧。" },
               { "id": "b2", "type": "table", "headers": ["环节", "AI 能力", "产出"], "rows": [["剧本", "LLM 生成分镜脚本", "分镜文本"], ["角色图", "文生图生成角色形象", "角色 PNG"], ["背景", "文生图生成场景背景", "背景 PNG"], ["配音", "TTS + 声音克隆", "角色音频"], ["合成", "FFmpeg 合成视频", "最终漫剧 MP4"]] }
             ]
           },
           {
-            "id": "l5", "title": "音乐智能体",
+            "id": "l6", "title": "音乐智能体",
             "blocks": [
               { "id": "b1", "type": "text", "content": "音乐智能体 = RAG（音乐风格/和弦进行/歌词模板）+ Suno / Mureka + TTS。输入主题风格，生成完整歌曲。" },
               { "id": "b2", "type": "table", "headers": ["能力", "实现"], "rows": [["歌词生成", "LLM + 歌词模板 RAG"], ["旋律生成", "Suno API（风格+歌词→歌曲）"], ["人声替换", "声音克隆替换 Suno 默认人声"], ["BGM", "纯音乐模式生成背景音乐"]] }
             ]
           },
           {
-            "id": "l6", "title": "简历智能体",
+            "id": "l7", "title": "简历智能体",
             "blocks": [
               { "id": "b1", "type": "text", "content": "简历智能体 = RAG（简历模板/行业JD库）+ AI 内容润色。用户输入基本信息，AI 根据目标职位生成定制化简历。" },
               { "id": "b2", "type": "table", "headers": ["步骤", "说明"], "rows": [["信息收集", "前端表单收集：基本信息、工作经历、技能"], ["内容生成", "LLM 根据职位 JD 生成简历要点"], ["模板套用", "用户选择模板风格，AI 填充内容"], ["导出", "PDF 导出 + 一键部署为在线简历页"]] }
             ]
           },
           {
-            "id": "l7", "title": "英语智能体",
+            "id": "l8", "title": "英语智能体",
             "blocks": [
               { "id": "b1", "type": "text", "content": "英语智能体 = RAG（语法规则/口语场景库）+ AI 语音交互。能口语对话、语法纠错、发音评测，就像一个 AI 英语私教。" },
               { "id": "b2", "type": "table", "headers": ["能力", "技术", "说明"], "rows": [["口语对话", "STT → LLM → TTS", "语音输入 → AI回复 → 语音输出"], ["语法纠错", "LLM + 语法规则 RAG", "输入句子 → 纠正语法 → 解释原因"], ["发音评测", "Whisper + 音素对比", "用户朗读 → 对比标准发音 → 打分"], ["场景练习", "情景对话模板", "机场/餐厅/面试等场景角色扮演"]] }
@@ -2793,46 +2802,7 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch6",
-        "title": "通用智能体（LangGraph自建）",
-        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
-        "lessons": [
-          {
-            "id": "l1", "title": "LangGraph vs Claude Code（自建还是接入）",
-            "blocks": [
-              { "id": "b1", "type": "text", "content": "LangGraph 自建智能体灵活可控，但需要自己写 agent loop、工具注册、流式处理。Claude Agent SDK 一步到位，是商业级方案的选择。" },
-              { "id": "b2", "type": "code", "language": "javascript", "filename": "SDK 接入示例", "code": "import { query } from \"@anthropic-ai/claude-agent-sdk\"\n\nfor await (const msg of query({\n  prompt: \"写一个nodejs hello world，打印\",\n  options: {\n    allowedTools: [\"Bash\", \"Write\", \"Read\"],\n    permissionMode: \"bypassPermissions\",\n    systemPrompt: \"你是一个中文助手，操作前确认当前目录\",\n    thinking: { type: \"enabled\", budgetTokens: 2000 },\n  },\n})) {\n  // msg.type: system / assistant / user / result\n  // assistant → thinking(思考) → text(回复) → tool_use(工具调用)\n  // user → tool_result(执行结果)\n}" },
-              { "id": "b3", "type": "table", "headers": ["SDK 消息类型", "含义", "前端展示"], "rows": [["assistant.thinking", "模型思考过程", "折叠显示"], ["assistant.text", "模型文字回复", "直接展示"], ["assistant.tool_use", "调用工具（Bash/Write等）", "显示工具名+参数"], ["user.tool_result", "工具执行结果", "流式返回"], ["result", "完成，含耗时和费用", "摘要展示"]] }
-            ]
-          },
-          {
-            "id": "l2", "title": "沙箱环境（Docker + Firecracker 等）",
-            "blocks": [
-              { "id": "b1", "type": "text", "content": "沙箱是代码智能体的安全底座。AI生成的代码不可信，必须在隔离环境中执行。课程用 Docker（最通用），同时了解其他沙箱方案。" },
-              { "id": "b2", "type": "table", "headers": ["沙箱方案", "隔离级别", "启动速度", "适用场景"], "rows": [["Docker", "容器级", "秒级", "通用，课程选用"], ["Firecracker", "microVM 级", "毫秒级（<125ms）", "AWS Lambda 级别安全"], ["gVisor", "用户态内核", "秒级", "Google App Engine"], ["VM2/isolated-vm", "进程级", "毫秒级", "Node.js 轻量隔离"], ["EC2 云沙箱", "虚拟机级", "秒级", "AWS 按需实例，用完销毁，最安全"]] },
-              { "id": "b3", "type": "tip", "content": "Docker：最通用，任何语言都能跑。Firecracker：AWS 开源的轻量虚拟机，每个沙箱独立内核，安全性最高。选型原则：本地用 Docker，云端用 EC2（按需创建，用完销毁），极致安全用 Firecracker。" }
-            ]
-          },
-          {
-            "id": "l3", "title": "智能写代码实战（SDK + Docker）",
-            "blocks": [
-              { "id": "b1", "type": "text", "content": "用户在前端输入需求 → 后端创建 Docker 容器挂载工作目录 → SDK 在容器内自主写代码 → 前端流式显示思考/代码/执行结果。" },
-              { "id": "b2", "type": "code", "language": "javascript", "filename": "完整流程", "code": "import { query } from \"@anthropic-ai/claude-agent-sdk\"\nimport { execSync } from 'child_process'\nimport { v4 as uuid } from 'uuid'\n\nasync function codeAgent(userPrompt, onMessage) {\n  const sessionId = uuid()\n  const workDir = `/tmp/sandbox/${sessionId}`\n  \n  // 1. 创建沙箱并挂载工作目录\n  execSync(`mkdir -p ${workDir}`)\n  const containerId = execSync(\n    `docker run -d --rm --network=none --memory=512m --cpus=1 ` +\n    `-v ${workDir}:/workspace -w /workspace node:20 sleep 3600`\n  ).toString().trim()\n\n  // 2. SDK 在沙箱内自主写代码、执行、调试\n  for await (const msg of query({\n    prompt: `在当前目录创建项目：${userPrompt}。写完后用 node 运行验证。`,\n    options: {\n      allowedTools: [\"Bash\", \"Write\", \"Read\"],\n      permissionMode: \"bypassPermissions\",\n      workDir: workDir, // SDK 在沙箱挂载目录工作\n    },\n  })) {\n    onMessage(msg) // 实时推给前端\n  }\n\n  // 3. 清理沙箱\n  execSync(`docker stop ${containerId}`)\n}" },
-              { "id": "b3", "type": "tip", "content": "关键设计：SDK workDir 指向 Docker 挂载目录，Claude Code 写的代码直接落入沙箱，执行结果流式返回前端。不需要自己写 LLM 工具循环。" }
-            ]
-          },
-          {
-            "id": "l4", "title": "自动部署与域名",
-            "blocks": [
-              { "id": "b1", "type": "text", "content": "代码智能体写完后，用户说「部署到服务器并配置域名」，SDK 自动 SSH 到服务器、拉代码、配置 Nginx、申请 SSL 证书。全自动一条龙。" },
-              { "id": "b2", "type": "code", "language": "javascript", "filename": "部署示例", "code": "// 用户输入：\"把项目部署到服务器 192.168.1.100，域名 myapp.com\"\n// SDK 自动执行：\n\n// 1. 构建 + 上传\nscp -r ./dist root@192.168.1.100:/var/www/myapp/\n\n// 2. 配置 Nginx（SDK 自动写入 /etc/nginx/sites-available/myapp）\nserver {\n  listen 80;\n  server_name myapp.com;\n  root /var/www/myapp;\n}\n\n// 3. SSL 证书\ncertbot --nginx -d myapp.com\n\n// 4. 重启\nsystemctl reload nginx" },
-              { "id": "b3", "type": "table", "headers": ["步骤", "SDK 做的事"], "rows": [["1. 代码生成", "在沙箱内完成项目开发"], ["2. 配置部署", "SSH 到服务器，自动写 Nginx 配置"], ["3. 域名+SSL", "自动执行 certbot 申请证书"], ["4. 上线", "重启服务，公网可访问"]] }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "ch7",
-        "title": "Claude Code通用智能体",
+        "title": "代码智能体",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
           {
@@ -2862,7 +2832,7 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch8",
-        "title": "平台托管（用户代码上线）",
+        "title": "平台托管",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
           {
@@ -2891,7 +2861,7 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch9",
-        "title": "激活码兑换（三方引流）",
+        "title": "激活码兑换",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
           {
@@ -2912,7 +2882,7 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch10",
-        "title": "微信支付（直接访问网站支付）",
+        "title": "微信支付",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
           {
@@ -2933,7 +2903,7 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch11",
-        "title": "项目部署（部署实战项目）",
+        "title": "项目部署",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
           {
