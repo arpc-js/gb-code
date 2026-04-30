@@ -2002,6 +2002,37 @@ export const frontendCourses: Course[] = [
                 "language": "javascript",
                 "filename": "CRUD示例",
                 "code": "// 插入数据 (Create)\ndb.prepare('INSERT INTO users (name, email) VALUES (?, ?)').run('张三', 'zhangsan@example.com')\ndb.prepare('INSERT INTO users (name, email) VALUES (?, ?)').run('李四', 'lisi@example.com')\n\n// 查询数据 (Read)\nconst user = db.prepare('SELECT * FROM users WHERE id = ?').get(1)\nconst users = db.prepare('SELECT * FROM users').all()\n\n// 更新数据 (Update)\ndb.prepare('UPDATE users SET name = ? WHERE id = ?').run('张三丰', 1)\n\n// 删除数据 (Delete)\ndb.prepare('DELETE FROM users WHERE id = ?').run(2)"
+              },
+              {
+                "id": "b3",
+                "type": "tip",
+                "content": "VSCode 安装 SQLite Viewer 插件（作者 Florian Klampfer），右键 .sqlite 文件即可查看表结构和数据，增删改查结果一目了然。"
+              }
+            ]
+          },
+          {
+            "id": "l4",
+            "title": "两表联查",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              {
+                "id": "b1",
+                "type": "text",
+                "content": "实际开发中数据分散在多张表。JOIN 把两张表按关联字段连接起来，一次查询拿到完整信息。"
+              },
+              {
+                "id": "b2",
+                "type": "code",
+                "language": "javascript",
+                "filename": "创建关联表",
+                "code": "// 订单表（关联用户）\ndb.exec(`\n  CREATE TABLE IF NOT EXISTS orders (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    userId INTEGER NOT NULL,\n    product TEXT NOT NULL,\n    price REAL NOT NULL,\n    FOREIGN KEY (userId) REFERENCES users(id)\n  )\n`)\n\n// 插入订单\ndb.prepare('INSERT INTO orders (userId, product, price) VALUES (?, ?, ?)').run(1, '笔记本电脑', 5999)\ndb.prepare('INSERT INTO orders (userId, product, price) VALUES (?, ?, ?)').run(1, '鼠标', 199)\ndb.prepare('INSERT INTO orders (userId, product, price) VALUES (?, ?, ?)').run(2, '键盘', 399)"
+              },
+              {
+                "id": "b3",
+                "type": "code",
+                "language": "javascript",
+                "filename": "JOIN 联查",
+                "code": "// INNER JOIN：只返回匹配的行\nconst rows = db.prepare(`\n  SELECT users.name, orders.product, orders.price\n  FROM users\n  INNER JOIN orders ON users.id = orders.userId\n`).all()\n// 结果：张三 | 笔记本电脑 | 5999\n//       张三 | 鼠标      | 199\n//       李四 | 键盘      | 399\n\n// LEFT JOIN：返回所有用户（含无订单的）\nconst all = db.prepare(`\n  SELECT users.name, orders.product\n  FROM users\n  LEFT JOIN orders ON users.id = orders.userId\n`).all()"
               }
             ]
           }
@@ -2037,7 +2068,8 @@ export const frontendCourses: Course[] = [
                 "headers": ["参数", "作用", "示例"],
                 "rows": [
                   ["model", "模型名称", "deepseek-chat / gpt-4o"],
-                  ["messages", "对话消息数组", "[{role:'user', content:'你好'}]"],
+                  ["messages", "对话消息数组", "[{role:'system', content:'人设'}, {role:'user', content:'你好'}]"],
+                  ["system角色", "设定人设", "\"你是一个幽默的助手\""],
                   ["temperature", "随机性 0~2", "0=严谨，1=创意"],
                   ["max_tokens", "最大输出长度", "4096"],
                   ["stream", "是否流式", "false / true"]
@@ -2048,7 +2080,7 @@ export const frontendCourses: Course[] = [
                 "type": "code",
                 "language": "javascript",
                 "filename": "调用DeepSeek API",
-                "code": "// 原生fetch调用，不需要任何SDK\nconst response = await fetch('https://api.deepseek.com/v1/chat/completions', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer sk-你的API密钥'\n  },\n  body: JSON.stringify({\n    model: 'deepseek-chat',\n    messages: [\n      { role: 'system', content: '你是一个乐于助人的助手。' },\n      { role: 'user', content: '用一句话介绍前端开发' }\n    ],\n    temperature: 0.7\n  })\n})\n\nconst data = await response.json()\nconsole.log(data.choices[0].message.content)"
+                "code": "// 原生fetch调用，不需要任何SDK\nconst response = await fetch('https://api.deepseek.com/v1/chat/completions', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer sk-你的API密钥'\n  },\n  body: JSON.stringify({\n    model: 'deepseek-chat',\n    messages: [\n      { role: 'system', content: '你是一个幽默的助手。（人设：system角色定义你是谁）' },\n      { role: 'user', content: '用一句话介绍前端开发' }\n    ],\n    temperature: 0.7\n  })\n})\n\nconst data = await response.json()\nconsole.log(data.choices[0].message.content)"
               },
               {
                 "id": "b4",
@@ -2156,7 +2188,29 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch2",
-        "title": "函数调用",
+        "title": "会话管理",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1", "title": "会话概念",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "大模型本身无状态。每次请求独立，不记得上一句说了什么。会话管理就是手动维护 messages 数组，每轮把历史全部传回去。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "手写会话管理", "code": "let messages = [{ role: 'system', content: '你是一个助手' }]\n\nasync function chat(userInput) {\n  messages.push({ role: 'user', content: userInput })\n  \n  const res = await fetch(API_URL, {\n    method: 'POST',\n    headers: { 'Authorization': 'Bearer sk-xxx' },\n    body: JSON.stringify({ model: 'deepseek-chat', messages, stream: true })\n  })\n  // 处理流式响应...\n  \n  const reply = await parseStream(res)\n  messages.push({ role: 'assistant', content: reply }) // 记住回复\n  return reply\n}\n\nawait chat('你好')\nawait chat('我刚才说了什么？') // 能答出来，因为 messages 里有历史" },
+              { "id": "b3", "type": "tip", "content": "核心：每轮把 messages 数组传给 API，LLM 就能记住上下文。messages 越长，Token 消耗越多。" }
+            ]
+          },
+          {
+            "id": "l2", "title": "上下文窗口与压缩",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "每轮追加消息，messages 会越来越长，直到超出模型的上下文窗口。需要压缩：保留最近 N 轮 + 对更早的对话做摘要。" },
+              { "id": "b2", "type": "table", "headers": ["策略", "做法", "适用"], "rows": [["保留最近N轮", "只传最近10条消息", "简单粗暴，短对话"], ["摘要压缩", "超出窗口时让LLM总结历史", "长对话，省Token"], ["滑动窗口", "最近N轮+早期摘要", "平衡方案，推荐"]] }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "函数调用和MCP",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
           {
@@ -2241,7 +2295,7 @@ export const frontendCourses: Course[] = [
         ]
       },
       {
-        "id": "ch3",
+        "id": "ch4",
         "title": "RAG知识库",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
@@ -2353,7 +2407,33 @@ export const frontendCourses: Course[] = [
         ]
       },
       {
-        "id": "ch4",
+        "id": "ch5",
+        "title": "原生智能体",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1",
+            "title": "什么是智能体",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "智能体 = 人设 + RAG + 函数调用 + 自主编排。人设决定你是谁（systemPrompt），RAG 决定你知道什么（知识库），函数调用决定你能做什么（工具），自主编排决定你做什么（LLM 路由决策）。四要素缺一不可。" },
+              { "id": "b2", "type": "table", "headers": ["要素", "作用", "原生实现"], "rows": [["人设", "定义角色和行为", "messages[0] system角色"], ["RAG", "领域知识", "检索 + prompt注入"], ["函数调用", "执行工具", "tool_use循环"], ["自主编排", "决策下一步", "LLM 判断是否继续调工具"]] }
+            ]
+          },
+          {
+            "id": "l2",
+            "title": "手写 agent loop",
+            "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "最简智能体：while循环 + LLM 调用 + tool_use 自动循环。人设写在 system prompt，知识库通过 RAG prompt 注入，工具通过 JSON Schema 注册，LLM 自主决策是否继续调工具。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "原生 agent loop", "code": "const messages = [\n  { role: 'system', content: '你是助手。可用工具：查天气 getWeather(city)' }\n]\n\nasync function agent(userInput) {\n  messages.push({ role: 'user', content: userInput })\n  while (true) {\n    const res = await fetch(API_URL, {\n      body: JSON.stringify({ model: 'deepseek-chat', messages, tools })\n    })\n    const data = await res.json()\n    const choice = data.choices[0]\n    \n    if (choice.finish_reason === 'stop') return choice.message.content\n    \n    // tool_use：执行工具，结果回传\n    for (const tc of choice.message.tool_calls) {\n      const result = await executeTool(tc.function.name, tc.function.arguments)\n      messages.push({ role: 'tool', tool_call_id: tc.id, content: result })\n    }\n  }\n}" },
+              { "id": "b3", "type": "tip", "content": "这就是最简智能体：人设(system) + 工具(tools) + LLM自主循环(while)。30行代码拥有完整的智能体能力。" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch6",
         "title": "LangGraph智能体",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
@@ -2365,7 +2445,7 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b1",
                 "type": "text",
-                "content": "LangGraph用图（Graph）来编排大模型工作流。核心三要素：State（共享状态）、Node（处理节点）、Edge（连接线）。比手写if/else的好处：每个节点独立、流程可视化、出错可回溯。"
+                "content": "智能体不需要自主决策和函数调用，最简智能体 = 人设 + RAG。人设定义角色，RAG 提供知识，就能做出有用的 AI 助手。LangGraph 用 StateGraph 统一实现——State 管上下文，Node 封装逻辑，Edge 连流程。"
               },
               {
                 "id": "b2",
@@ -2427,58 +2507,102 @@ export const frontendCourses: Course[] = [
               {
                 "id": "b3",
                 "type": "tip",
-                "content": "循环是智能体的核心能力。条件路由 + 循环 = LLM可以在图里\"走自己的路\"，不再是你预设一条直线。下一章自主编排智能体会把这个能力用到极致。"
+                "content": "循环是智能体的核心能力。条件路由 + 循环 = LLM可以在图里\"走自己的路\"，不再是你预设一条直线。下一章讲如何通过 Skills 渐进式暴露让 LLM 更高效地决策和路由。"
               }
             ]
           }
         ]
       },
       {
-        "id": "ch5",
-        "title": "自主编排智能体",
+        "id": "ch7",
+        "title": "Claude通用智能体",
         "video": "https://www.w3schools.com/html/mov_bbb.mp4",
         "lessons": [
           {
-            "id": "l1",
-            "title": "Planner-Executor模式",
+            "id": "l1", "title": "Claude智能体 vs LangGraph自建",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "三种方案对比：原生 API 完全可控但开发量大，LangGraph 框架辅助但需自己搭建，Agent SDK 开箱即用。" },
+              { "id": "b2", "type": "table", "headers": ["对比", "原生 API", "LangGraph", "Agent SDK"], "rows": [["定位", "手写一切", "框架辅助", "开箱即用商业级"], ["开发量", "几千行", "几百行", "几十行"], ["工具", "JSON Schema 手写", "代码注册", "Bash/Write/Read 全内置"], ["流式", "fetch SSE 手写", "框架支持", "for await 原生"], ["会话管理", "messages 数组手写", "State 管理", "resume: sessionId"], ["函数调用", "while 循环手写", "框架帮你循环", "全自动"], ["Skill", "无", "无", ".md文件即插即用"]] },
+              { "id": "b3", "type": "tip", "content": "结论：原生 API 学原理，LangGraph 学编排，Agent SDK 做商业落地。课程三层递进。" }
+            ]
+          },
+          {
+            "id": "l2", "title": "环境安装与配置 DeepSeek",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "安装 Claude Agent SDK，配置 DeepSeek V4 作为底层模型。SDK 支持任意兼容 OpenAI 格式的模型。" },
+              { "id": "b2", "type": "code", "language": "bash", "filename": "安装", "code": "npm install @anthropic-ai/claude-agent-sdk" },
+              { "id": "b3", "type": "code", "language": "javascript", "filename": "配置 DeepSeek V4", "code": "// .env 配置\nDEEPSEEK_API_KEY=sk-你的密钥\nDEEPSEEK_BASE_URL=https://api.deepseek.com/v1\n\n// SDK 使用 DeepSeek 模型\nimport { query } from \"@anthropic-ai/claude-agent-sdk\"\n\nfor await (const msg of query({\n  prompt: \"你好\",\n  options: {\n    model: \"deepseek-chat\",               // DeepSeek V4\n    baseURL: process.env.DEEPSEEK_BASE_URL,\n    apiKey: process.env.DEEPSEEK_API_KEY,\n    allowedTools: [\"Bash\", \"Write\", \"Read\"],\n    permissionMode: \"bypassPermissions\",\n  },\n})) { /* 处理消息 */ }" }
+            ]
+          },
+          {
+            "id": "l3", "title": "写代码 + 常用指令",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "Claude智能体最核心的能力是自主写代码。prompt 描述需求，SDK 自动创建文件、写入代码、运行验证。支持 JS/TS/Python/Go/Shell 等所有语言。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "指令示例", "code": "// 写一个完整项目\n“用 Express 写一个用户管理系统，包括增删改查 API”\n\n// 写脚本\n“写一个 Python 脚本爬取百度热搜并保存为 CSV”\n\n// 调试修复\n“这个报错什么意思，帮我修：TypeError: Cannot read properties of undefined”\n\n// 部署\n“把这个项目部署到服务器，配置域名和 SSL”\n\n// 数据分析\n“分析 data.csv 的销售数据，生成图表和结论”" },
+              { "id": "b3", "type": "table", "headers": ["内置工具", "功能", "示例"], "rows": [["Bash", "执行命令", "npm install, python script.py"], ["Write", "写入文件", "生成 index.html, app.js"], ["Read", "读取文件", "查看代码、配置文件"], ["WebFetch", "访问网页", "查 API 文档、抓数据"], ["Grep", "搜索代码", "找函数定义、变量引用"], ["Edit", "编辑文件", "修改某一行代码"]] }
+            ]
+          },
+          {
+            "id": "l4", "title": "安装与开发 Skill",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "三种扩展能力对比：函数调用（JSON Schema 定义工具）、MCP（外部服务的标准协议）、Skill（.md 文件即插即用）。Skill 最简单，不需要写代码，不需要搭服务。" },
+              { "id": "b1-1", "type": "table", "headers": ["对比", "函数调用", "MCP", "Skill"], "rows": [["定义方式", "JSON Schema + 代码", "启动外部服务", ".md 文件"], ["开发量", "写注册代码", "搭服务+配置", "写一个文件"], ["LLM 路由", "手写路由逻辑", "协议自动发现", "LLM 自动匹配"], ["适合", "自定义内部工具", "跨服务通信", "业务能力封装"]] },
+              { "id": "b2", "type": "code", "language": "markdown", "filename": "ppt-generator.md", "code": "# PPT Generator Skill\n\n## 触发条件\n用户提到\"生成PPT\"、\"做一份演示文稿\"、\"幻灯片\"\n\n## 工具权限\nBash, Write, Read\n\n## 执行流程\n1. 理解用户主题和页数需求\n2. 用 python-pptx 库生成 PPT\n3. 每页包含标题 + 要点 + 配图描述\n4. 支持多模板风格（科技/商务/简约）\n5. 输出 .pptx 文件" },
+              { "id": "b3", "type": "code", "language": "markdown", "filename": "deploy.md", "code": "# Deploy Skill\n\n## 触发条件\n用户提到\"部署\"、\"上线\"、\"发布\"、\"配置域名\"\n\n## 工具权限\nBash, Write, Read\n\n## 执行流程\n1. 确认目标服务器 IP 和域名\n2. 构建 Docker 镜像\n3. 推送镜像到仓库\n4. 生成 Knative Service YAML\n5. kubectl apply 部署\n6. 配置域名和自动 HTTPS\n7. 验证部署结果" },
+              { "id": "b4", "type": "tip", "content": "Skill 即插即用：新增一个 .md 文件 = 新增一个智能体能力。不需要改任何代码。团队共享，Git 版本控制。" }
+            ]
+          },
+          {
+            "id": "l5",
+            "title": "VSCode 插件可视化",
             "video": "https://www.w3schools.com/html/mov_bbb.mp4",
             "blocks": [
-              {
-                "id": "b1",
-                "type": "text",
-                "content": "前面学的函数调用每次只让LLM决定下一步。自主编排更进一步：用户说一句话，LLM一次性制定完整计划，然后逐步执行全部。\n\n例如用户说\"查深圳天气，算25*17+89，搜AI发展趋势\"——LLM直接输出3步计划，四个工具各司其职，全部自动完成。"
-              },
-              {
-                "id": "b2",
-                "type": "code",
-                "language": "javascript",
-                "filename": "1. 工具定义 + State",
-                "code": "import { ChatDeepSeek } from \"@langchain/deepseek\"\nimport { StateGraph, Annotation } from \"@langchain/langgraph\"\nimport { chromium } from 'playwright'\n\n// 工具：天气/时间/计算/浏览器\nconst weatherInfo = {\n  \"北京\": { temp: 25, weather: \"晴天\" },\n  \"上海\": { temp: 22, weather: \"多云\" },\n  \"深圳\": { temp: 29, weather: \"晴天\" }\n}\nfunction getWeather(args) { return weatherInfo[args.city] || { error: \"未找到\" } }\nfunction getTime() { return { time: new Date().toLocaleString(\"zh-CN\") } }\nfunction calculate(args) { return { result: eval(args.expr) } }\n\nlet browser = null\nasync function browserTool(args) {\n  if (!browser) browser = await chromium.launch({ channel: 'msedge', headless: false })\n  const page = await browser.newPage()\n  if (args.action === 'search') {\n    await page.goto(`https://www.baidu.com/s?wd=${args.query}`)\n    return { success: true, message: `已搜索: ${args.query}` }\n  }\n  if (args.action === 'screenshot') {\n    await page.screenshot({ path: args.path + '.png', fullPage: true })\n    return { success: true, path: args.path + '.png' }\n  }\n}\n\nconst tools = { getWeather, getTime, calculate, browser: browserTool }\n\n// State定义\nconst State = Annotation.Root({\n  task: Annotation({ value: (x, y) => y, default: () => \"\" }),\n  plan: Annotation({ value: (x, y) => y, default: () => [] }),\n  currentStep: Annotation({ value: (x, y) => y, default: () => 0 }),\n  results: Annotation({ value: (x, y) => y, default: () => [] }),\n})"
-              },
-              {
-                "id": "b3",
-                "type": "code",
-                "language": "javascript",
-                "filename": "2. parsePlan + Planner节点",
-                "code": "// 正则解析 LLM 输出的计划\nfunction parsePlan(text) {\n  const steps = []\n  for (const line of text.split(\"\\n\")) {\n    const match = line.match(/\\d+\\.\\s*TOOL_CALL:\\s*(\\w+)\\s*\\(([^)]*)\\)/)\n    if (match) {\n      const args = {}\n      const regex = /(\\w+)=[\"']([^\"']+)[\"']/g\n      let m\n      while ((m = regex.exec(match[2] || \"\")) !== null) args[m[1]] = m[2]\n      steps.push({ tool: match[1], args })\n    }\n  }\n  return steps\n}\n\nconst model = new ChatDeepSeek({ model: \"deepseek-chat\", temperature: 0 })\n\nasync function plannerNode(state) {\n  const prompt = `可用工具：\n1. getWeather(city=\"城市名\")\n2. getTime()\n3. calculate(expr=\"表达式\")\n4. browser(action=\"search\", query=\"关键词\")\n5. browser(action=\"screenshot\", path=\"文件名\")\n\n用户任务：${state.task}\n\n输出执行计划，每行格式：\n1. TOOL_CALL:工具名(参数)\n2. TOOL_CALL:工具名(参数)`\n\n  const response = await model.invoke(prompt)\n  const plan = parsePlan(response.content?.trim() || \"\")\n  return { plan, currentStep: 0, results: [] }\n}"
-              },
-              {
-                "id": "b4",
-                "type": "code",
-                "language": "javascript",
-                "filename": "3. Executor + 循环 + 运行",
-                "code": "async function executorNode(state) {\n  const idx = state.currentStep\n  const step = state.plan[idx]\n  if (!step) return state\n  \n  const result = tools[step.tool]\n    ? await tools[step.tool](step.args)\n    : { error: `未知工具: ${step.tool}` }\n  \n  return {\n    currentStep: idx + 1,\n    results: [...state.results, { step: idx + 1, tool: step.tool, result }]\n  }\n}\n\nfunction shouldContinue(state) {\n  return state.currentStep >= state.plan.length ? '__end__' : 'executor'\n}\n\nconst graph = new StateGraph(State)\n  .addNode('planner', plannerNode)\n  .addNode('executor', executorNode)\n  .addEdge('__start__', 'planner')\n  .addEdge('planner', 'executor')\n  .addConditionalEdges('executor', shouldContinue)\n  .compile()\n\n// 运行\nconst res = await graph.invoke({\n  task: '查深圳天气，算25*17+89，打开浏览器搜索AI发展趋势并截图'\n})\n\n// LLM自主规划的输出：\n// 1. TOOL_CALL:getWeather(city=\"深圳\")\n// 2. TOOL_CALL:calculate(expr=\"25*17+89\")\n// 3. TOOL_CALL:browser(action=\"search\" query=\"AI发展趋势\")\n// 4. TOOL_CALL:browser(action=\"screenshot\" path=\"ai_trends\")\n\n// 自动执行结果：\n// [步骤1] getWeather → {\"temp\":29,\"weather\":\"晴天\"}\n// [步骤2] calculate  → {\"result\":514}\n// [步骤3] browser(search) → 浏览器打开百度搜索\n// [步骤4] browser(screenshot) → 截图保存 ai_trends.png"
-              },
-              {
-                "id": "b5",
-                "type": "text",
-                "content": "核心价值：不是你预设流程，而是LLM根据用户输入自主决定要做什么、按什么顺序。你只管提供工具，LLM负责看任务、拆步骤、定顺序——真正的自主编排。"
-              },
-              {
-                "id": "b6",
-                "type": "tip",
-                "content": "parsePlan函数用两个正则：第一个提取 TOOL_CALL:工具名(参数)，第二个从参数串中提取 key=\"value\" 对。LLM输出格式不固定，用正则比JSON.parse更容错。"
-              }
+              { "id": "b1", "type": "text", "content": "Claude Code 提供 VSCode 插件，直接在编辑器里对话、写代码、执行。所见即所得的智能体开发体验。安装后在 VSCode 侧边栏打开，相当于一个内置的 Claude 智能体。" },
+              { "id": "b2", "type": "table", "headers": ["功能", "说明"], "rows": [["对话面板", "侧边栏聊天，上下文感知当前文件"], ["代码生成", "选中描述 → 自动生成代码到编辑器"], ["终端集成", "直接在终端执行 Claude 建议的命令"], ["文件操作", "自动读/写/编辑项目文件"], ["可视化", "思考和工具调用过程实时展示"]] },
+              { "id": "b3", "type": "tip", "content": "VSCode 插件 = Claude 智能体的可视化界面。和在代码里调 SDK 是同一套能力，只是多了图形化交互。" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch8",
+        "title": "Agent SDK智能体",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1", "title": "SDK 流式调用",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "SDK 一行替代 ch1 的手写 fetch+SSE。流式输出 = for await 原生，systemPrompt = 人设。不再手写 30 行 SSE 解析。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "流式调用", "code": "import { query } from \"@anthropic-ai/claude-agent-sdk\"\n\nfor await (const msg of query({\n  prompt: \"你好\",\n  options: {\n    systemPrompt: \"你是一个幽默的助手\",  // 人设\n    allowedTools: [\"Bash\", \"Write\"],\n    permissionMode: \"bypassPermissions\",\n  },\n})) {\n  if (msg.type === 'assistant') { /* 流式推前端 */ }\n}" }
+            ]
+          },
+          {
+            "id": "l2", "title": "SDK 会话管理",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "SDK 一行替代 ch2 的手写 messages 数组。resume: sessionId + persistSession = 自动上下文续接，不再手动管理历史消息。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "会话管理", "code": "let sessionId\n\nasync function chat(prompt) {\n  for await (const msg of query({\n    prompt,\n    options: {\n      ...(sessionId ? { resume: sessionId } : {}), // 续接会话\n      persistSession: true,                        // 持久化\n      systemPrompt: \"你是一个中文助手\",\n    },\n  })) {\n    if (msg.type === 'system' && msg.session_id) {\n      sessionId = msg.session_id  // 记住，下次续接\n    }\n  }\n}\n\nawait chat('我叫张三')\nawait chat('我叫什么？') // 答：张三 ✓" }
+            ]
+          },
+          {
+            "id": "l3", "title": "SDK 函数调用 + Skill",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "SDK 内置 tool_use 循环，不需要手写 ch2 的 agent loop。Skill = .md 文件扩展能力，相当于增强版函数调用——定义 prompt + 工具权限即可。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "函数调用+Skill", "code": "// 原生需要30行 agent loop → SDK 全自动\nfor await (const msg of query({\n  prompt: \"查深圳天气，生成一份PPT\",\n  options: {\n    allowedTools: [\"Bash\", \"Write\", \"WebFetch\"],\n    skills: [\"ppt-generator\", \"weather\"], // Skill列表\n    systemPrompt: \"你是智能助手，根据需求自动调用工具\",\n  },\n})) {\n  // SDK自动：判断调哪个工具 → 执行 → 回传 → 决定是否继续\n}" }
+            ]
+          },
+          {
+            "id": "l4", "title": "SDK + RAG",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "RAG 检索部分自己写（20行），结果注入 prompt，SDK 自动回答。对比 ch3 手写：不需要自己管流式、会话、工具调用。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "RAG + SDK", "code": "async function ragAsk(question) {\n  // 1. RAG检索（你自己写，20行）\n  const vec = await getEmbedding(question)\n  const docs = db.prepare(`SELECT content FROM chunks\n    ORDER BY vec_distance_cosine(embedding, ?) LIMIT 3`\n  ).all(JSON.stringify(vec))\n  const context = docs.map(d => d.content).join('\\n---\\n')\n\n  // 2. SDK 自动回答（不需要管流式/会话/工具）\n  for await (const msg of query({\n    prompt: `参考资料：\\n${context}\\n\\n问题：${question}`,\n    options: { resume: sessionId, persistSession: true },\n  })) { /* 流式推前端 */ }\n}" }
+            ]
+          },
+          {
+            "id": "l5", "title": "SDK = 完整智能体",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "一份代码 = 前五章全部能力。" },
+              { "id": "b2", "type": "table", "headers": ["前五章", "原生实现", "Agent SDK"], "rows": [["ch1 API流式调用", "fetch + SSE（30行）", "for await 原生"], ["ch2 函数调用", "tool_use while循环（30行）", "内置自动循环"], ["ch3 RAG", "检索 + 注入（20行）", "检索你写，注入SDK"], ["ch4 会话管理", "messages 数组（20行）", "resume: sessionId"], ["ch5 智能体", "agent loop（50行）", "SDK 内置"]] },
+              { "id": "b3", "type": "tip", "content": "150行原生代码 → 30行SDK。前5章教你原理，SDK 让你落地。" }
             ]
           }
         ]
@@ -2486,10 +2610,355 @@ export const frontendCourses: Course[] = [
     ]
   },
 {
+    "id": "frontend-agent",
+    "pathId": "frontend",
+    "title": "智能体项目",
+    "desc": "Agent SDK全栈、AIGC、RAG、支付、部署",
+    "icon": "🤖",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "超级智能体概述",
+        "lessons": [
+          {
+            "id": "l1", "title": "什么是超级智能体",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "超级智能体 = 通用智能体 + 多个专业智能体。通用智能体负责统筹调度，专业智能体各司其职（代码、PPT、音乐、漫剧等），背后靠 RAG 知识库驱动。" },
+              { "id": "b2", "type": "table", "headers": ["类型", "能力", "驱动方式"], "rows": [["通用智能体", "函数调用、自主编排、调度所有能力", "Function Calling"], ["专业智能体", "代码/PPT/漫剧/音乐/简历", "RAG + 工具调用"]] },
+              { "id": "b3", "type": "tip", "content": "一句话：通用智能体是大脑，专业智能体是手脚，RAG 是记忆。" }
+            ]
+          },
+          {
+            "id": "l2", "title": "技术架构总览",
+            "blocks": [
+              { "id": "b1", "type": "table", "headers": ["层", "技术", "作用"], "rows": [["前端", "Vue3 + Vite", "智能体控制台"], ["后端", "Node.js + Express", "API + 工具执行"], ["AI", "DeepSeek / 千问 / 豆包", "LLM 引擎"], ["向量库", "sqlite-vec", "RAG 知识检索"], ["编排", "LangGraph", "工作流 + 智能体编排"], ["部署", "Linux + Nginx + PM2", "生产环境上线"]] },
+              { "id": "b2", "type": "text", "content": "关键设计：前端不直接调 LLM，全部通过后端中转。后端统一管理 API Key、工具注册、知识库，前端只负责展示和交互。" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "AIGC全能力引擎",
+        "lessons": [
+          {
+            "id": "l1", "title": "图片生成（文生图、图生图、AI修图）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "调用通义万相 / 即梦 API，输入文字描述即可生成图片。支持文生图、图生图、图片编辑三种模式。" },
+              { "id": "b2", "type": "table", "headers": ["能力", "API", "关键参数"], "rows": [["文生图", "通义万相 wan2.1-t2i", "prompt + size"], ["图生图", "通义万相 image2image", "ref_img + prompt"], ["AI修图", "即梦 CV API", "图片 + 修改指令"]] }
+            ]
+          },
+          {
+            "id": "l2", "title": "视频生成（文生视频、数字人）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "视频生成调用 HappyHorse / Seedance，数字人调用即梦 OmniHuman 或阿里 VideoRetalk 唇形同步。" },
+              { "id": "b2", "type": "table", "headers": ["能力", "API", "说明"], "rows": [["文生视频", "HappyHorse / Seedance", "prompt → 视频，异步轮询"], ["数字人口播", "OmniHuman", "照片 + 音频 → 唇形同步视频"], ["视频换口型", "VideoRetalk / HeyGem", "已有视频 + 新音频 → 口型替换，HeyGem 开源免部署"]] }
+            ]
+          },
+          {
+            "id": "l3", "title": "音频生成（音乐、TTS、声音克隆）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "音频三件套：豆包 TTS 文字转语音、声音复刻克隆音色、Suno/Mureka 生成音乐。" },
+              { "id": "b2", "type": "table", "headers": ["能力", "API", "说明"], "rows": [["TTS 语音", "豆包语音合成", "文字 → 自然语音，支持流式"], ["声音克隆", "豆包声音复刻2.0", "5秒样本 → 克隆音色"], ["音乐生成", "Suno / Mureka", "风格+歌词 → 完整歌曲"]] }
+            ]
+          },
+          {
+            "id": "l4", "title": "漫剧与漫画生成",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "漫剧 = 漫画 + AI配音 + 简单动画。流程：AI生成漫画分镜 → 拆分角色和场景 → TTS配音 → 合成视频。" },
+              { "id": "b2", "type": "table", "headers": ["步骤", "工具", "产出"], "rows": [["1. 剧本/分镜", "DeepSeek/Claude", "漫画脚本 + 分镜描述"], ["2. 漫画生成", "通义万相/即梦", "漫画风格图片"], ["3. 配音", "豆包TTS + 声音克隆", "角色配音"], ["4. 合成", "node-canvas + FFmpeg", "漫剧视频"]] }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "多模态",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1", "title": "多模态概念",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "多模态 = 输入可以是文字、图片、音频、视频，输出也可以是文字、图片、音频、视频。不是单一的文字→文字，而是任意形式→任意形式。" },
+              { "id": "b2", "type": "table", "headers": ["输入 ↓ / 输出 →", "文字", "图片", "音频", "视频"], "rows": [["文字", "LLM对话", "文生图", "TTS语音", "文生视频"], ["图片", "图片描述", "图生图/修图", "-", "图生视频"], ["音频", "语音转文字", "-", "声音克隆", "数字人口播"], ["视频", "视频摘要", "视频截图", "-", "视频编辑"]] }
+            ]
+          },
+          {
+            "id": "l2", "title": "视觉多模态（图片+视频理解）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "GPT-4o、千问-VL、豆包等模型支持图片输入。上传一张图片，LLM 能理解内容、回答问题、提取信息。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "图片理解API", "code": "// 图片 → 文字（千问-VL / GPT-4o）\nconst response = await fetch('https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation', {\n  method: 'POST',\n  headers: { 'Authorization': 'Bearer sk-xxx' },\n  body: JSON.stringify({\n    model: 'qwen-vl-max',\n    input: {\n      messages: [{\n        role: 'user',\n        content: [\n          { image: 'https://example.com/photo.jpg' },\n          { text: '这张图片里有什么？' }\n        ]\n      }]\n    }\n  })\n})" }
+            ]
+          },
+          {
+            "id": "l3", "title": "语音多模态（TTS + STT）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "语音多模态已不需要单独 TTS。阿里 Qwen-Omni 等模型支持音频和文字同时输入输出——用户说话，模型直接回语音+文字，端到端一次完成。STT→LLM→TTS 的三段式已是过去式。" },
+              { "id": "b2", "type": "table", "headers": ["能力", "API", "方向"], "rows": [["STT 语音识别", "Whisper / 豆包语音识别", "音频 → 文字"], ["TTS 语音合成", "豆包语音合成", "文字 → 音频"], ["端到端语音", "Qwen-Omni / 豆包端到端", "音频+文字同时输入输出，无需 TTS"]] }
+            ]
+          },
+          {
+            "id": "l4", "title": "跨模态串联实战",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "多模态的真正威力在于串联：语音说需求 → 识别为文字 → LLM理解 → 调用AIGC生成图片/视频 → 返回结果。一个请求穿越4种模态。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "跨模态串联", "code": "// 语音 → 文字 → 生成图片 → 返回图片\nasync function voiceToImage(audioBuffer) {\n  // 1. 音频 → 文字（STT）\n  const text = await speechToText(audioBuffer)\n  \n  // 2. 文字 → 提示词（LLM）\n  const prompt = await callLLM(`优化为图片描述：${text}`)\n  \n  // 3. 文字 → 图片（文生图）\n  const image = await generateImage(prompt)\n  \n  return { text, prompt, image }\n}" },
+              { "id": "b3", "type": "tip", "content": "超级智能体的目标：用户用任何方式输入，智能体用最合适的模态输出。说话→出图、拍照→出视频、文字→出PPT。" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "工作流",
+        "lessons": [
+          {
+            "id": "l1", "title": "可视化 vs 代码工作流",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "可视化拖拽工作流（Dify、n8n、Coze）适合非开发者快速验证。AI 时代代码工作流是主流：LLM 能写代码改代码，但改不了拖拽节点；代码可 Git 版本控制，JSON 配置合并冲突难解决；50 个节点在画布上眼花缭乱，50 个函数在代码里清晰可控。" },
+              { "id": "b2", "type": "table", "headers": ["对比", "可视化工作流", "代码工作流"], "rows": [["AI 友好", "❌ LLM 改不了", "✅ LLM 直接写"], ["版本管理", "❌ JSON 难 diff", "✅ Git 清晰"], ["复杂度", "❌ 节点多眼花", "✅ 函数清晰"], ["灵活性", "❌ 平台限制", "✅ 无限制"]] },
+              { "id": "b3", "type": "tip", "content": "结论：开发自己的智能体，用代码定义工作流。LangGraph 的 StateGraph 是最佳实践。" }
+            ]
+          },
+          {
+            "id": "l2", "title": "StateGraph节点定义",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "每个节点 = 一个工具或一个 AI 决策步骤。定义输入 State，节点接收 State 返回更新。简单清晰，LLM 能理解并自动生成。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "节点定义模式", "code": "const State = Annotation.Root({\n  userInput: Annotation<string>,\n  toolResult: Annotation<string>,\n  response: Annotation<string>\n})\n\n// 每个节点是一个独立函数\nasync function imageGenerateNode(state) {\n  const img = await generateImage(state.userInput)\n  return { toolResult: img.url }\n}\n\nasync function respondNode(state) {\n  const reply = await callLLM(`已生成图片：${state.toolResult}`)\n  return { response: reply }\n}" }
+            ]
+          },
+          {
+            "id": "l3", "title": "条件分支与循环",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "工作流不是一条直线。LLM 判断用户意图 → 走不同分支（图片/视频/音乐/PPT）。任务完成后回到入口等待下一步指令，形成循环。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "条件路由", "code": "function routeAfterIntent(state) {\n  if (state.intent === 'image') return 'imageAgent'\n  if (state.intent === 'video') return 'videoAgent'\n  if (state.intent === 'ppt') return 'pptAgent'\n  return 'generalAgent'\n}\n\nconst graph = new StateGraph(State)\n  .addNode('router', routerNode)\n  .addConditionalEdges('router', routeAfterIntent)\n  .compile()" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch5",
+        "title": "专业智能体",
+        "lessons": [
+          {
+            "id": "l1", "title": "RAG知识库搭建",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "专业智能体的核心是 RAG 知识库。每个智能体有自己的知识库：代码智能体有技术文档，PPT智能体有模板库，漫剧智能体有素材风格库。" },
+              { "id": "b2", "type": "table", "headers": ["步骤", "技术", "说明"], "rows": [["1. 文档上传", "multer 接收文件", "支持 PDF/Word/Markdown/TXT"], ["2. 文档切分", "按段落切 chunk", "每块 500 字，重叠 100"], ["3. 向量化", "text-embedding-3-small", "1536维向量"], ["4. 存储", "sqlite-vec", "SQLite 向量扩展"], ["5. 检索", "余弦相似度", "TOP-K 返回"]] }
+            ]
+          },
+          {
+            "id": "l2", "title": "自定义RAG智能体",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "用户上传自己的文档，自动创建专属智能体。上传 → 自动切分 → 自动向量化 → 立即可问答。每个用户的数据隔离存储。" },
+              { "id": "b2", "type": "table", "headers": ["流程", "接口", "说明"], "rows": [["上传文档", "POST /api/kb/upload", "接受文件，返回 kbId"], ["自动建库", "后台自动切分+向量化", "大文件异步处理"], ["查询", "POST /api/kb/{kbId}/query", "问题 → 检索 → LLM生成回答"]] },
+              { "id": "b3", "type": "tip", "content": "关键设计：每个用户 userId 隔离知识库，RLS 数据安全。用户只能查自己的知识库。" }
+            ]
+          },
+          {
+            "id": "l3", "title": "PPT智能体",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "PPT智能体 = RAG（模板库）+ AI 内容生成。选择模板 → AI 根据主题生成每页内容 → 填充到模板 → 导出 pptx。" },
+              { "id": "b2", "type": "table", "headers": ["步骤", "技术"], "rows": [["模板库", "预置5-10套不同风格模板（科技/商务/简约）"], ["内容生成", "LLM 根据主题生成标题+要点+配图描述"], ["图片生成", "AIGC 生成配图"], ["导出", "pptx 库生成可下载的 PPT 文件"]] }
+            ]
+          },
+          {
+            "id": "l4", "title": "漫剧智能体",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "漫剧智能体 = RAG（漫画风格/角色素材库）+ 分镜生成 + TTS配音 + 合成。输入故事梗概，自动生成完整漫剧。" },
+              { "id": "b2", "type": "table", "headers": ["环节", "AI 能力", "产出"], "rows": [["剧本", "LLM 生成分镜脚本", "分镜文本"], ["角色图", "文生图生成角色形象", "角色 PNG"], ["背景", "文生图生成场景背景", "背景 PNG"], ["配音", "TTS + 声音克隆", "角色音频"], ["合成", "FFmpeg 合成视频", "最终漫剧 MP4"]] }
+            ]
+          },
+          {
+            "id": "l5", "title": "音乐智能体",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "音乐智能体 = RAG（音乐风格/和弦进行/歌词模板）+ Suno / Mureka + TTS。输入主题风格，生成完整歌曲。" },
+              { "id": "b2", "type": "table", "headers": ["能力", "实现"], "rows": [["歌词生成", "LLM + 歌词模板 RAG"], ["旋律生成", "Suno API（风格+歌词→歌曲）"], ["人声替换", "声音克隆替换 Suno 默认人声"], ["BGM", "纯音乐模式生成背景音乐"]] }
+            ]
+          },
+          {
+            "id": "l6", "title": "简历智能体",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "简历智能体 = RAG（简历模板/行业JD库）+ AI 内容润色。用户输入基本信息，AI 根据目标职位生成定制化简历。" },
+              { "id": "b2", "type": "table", "headers": ["步骤", "说明"], "rows": [["信息收集", "前端表单收集：基本信息、工作经历、技能"], ["内容生成", "LLM 根据职位 JD 生成简历要点"], ["模板套用", "用户选择模板风格，AI 填充内容"], ["导出", "PDF 导出 + 一键部署为在线简历页"]] }
+            ]
+          },
+          {
+            "id": "l7", "title": "英语智能体",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "英语智能体 = RAG（语法规则/口语场景库）+ AI 语音交互。能口语对话、语法纠错、发音评测，就像一个 AI 英语私教。" },
+              { "id": "b2", "type": "table", "headers": ["能力", "技术", "说明"], "rows": [["口语对话", "STT → LLM → TTS", "语音输入 → AI回复 → 语音输出"], ["语法纠错", "LLM + 语法规则 RAG", "输入句子 → 纠正语法 → 解释原因"], ["发音评测", "Whisper + 音素对比", "用户朗读 → 对比标准发音 → 打分"], ["场景练习", "情景对话模板", "机场/餐厅/面试等场景角色扮演"]] }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch6",
+        "title": "通用智能体（LangGraph自建）",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1", "title": "LangGraph vs Claude Code（自建还是接入）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "LangGraph 自建智能体灵活可控，但需要自己写 agent loop、工具注册、流式处理。Claude Agent SDK 一步到位，是商业级方案的选择。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "SDK 接入示例", "code": "import { query } from \"@anthropic-ai/claude-agent-sdk\"\n\nfor await (const msg of query({\n  prompt: \"写一个nodejs hello world，打印\",\n  options: {\n    allowedTools: [\"Bash\", \"Write\", \"Read\"],\n    permissionMode: \"bypassPermissions\",\n    systemPrompt: \"你是一个中文助手，操作前确认当前目录\",\n    thinking: { type: \"enabled\", budgetTokens: 2000 },\n  },\n})) {\n  // msg.type: system / assistant / user / result\n  // assistant → thinking(思考) → text(回复) → tool_use(工具调用)\n  // user → tool_result(执行结果)\n}" },
+              { "id": "b3", "type": "table", "headers": ["SDK 消息类型", "含义", "前端展示"], "rows": [["assistant.thinking", "模型思考过程", "折叠显示"], ["assistant.text", "模型文字回复", "直接展示"], ["assistant.tool_use", "调用工具（Bash/Write等）", "显示工具名+参数"], ["user.tool_result", "工具执行结果", "流式返回"], ["result", "完成，含耗时和费用", "摘要展示"]] }
+            ]
+          },
+          {
+            "id": "l2", "title": "沙箱环境（Docker + Firecracker 等）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "沙箱是代码智能体的安全底座。AI生成的代码不可信，必须在隔离环境中执行。课程用 Docker（最通用），同时了解其他沙箱方案。" },
+              { "id": "b2", "type": "table", "headers": ["沙箱方案", "隔离级别", "启动速度", "适用场景"], "rows": [["Docker", "容器级", "秒级", "通用，课程选用"], ["Firecracker", "microVM 级", "毫秒级（<125ms）", "AWS Lambda 级别安全"], ["gVisor", "用户态内核", "秒级", "Google App Engine"], ["VM2/isolated-vm", "进程级", "毫秒级", "Node.js 轻量隔离"], ["EC2 云沙箱", "虚拟机级", "秒级", "AWS 按需实例，用完销毁，最安全"]] },
+              { "id": "b3", "type": "tip", "content": "Docker：最通用，任何语言都能跑。Firecracker：AWS 开源的轻量虚拟机，每个沙箱独立内核，安全性最高。选型原则：本地用 Docker，云端用 EC2（按需创建，用完销毁），极致安全用 Firecracker。" }
+            ]
+          },
+          {
+            "id": "l3", "title": "智能写代码实战（SDK + Docker）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "用户在前端输入需求 → 后端创建 Docker 容器挂载工作目录 → SDK 在容器内自主写代码 → 前端流式显示思考/代码/执行结果。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "完整流程", "code": "import { query } from \"@anthropic-ai/claude-agent-sdk\"\nimport { execSync } from 'child_process'\nimport { v4 as uuid } from 'uuid'\n\nasync function codeAgent(userPrompt, onMessage) {\n  const sessionId = uuid()\n  const workDir = `/tmp/sandbox/${sessionId}`\n  \n  // 1. 创建沙箱并挂载工作目录\n  execSync(`mkdir -p ${workDir}`)\n  const containerId = execSync(\n    `docker run -d --rm --network=none --memory=512m --cpus=1 ` +\n    `-v ${workDir}:/workspace -w /workspace node:20 sleep 3600`\n  ).toString().trim()\n\n  // 2. SDK 在沙箱内自主写代码、执行、调试\n  for await (const msg of query({\n    prompt: `在当前目录创建项目：${userPrompt}。写完后用 node 运行验证。`,\n    options: {\n      allowedTools: [\"Bash\", \"Write\", \"Read\"],\n      permissionMode: \"bypassPermissions\",\n      workDir: workDir, // SDK 在沙箱挂载目录工作\n    },\n  })) {\n    onMessage(msg) // 实时推给前端\n  }\n\n  // 3. 清理沙箱\n  execSync(`docker stop ${containerId}`)\n}" },
+              { "id": "b3", "type": "tip", "content": "关键设计：SDK workDir 指向 Docker 挂载目录，Claude Code 写的代码直接落入沙箱，执行结果流式返回前端。不需要自己写 LLM 工具循环。" }
+            ]
+          },
+          {
+            "id": "l4", "title": "自动部署与域名",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "代码智能体写完后，用户说「部署到服务器并配置域名」，SDK 自动 SSH 到服务器、拉代码、配置 Nginx、申请 SSL 证书。全自动一条龙。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "部署示例", "code": "// 用户输入：\"把项目部署到服务器 192.168.1.100，域名 myapp.com\"\n// SDK 自动执行：\n\n// 1. 构建 + 上传\nscp -r ./dist root@192.168.1.100:/var/www/myapp/\n\n// 2. 配置 Nginx（SDK 自动写入 /etc/nginx/sites-available/myapp）\nserver {\n  listen 80;\n  server_name myapp.com;\n  root /var/www/myapp;\n}\n\n// 3. SSL 证书\ncertbot --nginx -d myapp.com\n\n// 4. 重启\nsystemctl reload nginx" },
+              { "id": "b3", "type": "table", "headers": ["步骤", "SDK 做的事"], "rows": [["1. 代码生成", "在沙箱内完成项目开发"], ["2. 配置部署", "SSH 到服务器，自动写 Nginx 配置"], ["3. 域名+SSL", "自动执行 certbot 申请证书"], ["4. 上线", "重启服务，公网可访问"]] }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch7",
+        "title": "Claude Code通用智能体",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1", "title": "为什么直接接入Claude Code",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "自己做通用智能体 = 写 agent loop + 工具编排 + 流式处理 + 错误重试，而且不一定智能。Claude Agent SDK 已经是一个生产级通用智能体，Bash/Write/Read/WebFetch 全内置，直接接入就是商业级。" },
+              { "id": "b2", "type": "table", "headers": ["对比", "自己开发", "Claude Agent SDK"], "rows": [["智能程度", "取决于你的 prompt 和工具设计", "Claude 官方调优，生产级"], ["工具丰富度", "自己注册，有限", "Bash+Write+Read+WebFetch+Grep 全内置"], ["流式处理", "自己处理 SSE", "SDK for await 原生支持"], ["维护成本", "持续优化 prompt 和工具", "SDK 升级即可"]] },
+              { "id": "b3", "type": "tip", "content": "一句话：不要重新发明轮子。Claude Code 已经是商业级通用智能体，你只需要包一层 Docker 沙箱 + 前端界面。" }
+            ]
+          },
+          {
+            "id": "l2", "title": "SDK 全能力一览",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "Claude Agent SDK 内置工具覆盖了绝大多数商业场景。写代码、生成 PPT、爬虫抓数据、浏览器操作，一个 SDK 全搞定。" },
+              { "id": "b2", "type": "table", "headers": ["能力", "实现方式", "典型场景"], "rows": [["写代码", "Write + Bash 执行", "完整项目开发、脚本、自动化"], ["PPT 生成", "Bash 执行 python-pptx 脚本", "主题PPT、数据报告PPT"], ["爬虫抓数据", "Bash 执行 curl/python requests", "竞品分析、舆情监控"], ["浏览器操作", "Bash 执行 Playwright 脚本", "截图、表单填写、数据采集"], ["数据分析", "Bash 执行 Python pandas", "Excel分析、图表生成"], ["文件处理", "Read + Write + Bash", "PDF转换、图片处理、文档生成"]] },
+              { "id": "b3", "type": "code", "language": "javascript", "filename": "全能力接入示例", "code": "import { query } from \"@anthropic-ai/claude-agent-sdk\"\n\nconst prompt = `\n在 /tmp/sandbox 目录下完成以下任务：\n1. 爬取 https://news.ycombinator.com 首页标题\n2. 把标题分析整理成 PPT\n3. 用 Playwright 给首页截图\n4. 所有产物放到 output/ 目录\n`\n\nfor await (const msg of query({\n  prompt,\n  options: {\n    allowedTools: [\"Bash\", \"Write\", \"Read\", \"WebFetch\"],\n    permissionMode: \"bypassPermissions\",\n  },\n})) { /* 流式推到前端 */ }" }
+            ]
+          },
+          {
+            "id": "l3", "title": "沙箱 + SDK 集成实战",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "生产环境：用户对话 → 后端创建 Docker 沙箱（挂载工作目录）→ SDK 在沙箱内自主操作 → 前端流式显示。SDK 的 workDir 指向 Docker 挂载目录，代码直接落入沙箱。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "沙箱+SDK集成", "code": "// 1. 创建沙箱\nconst workDir = `/tmp/sandbox/${uuid()}`\nexecSync(`mkdir -p ${workDir}`)\nconst cid = execSync(`docker run -d --rm --network=none --memory=1g ` +\n  `-v ${workDir}:/workspace -w /workspace ` +\n  `node:20 bash -c \"npm i -g playwright; sleep 3600\"`).toString().trim()\n\n// 2. SDK 在工作目录自主操作\nfor await (const msg of query({\n  prompt: userPrompt,\n  options: { allowedTools: [\"Bash\",\"Write\",\"Read\",\"WebFetch\"], workDir },\n})) { ws.send(JSON.stringify(msg)) } // WebSocket 推前端\n\n// 3. 产物打包下载\nexecSync(`docker cp ${cid}:/workspace/output ./output`)" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch8",
+        "title": "平台托管（用户代码上线）",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1", "title": "用户代码托管架构",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "用户在前端用 Claude Code 智能体生成的代码，需要一键托管到平台。核心：每个用户一个独立 Docker 容器 + 独立子域名。用户生成 → 自动构建镜像 → 推送 → 部署 → 分配 URL。" },
+              { "id": "b2", "type": "table", "headers": ["步骤", "技术", "说明"], "rows": [["1. 代码生成", "Claude Agent SDK", "用户在平台生成项目代码"], ["2. 自动构建", "Docker build", "根据语言自动选基础镜像"], ["3. 推送仓库", "Docker Registry", "每个用户一个 namespace"], ["4. 部署", "K3s + Knative", "一行 YAML 创建 Knative Service"], ["5. 分配URL", "Nginx + 子域名", "用户ID.平台域名.com"]] }
+            ]
+          },
+          {
+            "id": "l2", "title": "K3s + Knative 多租户隔离",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "K3s 轻量 K8s + Knative 无服务 = 最省资源的用户代码托管方案。每个用户一个 Knative Service，namespace 隔离，Scale to Zero 不浪费资源。" },
+              { "id": "b2", "type": "code", "language": "yaml", "filename": "用户项目 YAML 模板", "code": "apiVersion: serving.knative.dev/v1\nkind: Service\nmetadata:\n  name: user-{userId}-project\n  namespace: user-{userId}\nspec:\n  template:\n    spec:\n      containers:\n        - image: registry.example.com/user-{userId}/project:latest\n          ports:\n            - containerPort: 3000\n          resources:\n            requests:\n              cpu: 100m\n              memory: 128Mi\n            limits:\n              cpu: 500m\n              memory: 512Mi" },
+              { "id": "b3", "type": "tip", "content": "Knative Scale to Zero：用户项目 30 秒无访问自动休眠，省资源。用户访问时自动唤醒，冷启动 < 1 秒。" }
+            ]
+          },
+          {
+            "id": "l3", "title": "自动域名 + HTTPS",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "每个用户项目分配独立子域名，自动 HTTPS。User-A 的项目跑在 a.platform.com，User-B 跑在 b.platform.com。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "域名分配逻辑", "code": "// 用户生成项目后，自动分配域名\nasync function deployUserProject(userId, projectId, code) {\n  // 1. 写入代码\n  const dir = `/workspace/users/${userId}/${projectId}`\n  fs.mkdirSync(dir, { recursive: true })\n  fs.writeFileSync(`${dir}/index.html`, code)\n\n  // 2. 构建镜像\n  const image = `registry.platform.com/user-${userId}/${projectId}`\n  execSync(`docker build -t ${image} ${dir}`)\n  execSync(`docker push ${image}`)\n\n  // 3. 部署 + 分配域名\n  const yaml = buildKnativeYAML(userId, projectId, image)\n  execSync(`kubectl apply -f ${yaml}`)\n\n  // 4. 返回可访问URL\n  return `https://${projectId}.platform.com`\n}" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch9",
+        "title": "激活码兑换（三方引流）",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1", "title": "激活码商业模式",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "通过抖音/小红书/淘宝等第三方平台卖激活码，用户拿到码后在网站兑换权益。适合做低价引流（9.9元试用），降低用户首次付费门槛。" },
+              { "id": "b2", "type": "table", "headers": ["环节", "说明"], "rows": [["平台卖码", "抖音小店/淘宝上架虚拟商品，自动发货"], ["用户兑换", "访问网站 → 输入激活码 → 绑定账号"], ["权益开通", "后台验证后开通 VIP / 智能体次数 / 专属功能"], ["安全性", "激活码唯一 + 过期时间 + 使用次数限制"]] }
+            ]
+          },
+          {
+            "id": "l2", "title": "激活码生成与验证",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "后台管理生成一批激活码 → 导出给平台 → 用户兑换时校验唯一性、有效期、使用次数。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "激活码接口", "code": "// 生成激活码\napp.post('/api/admin/codes/generate', async (req, res) => {\n  const { count, plan, days } = req.body\n  const codes = []\n  for (let i = 0; i < count; i++) {\n    const code = 'VIP-' + crypto.randomUUID().slice(0, 8).toUpperCase()\n    await db.run('INSERT INTO codes (code, plan, days) VALUES (?, ?, ?)', [code, plan, days])\n    codes.push(code)\n  }\n  res.json({ codes })\n})\n\n// 用户兑换激活码\napp.post('/api/codes/redeem', async (req, res) => {\n  const { code } = req.body\n  const row = await db.get('SELECT * FROM codes WHERE code = ? AND used = 0', [code])\n  if (!row) return res.status(400).json({ error: '激活码无效或已使用' })\n  \n  await db.run('UPDATE codes SET used = 1, usedBy = ?, usedAt = datetime(\"now\") WHERE id = ?', [req.userId, row.id])\n  await db.run('UPDATE users SET vip = 1, vipExpire = datetime(\"now\", \"+\" || ? || \" days\") WHERE id = ?', [row.days, req.userId])\n  \n  res.json({ success: true, vipExpire: `开通${row.days}天` })\n})" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch10",
+        "title": "微信支付（直接访问网站支付）",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1", "title": "微信支付接入流程",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "用户直接访问网站 → 选择套餐 → 微信扫码支付 → 回调开通 VIP。微信支付分 JSAPI（公众号/小程序）和 Native（扫码）两种，课程用 Native 扫码支付，最通用。" },
+              { "id": "b2", "type": "table", "headers": ["步骤", "操作", "说明"], "rows": [["1. 统一下单", "后端调用微信支付 API", "生成支付链接/二维码"], ["2. 用户支付", "扫码支付", "微信 App 内完成"], ["3. 支付回调", "微信 POST 通知后端", "验证签名，开通权益"], ["4. 前端轮询", "查支付状态", "支付成功跳转结果页"]] }
+            ]
+          },
+          {
+            "id": "l2", "title": "支付接口实现",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "后端实现统一下单 + 支付回调。核心注意：回调签名验证（防伪造）、订单幂等（防止重复开通）。" },
+              { "id": "b2", "type": "code", "language": "javascript", "filename": "微信支付", "code": "// 统一下单\napp.post('/api/pay/create', async (req, res) => {\n  const { plan, amount } = req.body\n  const orderNo = 'ORD' + Date.now()\n  \n  // 调用微信 Native 支付 API\n  const payRes = await fetch('https://api.mch.weixin.qq.com/v3/pay/transactions/native', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },\n    body: JSON.stringify({\n      appid: WX_APPID, mchid: WX_MCHID,\n      description: `超级智能体 - ${plan}`,\n      out_trade_no: orderNo,\n      amount: { total: amount * 100, currency: 'CNY' },\n      notify_url: 'https://yourdomain.com/api/pay/notify'\n    })\n  })\n  \n  const { code_url } = await payRes.json()\n  res.json({ orderNo, code_url }) // 前端用code_url生成二维码\n})\n\n// 支付回调\napp.post('/api/pay/notify', async (req, res) => {\n  const { out_trade_no, trade_state } = req.body\n  if (trade_state !== 'SUCCESS') return res.json({ code: 'FAIL' })\n  \n  // 幂等：检查是否已处理\n  const order = await db.get('SELECT * FROM orders WHERE orderNo = ?', [out_trade_no])\n  if (order?.status === 'paid') return res.json({ code: 'SUCCESS' })\n  \n  // 开通VIP\n  await db.run('UPDATE orders SET status = \"paid\" WHERE orderNo = ?', [out_trade_no])\n  await db.run('UPDATE users SET vip = 1 WHERE id = ?', [order.userId])\n  \n  res.json({ code: 'SUCCESS' })\n})" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ch11",
+        "title": "项目部署（部署实战项目）",
+        "video": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "lessons": [
+          {
+            "id": "l1", "title": "自有项目部署（K3s + Knative）",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "你自己的超级智能体项目也部署到 K3s + Knative。把整个后端打包成 Docker 镜像，Knative Service 一行 YAML 部署，自动 HTTPS、自动扩缩、零宕机更新。" },
+              { "id": "b2", "type": "code", "language": "bash", "filename": "安装 K3s + Knative", "code": "# 一行安装 K3s\ncurl -sfL https://get.k3s.io | sh -\n\n# 安装 Knative + Kourier\nkubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.15.0/serving-crds.yaml\nkubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.15.0/serving-core.yaml\nkubectl apply -f https://github.com/knative/net-kourier/releases/download/knative-v1.15.0/kourier.yaml\n\n# 安装 Cert Manager（自动 HTTPS）\nkubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.0/cert-manager.yaml" }
+            ]
+          },
+          {
+            "id": "l2", "title": "部署 + 域名 + HTTPS",
+            "blocks": [
+              { "id": "b1", "type": "text", "content": "构建镜像 → 推送 → kubectl apply → 自动获取域名和 HTTPS。传统 PM2+Nginx+certbot 手动三件套全被 Knative 替代。" },
+              { "id": "b2", "type": "code", "language": "bash", "filename": "一键部署", "code": "# 构建 + 推送 + 部署\ndocker build -t registry.example.com/super-agent:v1 .\ndocker push registry.example.com/super-agent:v1\nkubectl apply -f service.yaml\n\n# 查看状态\nkubectl get ksvc super-agent\n# NAME          URL                            READY\n# super-agent   https://agent.yourdomain.com   True" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "ai-practice",
     "pathId": "frontend",
-    "title": "AI英语项目实战",
-    "desc": "AI英语学习、RAG知识库、智能对话",
+    "title": "Vibe Coding实战",
+    "desc": "Vibe Coding、2个完整项目",
     "icon": "🤖",
     "chapters": [
       {
@@ -2508,7 +2977,7 @@ export const frontendCourses: Course[] = [
                   ["首页", "学习模块入口(背单词/口语/语法/听力)"],
                   ["消息", "AI对话历史，支持继续对话"],
                   ["我的", "个人信息、VIP状态、创建智能体"],
-                  ["对话页", "LangGraph智能体对话，支持流式输出"],
+                  ["对话页", "智能体对话，支持流式输出"],
                   ["背单词", "单词库、记忆曲线、复习计划"],
                   ["情景口语", "场景选择、角色扮演、打分反馈"],
                   ["语法", "知识点讲解、练习题"],
@@ -2601,18 +3070,21 @@ export const frontendCourses: Course[] = [
       },
       {
         "id": "ch3",
-        "title": "LangGraph智能体",
+        "title": "口语智能体",
         "lessons": [
           {
             "id": "l1",
-            "title": "LLM API接入",
+            "title": "最简单的智能体：人设 + RAG",
             "blocks": [
               {
                 "id": "b1",
-                "type": "code",
-                "language": "javascript",
-                "filename": "OpenAI配置",
-                "code": "import OpenAI from 'openai'\n\nconst openai = new OpenAI({\n  apiKey: process.env.OPENAI_API_KEY\n})\n\nasync function chat(prompt, messages = []) {\n  const res = await openai.chat.completions.create({\n    model: 'gpt-4o',\n    messages: [\n      { role: 'system', content: prompt },\n      ...messages.map(m => ({ role: m.role, content: m.content }))\n    ],\n    stream: true\n  })\n  return res\n}"
+                "type": "text",
+                "content": "智能体不需要自主决策和函数调用。最简智能体 = 人设 + RAG。人设告诉它扮演什么角色（比如雅思口语教练），RAG 告诉它相关领域知识（比如口语题库）。这样就能做出一个有用的 AI 助手。"
+              },
+              {
+                "id": "b2",
+                "type": "text",
+                "content": "下面以口语智能体为例：人设 = \"你是雅思口语教练\"，RAG = 口语题库知识库，用户输入 → 检索相关题目 → 注入 prompt → LLM 生成回复。不需要函数调用，不需要自主编排。"
               }
             ]
           },
@@ -2662,7 +3134,7 @@ export const frontendCourses: Course[] = [
                 "id": "b2",
                 "type": "code",
                 "language": "javascript",
-                "filename": "LangGraph智能体",
+                "filename": "智能体",
                 "code": "// LangGraph工作流定义\nconst workflow = new StateGraph({ channels }) {\n  // 节点: 理解用户意图\n  .addNode('understand', async (state) => {\n    const res = await openai.chat.completions.create({\n      model: 'gpt-4o',\n      messages: [{ role: 'user', content: state.input }]\n    })\n    return { intent: res.choices[0].message.content }\n  })\n  // 节点: RAG检索\n  .addNode('retrieve', async (state) => {\n    const docs = await retrieveContext(state.input, state.kbId)\n    return { context: docs.map(d => d.content).join('\\\\\\\n') }\n  })\n  // 节点: 生成回复\n  .addNode('generate', async (state) => {\n    const msg = state.context\n      ? '基于知识库回答: ' + state.context + '\\\\\\\n\\\\\\\n问题: ' + state.input\n      : state.input\n    const res = await openai.chat.completions.create({\n      model: 'gpt-4o',\n      messages: [{ role: 'user', content: msg }]\n    })\n    return { response: res.choices[0].message.content }\n  })\n  // 边\n  .addEdge('understand', 'retrieve')\n  .addEdge('retrieve', 'generate')\n  .compile()\n}"
               }
             ]
